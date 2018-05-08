@@ -1,6 +1,6 @@
 # Kubernetes monitoring in less than 5 minutes
 
-Kubelet natively exposes cadvisor metrics at https://kubernetes.default.svc:443/api/v1/nodes/<node-name>/proxy/metrics/cadvisor and we can use a prometheus server to scrape this endpoint. These metrics can then be visualized using Grafana.\
+Kubelet natively exposes cadvisor metrics at https://kubernetes.default.svc:443/api/v1/nodes/<node-name>/proxy/metrics/cadvisor and we can use a prometheus server to scrape this endpoint. These metrics can then be visualized using Grafana.
 
 Setup:
 0. If you have not already deployed the nginx-ingress then - Comment out statement 191 to 210 - Uncomment statement 183 or 184 depending upon your cluster setup.
