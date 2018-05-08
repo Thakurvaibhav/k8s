@@ -16,4 +16,4 @@ Setup:
 
 Note:
 
-1. A Cluster-binding role is already being created by the config. The role currently as admin permissions, however you can modify it to a viewer role only.
+1. A Cluster-binding role is already being created by the config. The role currently has admin permissions, however you can modify it to a viewer role only.
