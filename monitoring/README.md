@@ -10,7 +10,7 @@ Setup:\
 		b. Add DataSource:\
 			i.   Name: DS_PROMETHEUS\
 			ii.  Type: Prometheus\
-			iii. URL: http://prometheus-service:8080\
+			iii. URL: http://prometheus-service:8080 \
 			iv.  Save and Test\
 	4. You can now build your custon dashboards or simply import dashboards from grafana.net. Dasboard #315 and #1471 are good to start with.\
 
