@@ -32,10 +32,11 @@ Access:
     ::1             localhost
     <pub-ip-lb>   foo.bar.com
     <pub-ip-lb>   bar.baz.com
+    <pub-ip-lb>.  test.host.com
 	```
-	RUN `curl foo.bar.com\foo`
-	RUN `curl bar.baz.com\bar` 
-
+	RUN `curl foo.bar.com\foo` :Should return the header\
+	RUN `curl bar.baz.com\bar` :Should return the header\
+    RUN `curl test.host.com`   :Should be redirected to default backend\   
 
 
 
