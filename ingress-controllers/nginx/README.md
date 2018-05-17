@@ -11,13 +11,13 @@ Setup:
 
 
 Access:
-1. External IP of the created ELB(in case of AWS) or GLB(in case of GKE) can be found by `kubectl get svc -n ingress-nginx` Only one service should have a public ip
+1. External IP of the created ELB(in case of AWS) or GLB(in case of GKE) can be found by `kubectl get svc -n ingress-nginx` Only one service should have a public ip.
 2. In order to test run the following,
-	kubectl run echoheaders --image=gcr.io/google_containers/echoserver:1.4 --replicas=1 --port=8080
-	kubectl expose deployment echoheaders --port=80 --target-port=8080 --name=echoheaders-x
-	kubectl expose deployment echoheaders --port=80 --target-port=8080 --name=echoheaders-y
-	If cluster is on AWS: kubectl apply -f aws/ingress.yaml 
-	If cluster is on GKE: kubectl apply -f gke/ingress.yaml
+	kubectl run echoheaders --image=gcr.io/google_containers/echoserver:1.4 --replicas=1 --port=8080\
+	kubectl expose deployment echoheaders --port=80 --target-port=8080 --name=echoheaders-x\
+	kubectl expose deployment echoheaders --port=80 --target-port=8080 --name=echoheaders-y\
+	If cluster is on AWS: kubectl apply -f aws/ingress.yaml\ 
+	If cluster is on GKE: kubectl apply -f gke/ingress.yaml\
 	Now, Access the services by making a entry for foo.bar.com and bar.baz.com on your local machine's /etc/hosts
 	```
 	cat /etc/hosts
@@ -33,6 +33,9 @@ Access:
     <pub-ip-lb>   foo.bar.com
     <pub-ip-lb>   bar.baz.com
 	```
+	RUN `curl foo.bar.com\foo`
+	RUN `curl bar.baz.com\bar` 
+
 
 
 
