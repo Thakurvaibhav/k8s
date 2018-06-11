@@ -5,9 +5,9 @@ data node provisions and formats its own persistent volume.
 
 Setup:
 
-1. kubectl -f es-data.yml 
-2. kubectl -f es-client.yml
-3. kubectl -f es-master.yml  
+1. kubectl apply -f es-data.yml 
+2. kubectl apply -f es-client.yml
+3. kubectl apply -f es-master.yml  
 
 Test:
 

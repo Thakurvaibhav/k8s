@@ -4,8 +4,8 @@ Production Grade Replicated Mongo Set-Up with 3 nodes. Each node provisions and 
 
 Setup:
 
-1. kubectl -f configure-node.yml   `This will configure the host machines kernel`
-2. kubeclt -f mongo.yml `Creates namespace,sc,stateful set and headless service`
+1. kubectl apply -f configure-node.yml   `This will configure the host machines kernel`
+2. kubeclt apply -f mongo.yml `Creates namespace,sc,stateful set and headless service`
 
 Test:
 
