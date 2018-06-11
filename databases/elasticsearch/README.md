@@ -1,4 +1,4 @@
-# Prodcution Elastic Search DB set up
+# Prodcution Grade Elastic Search DB set up
 
 Production Grade ES Set-Up with 2 Data Nodes, 2 Client Nodes and 3 Master Nodes. Each 
 data node provisions and formats its own persistent volume. 
