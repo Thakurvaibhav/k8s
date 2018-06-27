@@ -7,7 +7,8 @@ Setup:
 
 1. kubectl apply -f es-data.yml 
 2. kubectl apply -f es-client.yml
-3. kubectl apply -f es-master.yml  
+3. kubectl apply -f es-master.yml
+4. kubectl apply -f es-hq.yml
 
 Test:
 
@@ -21,3 +22,4 @@ Note:
 3. Headless service name for the master nodes is made available as an env variable (pre-set) to all the nodes so that they can find out the elected and eligible masters to form the cluster. 
 4. Pod anti-affinity is enabled on all 3 services so that no 2 pods of same service are scheduled on the same node. 
 5. The node-pool used for ES deployment should not be shared with a service which requires to tweak host kernel params. It is recommeded to have a seperate node pool for this service. Use NodeAffinity.
+6. You can access ES-HQ by using the public ip of the hq svc on port 5000 or run it behind an Ingress. 
