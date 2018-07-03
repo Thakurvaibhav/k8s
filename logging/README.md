@@ -15,7 +15,7 @@ Endpoint:  `http://<pub-ip-kibana-service>:5601/`
 Note:
 
 1. Update the endpoint for your ES cluster in fluent-bit Daemon Set config. 
-`   
+```   
 ...	
 	spec:
       containers:
@@ -25,10 +25,10 @@ Note:
         - name: FLUENT_ELASTICSEARCH_HOST
           value: "elasticsearch.elasticsearch"
 ...
-`
+```
 
 2. Similarly update the cluster name and endpoint in the kibana configuration as well.
-`
+```
 ...
     spec:
       containers:
@@ -40,7 +40,7 @@ Note:
         - name: ELASTICSEARCH_URL
           value: http://elasticsearch.elasticsearch:9200
 ...
-`
+```
 
 3. Elasticsearch can be deployed by following this: `https://github.com/Thakurvaibhav/k8s/tree/master/databases/elasticsearch`
 4. Access for Kibana can be either through public enpoint/Ingress or even an Internal LB (recommended) for your GKE cluster. 
