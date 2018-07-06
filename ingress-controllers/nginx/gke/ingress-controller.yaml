@@ -59,6 +59,8 @@ metadata:
   namespace: ingress-nginx
   labels:
     app: ingress-nginx
+data:
+  enable-vts-status: "true"
 ---
 kind: ConfigMap
 apiVersion: v1
@@ -198,7 +200,10 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: nginx-ingress-controller
-  namespace: ingress-nginx 
+  namespace: ingress-nginx
+  annotations:
+    prometheus.io/port: "10254"
+     prometheus.io/scrape: "true" 
 spec:
   replicas: 1
   selector:
@@ -266,4 +271,7 @@ spec:
   - name: https
     port: 443
     targetPort: https
+  - name:
+    port: 18080
+    targetPort: 18080
 
