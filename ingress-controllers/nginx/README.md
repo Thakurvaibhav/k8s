@@ -36,7 +36,8 @@ Access:
 	```
 	RUN `curl foo.bar.com\foo` :Should return the header\
 	RUN `curl bar.baz.com\bar` :Should return the header\
-    RUN `curl test.host.com`   :Should be redirected to default backend 
+    RUN `curl test.host.com`   :Should be redirected to default backend
+3. VTS metrics can been seen at `http://<pub-ip-lb>:18080/nginx_status`
 
 
 
