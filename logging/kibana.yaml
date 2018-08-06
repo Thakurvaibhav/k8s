@@ -37,6 +37,8 @@ kind: Service
 metadata:
   namespace: logging
   name: kibana
+  annotations:
+    cloud.google.com/load-balancer-type: "Internal"
   labels:
     component: kibana
 spec:

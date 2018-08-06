@@ -95,8 +95,8 @@ spec:
               mountPath: /data/db
           resources:
             requests:
-              cpu: 100m
-              memory: 300M
+              cpu: 1
+              memory: 2Gi
         - name: mongo-sidecar
           image: cvallance/mongo-k8s-sidecar
           env:
