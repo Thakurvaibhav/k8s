@@ -6,6 +6,7 @@ Setup:
 
 1. kubectl apply -f configure-node.yml   `This will configure the host machines kernel`
 2. kubeclt apply -f mongo.yml `Creates namespace,sc,stateful set and headless service`
+3. kubectl apply -f internal-lb-svc.yml `Creates 3 internal GCP loadbalancers for in case you want to access the db from outside the K8s cluster.`
 
 Test:
 
