@@ -11,6 +11,7 @@ provisioner: kubernetes.io/gce-pd
 parameters:
   type: pd-ssd
   fsType: xfs
+allowVolumeExpansion: true
 ---
 apiVersion: apps/v1beta1
 kind: StatefulSet

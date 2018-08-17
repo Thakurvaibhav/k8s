@@ -30,6 +30,7 @@ provisioner: kubernetes.io/gce-pd
 parameters:
   type: pd-ssd
   fsType: xfs
+allowVolumeExpansion: true
 ---
 apiVersion: v1
 kind: Service
