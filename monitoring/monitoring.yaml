@@ -235,14 +235,17 @@ metadata:
     kubernetes.io/ingress.class: "nginx"
 spec:
   rules:
-  - host: monitoring.yourdomain.com
+  - host: grafana.yourdomain.com
     http:
       paths:
-      - path: /grafana
+      - path: /
         backend:
           serviceName: grafana
           servicePort: 3000
-      - path: /prometheus
+  - host: prometheus.yourdomain.com
+    http:
+      paths:
+      - path: /
         backend:
           serviceName: prometheus-service
           servicePort: 8080

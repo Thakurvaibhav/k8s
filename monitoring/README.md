@@ -8,7 +8,7 @@ Setup:
     - Comment out statement 191 to 210 or Uncomment statement 183 or 184 depending          upon your cluster setup.
 2. Deployment: kubectl deploy -f k8s/monitoring/monitoring.yaml
 3. Once grafana is running:
- 	- Access grafana at monitoring.yourdomain.com/grafana in case of Ingress or     http://:3000 in case of type: LoadBalancer
+ 	- Access grafana at grafana.yourdomain.com in case of Ingress or http://<LB-IP>:3000 in case of type: LoadBalancer
  	- Add DataSource: 
  	  - Name: DS_PROMETHEUS - Type: Prometheus 
  	  - URL: http://prometheus-service:8080 
