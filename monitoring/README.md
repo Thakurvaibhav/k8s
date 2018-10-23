@@ -4,9 +4,9 @@ Kubelet natively exposes cadvisor metrics at https://kubernetes.default.svc:443/
 
 Setup:
 
-1. If you have not already deployed the nginx-ingress then
-    - Comment out statement 191 to 210 or Uncomment statement 183 or 184 depending          upon your cluster setup.
-2. Deployment: kubectl deploy -f k8s/monitoring/monitoring.yaml
+1. If you have not already deployed the nginx-ingress controller then
+    - Uncomment `type: LoadBalancer` field in Grafana and Prometheus Services.
+2. Deployment: kubectl deploy -f k8s/monitoring/
 3. Once grafana is running:
  	- Access grafana at grafana.yourdomain.com in case of Ingress or http://<LB-IP>:3000 in case of type: LoadBalancer
  	- Add DataSource: 
@@ -16,4 +16,4 @@ Setup:
 
 Note:
 
-1. A Cluster-binding role is already being created by the config. The role currently has admin permissions, however you can modify it to a viewer role only.
+1. A Cluster-binding role for prometheus is already being created by the config. The role currently has admin permissions, however you can modify it to a viewer role only.
