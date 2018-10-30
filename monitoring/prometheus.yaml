@@ -64,9 +64,7 @@ metadata:
   name: prometheus-service
   namespace: monitoring
   annotations:
-      prometheus.io/scrape: 'true'
-      prometheus.io/path:   /
-      prometheus.io/port:   '8080'  
+      prometheus.io/scrape: 'true' 
 spec:
   selector: 
     app: prometheus-server  
