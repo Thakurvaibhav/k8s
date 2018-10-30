@@ -17,3 +17,4 @@ Setup:
 Note:
 
 1. A Cluster-binding role for prometheus is already being created by the config. The role currently has admin permissions, however you can modify it to a viewer role only.
+2. if you need to update the prometheus config, it can be reloaded by making an api call to the prometheus server. `curl -XPOST http://<prom-service>:<prom-port>/-/reload`
