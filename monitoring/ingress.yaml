@@ -21,3 +21,10 @@ spec:
         backend:
           serviceName: prometheus-service
           servicePort: 8080
+  - host: alertmanager.yourdomain.com
+    http: 
+      paths:
+      - path: /
+        backend:
+          serviceName: alertmanager
+          servicePort: 9093

@@ -1,0 +1,82 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monitoring
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-rules
+  labels:
+    name: prometheus-rules
+  namespace: monitoring
+data:
+  alert.rules: |-
+    groups:
+      - name: Deployment
+        rules:
+        - alert: Deployment at 0 Replicas
+          annotations:
+            summary: Deployment {{$labels.deployment}} in {{$labels.namespace}} is currently having no pods running
+          expr: |
+            sum(kube_deployment_status_replicas{pod_template_hash=""}) by (deployment,namespace)  < 1
+          for: 1m
+          labels:
+            team: devops
+
+      - name: Pods
+        rules:
+        - alert: Container restarted
+          annotations:
+            summary: Container named {{$labels.container}} in {{$labels.pod}} in {{$labels.namespace}} was restarted
+          expr: |
+            sum(increase(kube_pod_container_status_restarts_total{namespace!="kube-system",pod_template_hash=""}[1m])) by (pod,namespace,container) > 0
+          for: 0m
+          labels:
+            team: server
+
+        - alert: High Memory Usage of Container 
+          annotations: 
+            summary: Container named {{$labels.container}} in {{$labels.pod}} in {{$labels.namespace}} is using more than 75% of Memory Limit
+          expr: | 
+            ((( sum(container_memory_usage_bytes{image!="",container_name!="POD", namespace!="kube-system"}) by (namespace,container_name,pod_name)  / sum(container_spec_memory_limit_bytes{image!="",container_name!="POD",namespace!="kube-system"}) by (namespace,container_name,pod_name) ) * 100 ) < +Inf ) > 75
+          for: 5m
+          labels: 
+            team: server
+
+        - alert: High CPU Usage of Container 
+          annotations: 
+            summary: Container named {{$labels.container}} in {{$labels.pod}} in {{$labels.namespace}} is using more than 75% of CPU Limit
+          expr: | 
+            ((sum(irate(container_cpu_usage_seconds_total{image!="",container_name!="POD", namespace!="kube-system"}[30s])) by (namespace,container_name,pod_name) / sum(container_spec_cpu_quota{image!="",container_name!="POD", namespace!="kube-system"} / container_spec_cpu_period{image!="",container_name!="POD", namespace!="kube-system"}) by (namespace,container_name,pod_name) ) * 100)  > 75
+          for: 5m
+          labels: 
+            team: server
+
+        - alert: Container Killed by Error
+          annotations:
+            summary: Container named {{$labels.container}} in {{$labels.pod}} in {{$labels.namespace}} was killed due to Error
+          expr: |
+            sum(kube_pod_container_status_last_terminated_reason{pod_template_hash="",reason="Error"}) by (namespace,container,pod) > 0
+          for: 0m
+          labels:
+            team: server
+
+        - alert: Container Killed by OOM
+          annotations:
+            summary: Container named {{$labels.container}} in {{$labels.pod}} in {{$labels.namespace}} was killed due to OOM
+          expr: |
+            sum(kube_pod_container_status_last_terminated_reason{pod_template_hash="",reason="OOMKilled"}) by (namespace,container,pod) > 0
+          for: 0m
+          labels:
+            team: server
+
+        - alert: Container Killed by CannotRun
+          annotations:
+            summary: Container named {{$labels.container}} in {{$labels.pod}} in {{$labels.namespace}} was killed due to CannotRun
+          expr: |
+            sum(kube_pod_container_status_last_terminated_reason{pod_template_hash="",reason="ContainerCannotRun"}) by (namespace,container,pod) > 0
+          for: 0m
+          labels:
+            team: devops
+
