@@ -29,8 +29,8 @@ data:
         receiver: devops
         continue: true 
       - match: 
-          team: server
-        receiver: server
+          team: dev
+        receiver: dev
         continue: true
 
     receivers:
@@ -48,7 +48,7 @@ data:
         send_resolved: true
 
 
-    - name: 'server'
+    - name: 'dev'
       victorops_configs:
       - api_key: '<YOUR_API_KEY>'
         routing_key: 'dev'
