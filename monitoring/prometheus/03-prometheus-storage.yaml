@@ -22,7 +22,7 @@ spec:
   storageClassName: fast
   gcePersistentDisk:
     fsType: ext4
-    pdName: pd-ssd-disk-01
+    pdName: prometheus-volume
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
