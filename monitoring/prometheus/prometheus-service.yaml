@@ -6,6 +6,8 @@ metadata:
  #   cloud.google.com/load-balancer-type: "Internal"
   name: prometheus-service
   namespace: monitoring
+  labels:
+    name: prometheus
 spec:
   selector: 
     app: prometheus-server 
