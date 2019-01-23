@@ -14,12 +14,21 @@ Setup for filebeat based logging:
 2. kubectl apply -f kibana.yaml
 
 
+Setup for fluentd based logging:
+
+1. kubectl apply -f fluentd/
+2. kubectl apply -f kibana.yaml
+
+Note: 
+  i.  Make sure you updated the config-map as per your use case. Mulitine JSON handling has been taken care of, please change the regex acc to app logs.
+  ii. The Dockerfile for the fluentd image can be found here `https://github.com/Thakurvaibhav/docker-library/tree/master/fluentd`
+
 Endpoint:  `http://<pub-ip-kibana-service>:5601/`
 
 
 Note:
 
-1. Update the endpoint for your ES cluster in fluent-bit or filebeat Daemon Set config. 
+1. Update the endpoint for your ES cluster in fluent-bit/filebeat/fluentd Daemon Set config. 
 ```   
 ...	
 	spec:
@@ -50,6 +59,7 @@ Note:
 3. Elasticsearch can be deployed by following this: `https://github.com/Thakurvaibhav/k8s/tree/master/databases/elasticsearch`
 4. Access for Kibana can be either through public enpoint/Ingress or even an Internal LB (recommended) for your GKE cluster. 
 5. Add more parsers in the config map depending upon your use case. 
+
 
 
 
