@@ -20,6 +20,7 @@ data:
     filebeat.autodiscover:
       providers:
         - type: kubernetes
+          hints.enabled: true
           templates:
             - condition:
                 equals:
