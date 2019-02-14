@@ -53,7 +53,7 @@
   "gnetId": 741,
   "graphTooltip": 0,
   "id": null,
-  "iteration": 1547660322210,
+  "iteration": 1550119937353,
   "links": [],
   "panels": [
     {
@@ -1146,12 +1146,12 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum (rate (container_cpu_usage_seconds_total{id!=\"/\",pod_name=~\"^$Deployment.*$\",container_name!=\"POD\"}[1m])) by (id)",
+          "expr": "sum (rate (container_cpu_usage_seconds_total{id!=\"/\",pod_name=~\"^$Deployment.*$\",container_name!=\"POD\"}[1m])) by (container_name)",
           "format": "time_series",
           "hide": false,
           "interval": "10s",
           "intervalFactor": 1,
-          "legendFormat": "{{ id }}",
+          "legendFormat": "{{ container_name  }}",
           "metric": "container_cpu",
           "refId": "A",
           "step": 60
@@ -1160,7 +1160,7 @@
       "thresholds": [],
       "timeFrom": null,
       "timeShift": null,
-      "title": "All processes CPU usage",
+      "title": "Average no of cores used per min",
       "tooltip": {
         "msResolution": true,
         "shared": true,
@@ -1177,7 +1177,7 @@
       },
       "yaxes": [
         {
-          "format": "percentunit",
+          "format": "none",
           "label": null,
           "logBase": 1,
           "max": null,
@@ -1689,5 +1689,5 @@
   "timezone": "browser",
   "title": "Kubernetes Deployment metrics",
   "uid": "XOE4JCfmz",
-  "version": 6
+  "version": 11
 }
