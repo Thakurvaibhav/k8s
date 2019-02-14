@@ -12,14 +12,17 @@ Setup:
 	- Deploy Alertmanger: kubectl apply -f k8s/monitoring/alertmanager
 	- Deploy Prometheus: kubectl apply -f k8s/monitoring/prometheus
 	- Deploy Kube-state-metrics: kubectl apply -f k8s/monitoring/kube-state-metrics
-	- Deploy Grafanar: kubectl apply -f k8s/monitoring/grafana
+	- Deploy Node-Exporter: kubectl apply -f k8s/monitoring/node-exporter
+	- Deploy Grafana: kubectl apply -f k8s/monitoring/grafana
 	- Deploy the Ingress: kubectl apply -f k8s/monitoring/ingress.yaml
+
 3. Once grafana is running:
  	- Access grafana at grafana.yourdomain.com in case of Ingress or http://<LB-IP>:3000 in case of type: LoadBalancer
  	- Add DataSource: 
  	  - Name: DS_PROMETHEUS - Type: Prometheus 
  	  - URL: http://prometheus-service:8080 
  	  - Save and Test. You can now build your custon dashboards or simply import dashboards from grafana.net. Dasboard #315 and #1471 are good to start with.
+ 	  - You can also import the dashboards from k8s/monitoring/dashboards
 
 Note:
 
