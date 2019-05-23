@@ -1,10 +1,10 @@
 # Halyard Kubernetes manifests which can be used to manage production grade spinnaker installations
 
-Setup: 
+## Setup: 
 
 `kubectl apply -f spinnaker-halyard/manifests/`
 
-Steps to Install Spinnaker:
+## Steps to Install Spinnaker:
 
 1. Exec into the halyard pod: `kubectl -n spinnaker exec -it <POD_NAME> /bin/bash`
 2. Run commands as spinnaker user: `su - spinnaker`
@@ -46,7 +46,7 @@ Steps to Install Spinnaker:
 	- Spinnaker should now be accessible at `http://spinnaker.<YOUR_ORG>.com`
 
 
-Back-up and Restore
+## Back-up and Restore
 
 1. The halyard backup cron will create daily backups of hal configuration and store it over an EBS volume. 
 2. In order to create manual backups.
