@@ -1,0 +1,63 @@
+# Halyard Kubernetes manifests which can be used to manage production grade spinnaker installations
+
+Setup: 
+
+`kubectl apply -f spinnaker-halyard/manifests/`
+
+Steps to Install Spinnaker:
+
+1. Exec into the halyard pod: `kubectl -n spinnaker exec -it <POD_NAME> /bin/bash`
+2. Run commands as spinnaker user: `su - spinnaker`
+3. Check if hal is up: `hal version list`
+4. Add AWS S3 as persistent storage for kubernetes: `hal config storage s3 edit --bucket <BUCKET_NAME> --access-key-id <ACCESS_KEY_ID> --secret-access-key --region us-east-2`
+5. Enter the AWS SECRETE KEY when prompted
+6. Configure kubectl to access your kubernetes installation. 
+7. Add kubernetes account to spinnaker: 
+	a. `CONTEXT=$(kubectl config current-context)`
+	b. `kubectl apply --context $CONTEXT -f https://spinnaker.io/downloads/kubernetes/service-account.yml`
+	c. `TOKEN=$(kubectl get secret --context $CONTEXT $(kubectl get serviceaccount spinnaker-service-account --context $CONTEXT -n spinnaker -o jsonpath='{.secrets[0].name}') -n spinnaker -o jsonpath='{.data.token}' | base64 --decode)`
+	d. `kubectl config set-credentials ${CONTEXT}-token-user --token $TOKEN`
+	e. `kubectl config set-context $CONTEXT --user ${CONTEXT}-token-user`
+	f. `hal config provider kubernetes enable`
+	g. `hal config provider kubernetes account add ​<KUBERNETES_ACCOUNT_NAME> --provider-version v2 --context $(kubectl config current-context)`
+	h. `hal config features edit --artifacts true`
+8. In order to add more than one kubernetes account to your spinnaker installtion, simply repeat Step 7. 
+9. Choose destination kubernetes account to install spinnaker
+	a. `ACCOUNT=​<KUBERNETES_ACCOUNT_NAME>` , make sure this account has been added to spinnaker
+	b. `hal config deploy edit --type distributed --account-name $ACCOUNT`
+	c. `hal version list`, choose the version of spinnaker you want to install
+	d. `VERSION=<CHOSEN_VERSION>`
+	e. `hal config version edit --version $VERSION`
+	f. `hal deploy apply`
+10. Add Jenkins as trigger for spinnaker. 
+	a. `hal config ci jenkins enable`
+	b. `hal config ci jenkins master add <JENKINS_MASTER_NAME> --address http://<JENKINS_HOST>:<JENKINS_PORT> --username <JENKINS_USER> --password`
+	c. Enter the API key for <JENKINS_USER> when prompted
+11. Expose Spinnaker for your users:
+	a. Make sure you are an Internal/External ingress controller deployed. In case of external ingress it is highly recommended to enable OAuth. 
+	b. In the cluster where you have installed spinnaker, deploy the ingress object. Make sure you edit the ingress object's hostname as per your preference. 
+	c. `kubectl apply -f spinnaker-halyard/spinnaker-ingress.yaml`
+12. Update endpoints in the hal config:
+	a. Exec into the halyard pod: `kubectl -n spinnaker exec -it <POD_NAME> /bin/bash`
+	b. Run commands as spinnaker user: `su - spinnaker`
+	c. `hal config security ui edit --override-base-url ​http://spinnaker.<YOUR_ORG>.com`
+	d. `hal config security api edit --override-base-url http://spingate.<YOUR_ORG>.com`
+	e. `hal deploy apply`
+	f. Spinnaker should now be accessible at `http://spinnaker.<YOUR_ORG>.com`
+
+
+Back-up and Restore
+
+1. The halyard backup cron will create daily backups of hal configuration and store it over an EBS volume. 
+2. In order to create manual backups.
+	a. Exec into the halyard pod: `kubectl -n spinnaker exec -it <POD_NAME> /bin/bash`
+	b. Run commands as spinnaker user: `su - spinnaker`
+	c. `hal backup create`
+3. In order to restore a backup
+	a. Exec into the halyard pod: `kubectl -n spinnaker exec -it <POD_NAME> /bin/bash`
+	b. Run commands as spinnaker user: `su - spinnaker`
+	c. `hal backup restore -q --backup-path <NAME_OF_BACKUP_FILE>`
+
+
+NOTE: This installtion is guide has basic settings like adding Kubernetes accounts and Jenkins as Trigger. We can make tons of other customizations like Slack Notifications, Docker registry accounts etc. Please refer to official Spinnaker documentation  `https://www.spinnaker.io/setup/` for it. 
+

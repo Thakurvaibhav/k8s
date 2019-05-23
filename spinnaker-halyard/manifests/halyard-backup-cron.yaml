@@ -1,0 +1,30 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  labels:
+    app: halyard
+    role: cron
+  name: halyard-cron
+  namespace: spinnaker
+spec:
+  schedule: "0 11 * * *"
+  jobTemplate:
+    metadata:
+      labels:
+        app: halyard
+        role: cron
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: halyard-cron
+            image: vaibhavthakur/halyard:latest
+            command: [ "/backup.sh" ]
+            volumeMounts:
+            - name: root-volume
+              mountPath: /root
+          volumes:
+          - name: root-volume
+            persistentVolumeClaim:
+              claimName: halyard
