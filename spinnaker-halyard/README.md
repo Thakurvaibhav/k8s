@@ -52,11 +52,11 @@
 2. In order to create manual backups.
 	- Exec into the halyard pod: `kubectl -n spinnaker exec -it <POD_NAME> /bin/bash`
 	- Run commands as spinnaker user: `su - spinnaker`
-	- `hal backup create`
+	- Create backup: `hal backup create`
 3. In order to restore a backup
 	- Exec into the halyard pod: `kubectl -n spinnaker exec -it <POD_NAME> /bin/bash`
 	- Run commands as spinnaker user: `su - spinnaker`
-	- `hal backup restore -q --backup-path <NAME_OF_BACKUP_FILE>`
+	- Restore backup: `hal backup restore -q --backup-path <NAME_OF_BACKUP_FILE>`
 
 
 NOTE: This installtion is guide has basic settings like adding Kubernetes accounts and Jenkins as Trigger. We can make tons of other customizations like Slack Notifications, Docker registry accounts etc. Please refer to official Spinnaker documentation  `https://www.spinnaker.io/setup/` for it. 
