@@ -23,40 +23,40 @@ Steps to Install Spinnaker:
     - `hal config features edit --artifacts true`
 8. In order to add more than one kubernetes account to your spinnaker installtion, simply repeat Step 7. 
 9. Choose destination kubernetes account to install spinnaker
-	a. `ACCOUNT=​<KUBERNETES_ACCOUNT_NAME>` , make sure this account has been added to spinnaker
-	b. `hal config deploy edit --type distributed --account-name $ACCOUNT`
-	c. `hal version list`, choose the version of spinnaker you want to install
-	d. `VERSION=<CHOSEN_VERSION>`
-	e. `hal config version edit --version $VERSION`
-	f. `hal deploy apply`
+	- `ACCOUNT=​<KUBERNETES_ACCOUNT_NAME>` , make sure this account has been added to spinnaker
+	- `hal config deploy edit --type distributed --account-name $ACCOUNT`
+	- `hal version list`, choose the version of spinnaker you want to install
+	- `VERSION=<CHOSEN_VERSION>`
+	- `hal config version edit --version $VERSION`
+	- `hal deploy apply`
 10. Add Jenkins as trigger for spinnaker. 
-	a. `hal config ci jenkins enable`
-	b. `hal config ci jenkins master add <JENKINS_MASTER_NAME> --address http://<JENKINS_HOST>:<JENKINS_PORT> --username <JENKINS_USER> --password`
-	c. Enter the API key for <JENKINS_USER> when prompted
+	- `hal config ci jenkins enable`
+	- `hal config ci jenkins master add <JENKINS_MASTER_NAME> --address http://<JENKINS_HOST>:<JENKINS_PORT> --username <JENKINS_USER> --password`
+	- Enter the API key for <JENKINS_USER> when prompted
 11. Expose Spinnaker for your users:
-	a. Make sure you are an Internal/External ingress controller deployed. In case of external ingress it is highly recommended to enable OAuth. 
-	b. In the cluster where you have installed spinnaker, deploy the ingress object. Make sure you edit the ingress object's hostname as per your preference. 
-	c. `kubectl apply -f spinnaker-halyard/spinnaker-ingress.yaml`
+	- Make sure you are an Internal/External ingress controller deployed. In case of external ingress it is highly recommended to enable OAuth. 
+	- In the cluster where you have installed spinnaker, deploy the ingress object. Make sure you edit the ingress object's hostname as per your preference. 
+	- `kubectl apply -f spinnaker-halyard/spinnaker-ingress.yaml`
 12. Update endpoints in the hal config:
-	a. Exec into the halyard pod: `kubectl -n spinnaker exec -it <POD_NAME> /bin/bash`
-	b. Run commands as spinnaker user: `su - spinnaker`
-	c. `hal config security ui edit --override-base-url ​http://spinnaker.<YOUR_ORG>.com`
-	d. `hal config security api edit --override-base-url http://spingate.<YOUR_ORG>.com`
-	e. `hal deploy apply`
-	f. Spinnaker should now be accessible at `http://spinnaker.<YOUR_ORG>.com`
+	- Exec into the halyard pod: `kubectl -n spinnaker exec -it <POD_NAME> /bin/bash`
+	- Run commands as spinnaker user: `su - spinnaker`
+	- `hal config security ui edit --override-base-url ​http://spinnaker.<YOUR_ORG>.com`
+	- `hal config security api edit --override-base-url http://spingate.<YOUR_ORG>.com`
+	- `hal deploy apply`
+	- Spinnaker should now be accessible at `http://spinnaker.<YOUR_ORG>.com`
 
 
 Back-up and Restore
 
 1. The halyard backup cron will create daily backups of hal configuration and store it over an EBS volume. 
 2. In order to create manual backups.
-	a. Exec into the halyard pod: `kubectl -n spinnaker exec -it <POD_NAME> /bin/bash`
-	b. Run commands as spinnaker user: `su - spinnaker`
-	c. `hal backup create`
+	- Exec into the halyard pod: `kubectl -n spinnaker exec -it <POD_NAME> /bin/bash`
+	- Run commands as spinnaker user: `su - spinnaker`
+	- `hal backup create`
 3. In order to restore a backup
-	a. Exec into the halyard pod: `kubectl -n spinnaker exec -it <POD_NAME> /bin/bash`
-	b. Run commands as spinnaker user: `su - spinnaker`
-	c. `hal backup restore -q --backup-path <NAME_OF_BACKUP_FILE>`
+	- Exec into the halyard pod: `kubectl -n spinnaker exec -it <POD_NAME> /bin/bash`
+	- Run commands as spinnaker user: `su - spinnaker`
+	- `hal backup restore -q --backup-path <NAME_OF_BACKUP_FILE>`
 
 
 NOTE: This installtion is guide has basic settings like adding Kubernetes accounts and Jenkins as Trigger. We can make tons of other customizations like Slack Notifications, Docker registry accounts etc. Please refer to official Spinnaker documentation  `https://www.spinnaker.io/setup/` for it. 
