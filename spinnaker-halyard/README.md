@@ -13,14 +13,14 @@ Steps to Install Spinnaker:
 5. Enter the AWS SECRETE KEY when prompted
 6. Configure kubectl to access your kubernetes installation. 
 7. Add kubernetes account to spinnaker: 
-    a. `CONTEXT=$(kubectl config current-context)`
-    b. `kubectl apply --context $CONTEXT -f https://spinnaker.io/downloads/kubernetes/service-account.yml`
-    c. `TOKEN=$(kubectl get secret --context $CONTEXT $(kubectl get serviceaccount spinnaker-service-account --context $CONTEXT -n spinnaker -o jsonpath='{.secrets[0].name}') -n spinnaker -o jsonpath='{.data.token}' | base64 --decode)`
-    d. `kubectl config set-credentials ${CONTEXT}-token-user --token $TOKEN`
-    e. `kubectl config set-context $CONTEXT --user ${CONTEXT}-token-user`
-    f. `hal config provider kubernetes enable`
-    g. `hal config provider kubernetes account add ​<KUBERNETES_ACCOUNT_NAME> --provider-version v2 --context $(kubectl config current-context)`
-    h. `hal config features edit --artifacts true`
+    - `CONTEXT=$(kubectl config current-context)`
+    - `kubectl apply --context $CONTEXT -f https://spinnaker.io/downloads/kubernetes/service-account.yml`
+    - `TOKEN=$(kubectl get secret --context $CONTEXT $(kubectl get serviceaccount spinnaker-service-account --context $CONTEXT -n spinnaker -o jsonpath='{.secrets[0].name}') -n spinnaker -o jsonpath='{.data.token}' | base64 --decode)`
+    - `kubectl config set-credentials ${CONTEXT}-token-user --token $TOKEN`
+    - `kubectl config set-context $CONTEXT --user ${CONTEXT}-token-user`
+    - `hal config provider kubernetes enable`
+    - `hal config provider kubernetes account add ​<KUBERNETES_ACCOUNT_NAME> --provider-version v2 --context $(kubectl config current-context)`
+    - `hal config features edit --artifacts true`
 8. In order to add more than one kubernetes account to your spinnaker installtion, simply repeat Step 7. 
 9. Choose destination kubernetes account to install spinnaker
 	a. `ACCOUNT=​<KUBERNETES_ACCOUNT_NAME>` , make sure this account has been added to spinnaker
