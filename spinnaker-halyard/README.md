@@ -4,7 +4,7 @@
 
 `kubectl apply -f spinnaker-halyard/manifests/`
 
-## Steps to Install Spinnaker:
+## Steps to Install Spinnaker: [ Install Spinnaker in a Kubernetes cluster, add other kubernetes clusters (if any), Enable Jenkins as trigger ]
 
 1. Exec into the halyard pod: `kubectl -n spinnaker exec -it <POD_NAME> /bin/bash`
 2. Run commands as spinnaker user: `su - spinnaker`
@@ -44,6 +44,15 @@
 	- `hal config security api edit --override-base-url http://spingate.<YOUR_ORG>.com`
 	- `hal deploy apply`
 	- Spinnaker should now be accessible at `http://spinnaker.<YOUR_ORG>.com`
+
+###Add-Ons
+
+1. Add Slack Notifications
+2. Enable Travis as Pipeline Trigger
+	- `hal config ci travis master add infra --address https://api.travis-ci.com --base-url https://travis-ci.com --github-token --number-of-repositories 250`
+	- Enter the Personal access token when prompted
+	- The github user for which the Personal access token has been generated should have `read:org, repo, user` permissions. 
+3. Enable Google Auth
 
 
 ## Back-up and Restore

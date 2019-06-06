@@ -42,5 +42,5 @@ spec:
           persistentVolumeClaim:
             claimName: prometheus-claim
         - name: rules-volume
-        configMap:
-          name: prometheus-rules
+          configMap:
+            name: prometheus-rules
