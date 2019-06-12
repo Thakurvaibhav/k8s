@@ -151,6 +151,7 @@ kubectl apply -f kiam-server.yaml
 ```
 kubectl apply -f kiam-agent.yaml
 ```
+
 ## Testing Access
 
 1. Deploy test-pod
