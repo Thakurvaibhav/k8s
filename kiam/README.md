@@ -69,7 +69,7 @@
    ```
 
 
-## Deploying KIAM
+## Deploying Cert-Manager
 
 1. Deploy cert-manager
 	- Install the CustomResourceDefinition resources separately
@@ -143,11 +143,13 @@
 	  	```
 	  	The default is not to allow any roles. You can use a regex as shown above to allow all roles or can even specify a particular role per namespace. 
 
-4.  Deploy the KIAM server (this will run as a DS on all master nodes)
+## Deploying KIAM
+
+1.  Deploy the KIAM server (this will run as a DS on all master nodes)
 ```
 kubectl apply -f kiam-server.yaml
 ```
-5.  Deploy the KIAM agent
+2.  Deploy the KIAM agent
 ```
 kubectl apply -f kiam-agent.yaml
 ```
