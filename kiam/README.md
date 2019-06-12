@@ -85,7 +85,7 @@
 
 		`helm repo update`
 	- Install the cert-manager Helm chart
-	
+
 		`helm install --name cert-manager --namespace cert-manager --version v0.8.0 jetstack/cert-manager`
     - This set-up is enough for kiam to work. However detailed Steps can be found [here](https://cert-manager.readthedocs.io/en/latest/getting-started/install/kubernetes.html#steps)
 
@@ -100,12 +100,16 @@
    		  --namespace=cert-manager
 	    ```
 	- Deploy cluster issuer, certificate and issue the certificate
-	    `kubectl apply -f kiam/namespace.yaml`
-	    `kubectl apply -f kiam/certificate.yaml`
+	```
+	    kubectl apply -f kiam/namespace.yaml
+	    kubectl apply -f kiam/certificate.yaml
+	```
 
 	- Test if certificates are issued correctly
-	    `kubectl -n kiam get secret kiam-agent-tls -o yaml`
-	    `kubectl -n kiam get secret kiam-server-tls -o yaml`
+	```
+	    kubectl -n kiam get secret kiam-agent-tls -o yaml
+	    kubectl -n kiam get secret kiam-server-tls -o yaml
+    ```
 
 3.  Annotating Resources
 	- Add the IAM role's name to Deployment as an annotation
@@ -137,11 +141,13 @@
 	  	The default is not to allow any roles. You can use a regex as shown above to allow all roles or can even specify a particular role per namespace. 
 
 4.  Deploy the KIAM server (this will run as a DS on all master nodes)
-	`kubectl apply -f kiam-server.yaml`
-
+```
+kubectl apply -f kiam-server.yaml
+```
 5.  Deploy the KIAM agent
-    `kubectl apply -f kiam-agent.yaml`
-
+```
+kubectl apply -f kiam-agent.yaml
+```
 ## Testing Access
 
 1. Deploy test-pod
