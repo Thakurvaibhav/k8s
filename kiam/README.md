@@ -37,7 +37,7 @@
 
 4. Create the IAM role (let's call it `my-role`) with appropriate access to AWS resources. 
 
-5. Enable `Trust Relationship` between the newly created role and role attached to Kubernetes Master nodes. 
+5. Enable `Trust Relationship` between the newly created role and role attached to Kiam server role. 
 	- Go to the newly created role in AWS console and Select `Trust relationships` tab
 	- Click on `Edit trust relationship`
 	- Add the following content to the policy:
@@ -51,19 +51,22 @@
       "Action": "sts:AssumeRole"
     }
 	``` 
-	- Enable Assume Role for Master Pool IAM roles. Add the following content as inline policy to Master IAM roles:
-	```
-		{
-            "Sid": "",
-            "Effect": "Allow",
-            "Action": [
-                "sts:AssumeRole"
-            ],
-            "Resource": [
-                "<ARN_KIAM-SERVER_IAM_ROLE>"
-            ]
-        }
-	```
+
+6.  Enable Assume Role for Master Pool IAM roles. Add the following content as inline policy to Master IAM roles:
+   ```
+   {
+  	 "Version": "2012-10-17",
+     "Statement": [
+      {
+        "Effect": "Allow",
+        "Action": [
+        	"sts:AssumeRole"
+      	 ],
+      	"Resource": "<ARN_KIAM-SERVER_IAM_ROLE>"
+      }
+  	]
+   }
+   ```
 
 
 ## Deploying KIAM
