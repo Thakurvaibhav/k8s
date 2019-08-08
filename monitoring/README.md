@@ -21,7 +21,7 @@ Setup:
  	- Add DataSource: 
  	  - Name: DS_PROMETHEUS - Type: Prometheus 
  	  - URL: http://prometheus-service:8080 
- 	  - Save and Test. You can now build your custon dashboards or simply import dashboards from grafana.net. Dasboard #315 and #1471 are good to start with.
+ 	  - Save and Test. You can now build your custon dashboards or simply import dashboards from grafana.net. Dashboard #315 and #1471 are good to start with.
  	  - You can also import the dashboards from k8s/monitoring/dashboards
 
 Note:
