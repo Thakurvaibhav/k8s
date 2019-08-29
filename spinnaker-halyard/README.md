@@ -45,7 +45,7 @@
 	- `hal deploy apply`
 	- Spinnaker should now be accessible at `http://spinnaker.<YOUR_ORG>.com`
 
-###Add-Ons
+## Add-Ons
 
 1. Add Slack Notifications
 2. Enable Travis as Pipeline Trigger
