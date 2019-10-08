@@ -203,7 +203,7 @@ metadata:
   namespace: ingress-nginx
   annotations:
     prometheus.io/port: "10254"
-     prometheus.io/scrape: "true" 
+    prometheus.io/scrape: "true" 
 spec:
   replicas: 1
   selector:
@@ -271,7 +271,7 @@ spec:
   - name: https
     port: 443
     targetPort: https
-  - name:
+  - name: vts
     port: 18080
     targetPort: 18080
 
