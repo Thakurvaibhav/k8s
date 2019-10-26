@@ -14,7 +14,7 @@ Setup:
 	- Deploy Kube-state-metrics: kubectl apply -f k8s/monitoring/kube-state-metrics
 	- Deploy Node-Exporter: kubectl apply -f k8s/monitoring/node-exporter
 	- Deploy Grafana: kubectl apply -f k8s/monitoring/grafana
-	- Deploy the Ingress: kubectl apply -f k8s/monitoring/ingress.yaml
+	- Deploy the Ingress: kubectl apply -f k8s/monitoring/prometheus/monitoring-ingress.yaml
 
 3. Once grafana is running:
  	- Access grafana at grafana.yourdomain.com in case of Ingress or http://<LB-IP>:3000 in case of type: LoadBalancer

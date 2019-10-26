@@ -1,0 +1,49 @@
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: thanos-compactor
+  namespace: monitoring
+  labels:
+    app: thanos-compactor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: thanos-compactor
+  serviceName: thanos-compactor
+  template:
+    metadata:
+      labels:
+        app: thanos-compactor
+    spec:
+      containers:
+        - name: thanos
+          image: quay.io/thanos/thanos:v0.8.0
+          args:
+            - "compact"
+            - "--log.level=debug"
+            - "--data-dir=/data"
+            - "--objstore.config={type: GCS, config: {bucket: prometheus-long-term}}"
+            - "--wait"
+          env:
+            - name : GOOGLE_APPLICATION_CREDENTIALS
+              value: /etc/secret/thanos-gcs-credentials.json
+          ports:
+            - name: http
+              containerPort: 10902
+          livenessProbe:
+            httpGet:
+              port: 10902
+              path: /-/healthy
+          readinessProbe:
+            httpGet:
+              port: 10902
+              path: /-/ready
+          volumeMounts:
+            - name: thanos-gcs-credentials
+              mountPath: /etc/secret
+              readOnly: false
+      volumes:
+        - name: thanos-gcs-credentials
+          secret:
+            secretName: thanos-gcs-credentials
