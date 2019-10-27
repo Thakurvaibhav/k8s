@@ -9,17 +9,17 @@ Some Important metrics which are not exposed by the kubelet, can be fetched usin
 1. If you have not already deployed the nginx-ingress controller then
     - Uncomment `type: LoadBalancer` field in Alertmanager, Prometheus and Grafana Services.
 2. Deployment: 
-    - Deploy Alertmanger: kubectl apply -f k8s/monitoring/alertmanager
-    - Deploy Prometheus: kubectl apply -f k8s/monitoring/prometheus
-    - Deploy Kube-state-metrics: kubectl apply -f k8s/monitoring/kube-state-metrics
-    - Deploy Node-Exporter: kubectl apply -f k8s/monitoring/node-exporter
-    - Deploy Grafana: kubectl apply -f k8s/monitoring/grafana
+    - Deploy Alertmanger: `kubectl apply -f k8s/monitoring/alertmanager`
+    - Deploy Prometheus: `kubectl apply -f k8s/monitoring/prometheus`
+    - Deploy Kube-state-metrics: `kubectl apply -f k8s/monitoring/kube-state-metrics`
+    - Deploy Node-Exporter: `kubectl apply -f k8s/monitoring/node-exporter`
+    - Deploy Grafana: `kubectl apply -f k8s/monitoring/grafana`
 
 3. Once grafana is running:
-    - Access grafana at grafana.yourdomain.com in case of Ingress or http://<LB-IP>:3000 in case of type: LoadBalancer
+    - Access grafana at `grafana.yourdomain.com` in case of Ingress or http://<LB-IP>:3000 in case of type: LoadBalancer
     - Add DataSource: 
       - Name: DS_PROMETHEUS - Type: Prometheus 
-      - URL: http://prometheus-service:8080 
+      - URL: `http://prometheus-service:8080` 
       - Save and Test. You can now build your custon dashboards or simply import dashboards from grafana.net. Dashboard #315 and #1471 are good to start with.
       - You can also import the dashboards from k8s/monitoring/dashboards
 
@@ -42,16 +42,26 @@ Note:
     - Create kubernetes secret using the credentials, `kubectl create secret generic thanos-gcs-credentials --from-file=thanos-gcs-credentials.json -n monitoring`
 
 3. Deployment: 
-    - Deploy Alertmanger: kubectl apply -f k8s/monitoring/alertmanager
-    - Deploy Prometheus: kubectl apply -f k8s/monitoring/prometheus-ha . This will deploy Prometheus and Thanos Stateful sets. The required volumes are provisioned dynamically. 
-    - Deploy Kube-state-metrics: kubectl apply -f k8s/monitoring/kube-state-metrics
-    - Deploy Node-Exporter: kubectl apply -f k8s/monitoring/node-exporter
-    - Deploy Grafana: kubectl apply -f k8s/monitoring/grafana
+    - Deploy Alertmanger: `kubectl apply -f k8s/monitoring/alertmanager`
+    - Deploy Prometheus: `kubectl apply -f k8s/monitoring/prometheus-ha`. This will deploy Prometheus and Thanos Stateful sets. The required volumes are provisioned dynamically. 
+    - Deploy Kube-state-metrics: `kubectl apply -f k8s/monitoring/kube-state-metrics`
+    - Deploy Node-Exporter: `kubectl apply -f k8s/monitoring/node-exporter`
+    - Deploy Grafana: `kubectl apply -f k8s/monitoring/grafana`
 
 4. Once grafana is running:
-    - Access grafana at grafana.yourdomain.com
+    - Access grafana at `grafana.yourdomain.com`
     - Add DataSource: 
       - Name: DS_PROMETHEUS - Type: Prometheus 
-      - URL: http://thanos-querier:9090 
+      - URL: `http://thanos-querier:9090` 
       - Save and Test. You can now build your custon dashboards or simply import dashboards from grafana.net. Dashboard #315 and #1471 are good to start with.
       - You can also import the dashboards from k8s/monitoring/dashboards
+
+5. You can access 
+    - Each prometheus replica at `prometheus-0.yourdomain.com`, `prometheus-1.yourdomain.com` and `prometheus-2.yourdomain.com`
+    - Thanos-querier with de-deuplicated data at `thanos-querier.yourdomain.com`
+    - Thanos-ruler at `thanos-ruler.yourdomain.com`
+    - Alermanager at `alertmanager.yourdomain.com`
+
+Note:
+
+1. Whenever prometheus config map is updated thanos automatically reloads all prometheus servers so no manual update needed. 
