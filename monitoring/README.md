@@ -31,7 +31,7 @@ Note:
 4. Before deploying prometheus please create GCP PD-SSD or AWS EBS Volume of size 250Gi or more, and name it `pd-ssd-disk-01`.
 5. Please update `00-alertmanager-configmap.yaml` to reflect correct api_url for Slack and VictorOps. You can additionally add more receievers. Ref:  https://prometheus.io/docs/alerting/configuration/ 
 
-## Clustered Prometheus Setup:
+## Highly Available Clustered Prometheus Setup:
 
 1. It is highly recommended to deploy an ingress-controller in order to reduce the number of public endpints created. This set-up uses Nginx Ingress Controller. 
 
