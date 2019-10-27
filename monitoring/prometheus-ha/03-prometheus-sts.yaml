@@ -1,0 +1,113 @@
+apiVersion: storage.k8s.io/v1beta1
+kind: StorageClass
+metadata:
+  name: fast
+  namespace: monitoring
+provisioner: kubernetes.io/gce-pd
+allowVolumeExpansion: true
+---
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: prometheus
+  namespace: monitoring
+spec:
+  replicas: 3
+  serviceName: prometheus-service
+  template:
+    metadata:
+      labels:
+        app: prometheus
+        thanos-store-api: "true"
+    spec:
+      serviceAccountName: monitoring
+      containers:
+        - name: prometheus
+          image: prom/prometheus:v2.4.3
+          args:
+            - "--config.file=/etc/prometheus-shared/prometheus.yaml"
+            - "--storage.tsdb.path=/prometheus/"
+            - "--web.enable-lifecycle"
+            - "--storage.tsdb.no-lockfile"
+            - "--storage.tsdb.min-block-duration=2h"
+            - "--storage.tsdb.max-block-duration=2h"
+          ports:
+            - name: prometheus
+              containerPort: 9090
+          volumeMounts:
+            - name: prometheus-storage
+              mountPath: /prometheus/
+            - name: prometheus-config-shared
+              mountPath: /etc/prometheus-shared/
+            - name: prometheus-rules
+              mountPath: /etc/prometheus/rules
+        - name: thanos
+          image: quay.io/thanos/thanos:v0.8.0
+          args:
+            - "sidecar"
+            - "--log.level=debug"
+            - "--tsdb.path=/prometheus"
+            - "--prometheus.url=http://127.0.0.1:9090"
+            - "--objstore.config={type: GCS, config: {bucket: prometheus-long-term}}"
+            - "--reloader.config-file=/etc/prometheus/prometheus.yaml.tmpl"
+            - "--reloader.config-envsubst-file=/etc/prometheus-shared/prometheus.yaml"
+            - "--reloader.rule-dir=/etc/prometheus/rules/"
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name : GOOGLE_APPLICATION_CREDENTIALS
+              value: /etc/secret/thanos-gcs-credentials.json
+          ports:
+            - name: http-sidecar
+              containerPort: 10902
+            - name: grpc
+              containerPort: 10901
+          livenessProbe:
+              httpGet:
+                port: 10902
+                path: /-/healthy
+          readinessProbe:
+            httpGet:
+              port: 10902
+              path: /-/ready
+          volumeMounts:
+            - name: prometheus-storage
+              mountPath: /prometheus
+            - name: prometheus-config-shared
+              mountPath: /etc/prometheus-shared/
+            - name: prometheus-config
+              mountPath: /etc/prometheus
+            - name: prometheus-rules
+              mountPath: /etc/prometheus/rules
+            - name: thanos-gcs-credentials
+              mountPath: /etc/secret
+              readOnly: false
+      securityContext:
+        fsGroup: 2000
+        runAsNonRoot: true
+        runAsUser: 1000
+      volumes:
+        - name: prometheus-config
+          configMap:
+            defaultMode: 420
+            name: prometheus-server-conf
+        - name: prometheus-config-shared
+          emptyDir: {}
+        - name: prometheus-rules
+          configMap:
+            name: prometheus-rules
+        - name: thanos-gcs-credentials
+          secret:
+            secretName: thanos-gcs-credentials
+  volumeClaimTemplates:
+  - metadata:
+      name: prometheus-storage
+      namespace: monitoring
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: fast
+      resources:
+        requests:
+          storage: 20Gi
