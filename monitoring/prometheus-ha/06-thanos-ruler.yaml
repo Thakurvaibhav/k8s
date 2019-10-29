@@ -40,17 +40,16 @@ spec:
         - name: thanos
           image: quay.io/thanos/thanos:v0.8.0
           args:
-            - "rule"
-            - "--log.level=debug"
-            - "--data-dir=/data"
-            - "--eval-interval=15s"
-            - "--rule-file=/etc/thanos-ruler/*.rules.yaml"
-            - "--alertmanagers.url=http://alertmanager:9093"
-            - "--query=thanos-querier:9090"
+            - rule
+            - --log.level=debug
+            - --data-dir=/data
+            - --eval-interval=15s
+            - --rule-file=/etc/thanos-ruler/*.rules.yaml
+            - --alertmanagers.url=http://alertmanager:9093
+            - --query=thanos-querier:9090
             - "--objstore.config={type: GCS, config: {bucket: thanos-ruler}}"
-            # We don't want to override underlying metric's cluster label.
-            - "--label=ruler_cluster="prometheus-ha"
-            - "--label=replica="$(POD_NAME)"
+            - --label=ruler_cluster="prometheus-ha"
+            - --label=replica="$(POD_NAME)"
           env:
             - name : GOOGLE_APPLICATION_CREDENTIALS
               value: /etc/secret/thanos-gcs-credentials.json
