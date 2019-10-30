@@ -343,7 +343,7 @@
             "rgba(237, 129, 40, 0.89)",
             "rgba(50, 172, 45, 0.97)"
           ],
-          "datasource": "DS_Prometheus",
+          "datasource": "DS_PROMETHEUS",
           "editable": true,
           "error": false,
           "format": "none",
@@ -426,7 +426,7 @@
             "rgba(237, 129, 40, 0.89)",
             "rgba(50, 172, 45, 0.97)"
           ],
-          "datasource": "DS_Prometheus",
+          "datasource": "DS_PROMETHEUS",
           "editable": true,
           "error": false,
           "format": "none",
@@ -509,7 +509,7 @@
             "rgba(237, 129, 40, 0.89)",
             "rgba(50, 172, 45, 0.97)"
           ],
-          "datasource": "DS_Prometheus",
+          "datasource": "DS_PROMETHEUS",
           "format": "none",
           "gauge": {
             "maxValue": 100,
@@ -590,7 +590,7 @@
             "rgba(237, 129, 40, 0.89)",
             "rgba(50, 172, 45, 0.97)"
           ],
-          "datasource": "DS_Prometheus",
+          "datasource": "DS_PROMETHEUS",
           "format": "none",
           "gauge": {
             "maxValue": 100,
@@ -687,7 +687,7 @@
             "rgba(237, 129, 40, 0.89)",
             "rgba(50, 172, 45, 0.97)"
           ],
-          "datasource": "DS_Prometheus",
+          "datasource": "DS_PROMETHEUS",
           "format": "none",
           "gauge": {
             "maxValue": 100,
@@ -785,7 +785,7 @@
             "rgba(237, 129, 40, 0.89)",
             "rgba(245, 54, 54, 0.9)"
           ],
-          "datasource": "DS_Prometheus",
+          "datasource": "DS_PROMETHEUS",
           "editable": true,
           "error": false,
           "format": "percent",
@@ -871,7 +871,7 @@
             "rgba(237, 129, 40, 0.89)",
             "rgba(245, 54, 54, 0.9)"
           ],
-          "datasource": "DS_Prometheus",
+          "datasource": "DS_PROMETHEUS",
           "decimals": 2,
           "editable": true,
           "error": false,
@@ -956,7 +956,7 @@
             "rgba(237, 129, 40, 0.89)",
             "rgba(50, 172, 45, 0.97)"
           ],
-          "datasource": "DS_Prometheus",
+          "datasource": "DS_PROMETHEUS",
           "editable": true,
           "error": false,
           "format": "bytes",
@@ -1039,7 +1039,7 @@
             "rgba(237, 129, 40, 0.89)",
             "rgba(50, 172, 45, 0.97)"
           ],
-          "datasource": "DS_Prometheus",
+          "datasource": "DS_PROMETHEUS",
           "editable": true,
           "error": false,
           "format": "bytes",
@@ -1123,7 +1123,7 @@
             "rgba(237, 129, 40, 0.89)",
             "rgba(50, 172, 45, 0.97)"
           ],
-          "datasource": "DS_Prometheus",
+          "datasource": "DS_PROMETHEUS",
           "editable": true,
           "error": false,
           "format": "none",
@@ -1207,7 +1207,7 @@
             "rgba(237, 129, 40, 0.89)",
             "rgba(50, 172, 45, 0.97)"
           ],
-          "datasource": "DS_Prometheus",
+          "datasource": "DS_PROMETHEUS",
           "editable": true,
           "error": false,
           "format": "none",
@@ -1291,7 +1291,7 @@
             "rgba(237, 129, 40, 0.89)",
             "rgba(245, 54, 54, 0.9)"
           ],
-          "datasource": "DS_Prometheus",
+          "datasource": "DS_PROMETHEUS",
           "decimals": 2,
           "editable": true,
           "error": false,
@@ -1499,7 +1499,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "DS_Prometheus",
+          "datasource": "DS_PROMETHEUS",
           "decimals": 3,
           "editable": true,
           "error": false,
