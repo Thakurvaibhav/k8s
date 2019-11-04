@@ -23,7 +23,7 @@ Some Important metrics which are not exposed by the kubelet, can be fetched usin
       - Save and Test. You can now build your custon dashboards or simply import dashboards from grafana.net. Dashboard #315 and #1471 are good to start with.
       - You can also import the dashboards from k8s/monitoring/dashboards
 
-Note:
+### Note:
 
 1. A Cluster-binding role for prometheus is already being created by the config. The role currently has admin permissions, however you can modify it to a viewer role only.
 2. if you need to update the prometheus config, it can be reloaded by making an api call to the prometheus server. `curl -XPOST http://<prom-service>:<prom-port>/-/reload`
@@ -62,7 +62,7 @@ Note:
     - Thanos-ruler at `thanos-ruler.yourdomain.com`
     - Alermanager at `alertmanager.yourdomain.com`
 
-Note:
+### Note:
 
 1. Whenever prometheus config map is updated thanos automatically reloads all prometheus servers so no manual update needed. 
 2. Some basic alering rules are defined in the prometheus rules file which can be updated before deploying. You can also add more rules under the same groups or create new ones.
