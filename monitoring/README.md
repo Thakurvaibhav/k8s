@@ -31,11 +31,11 @@ Note:
 4. Before deploying prometheus please create GCP PD-SSD or AWS EBS Volume of size 250Gi or more, and name it `pd-ssd-disk-01`.
 5. Please update `00-alertmanager-configmap.yaml` to reflect correct api_url for Slack and VictorOps. You can additionally add more receievers. Ref:  https://prometheus.io/docs/alerting/configuration/ 
 
-## Highly Available Clustered Prometheus Setup:
+## Highly Available and Scalable Clustered Prometheus Setup Using Thanos:
 
 1. It is highly recommended to deploy an ingress-controller in order to reduce the number of public endpints created. This set-up uses Nginx Ingress Controller. 
 
-2. This set-up uses GCP's GCS as long term storage for prometheus data which will be uploaded and compacted by Thanos. In order to configure that
+2. This set-up uses a GCS bucket as long term storage for prometheus data, to which it will be uploaded and compacted by Thanos. In order to configure that
     - Create 2 GCS buckets and name them as `prometheus-long-term` and `thanos-ruler`
     - Create a service account with the roles as Storage Object Creator and Storage Object Viewer
     - Download the key file as json credentials and name it as `thanos-gcs-credentials.json`
@@ -46,7 +46,7 @@ Note:
     - Deploy Prometheus: `kubectl apply -f k8s/monitoring/prometheus-ha`. This will deploy Prometheus and Thanos Stateful sets. The required volumes are provisioned dynamically. 
     - Deploy Kube-state-metrics: `kubectl apply -f k8s/monitoring/kube-state-metrics`
     - Deploy Node-Exporter: `kubectl apply -f k8s/monitoring/node-exporter`
-    - Deploy Grafana: `kubectl apply -f k8s/monitoring/grafana`
+    - Deploy Grafana: `kubectl apply -f k8s/monitoring/grafana`. Storage volume is provisioned dynamically. 
 
 4. Once grafana is running:
     - Access grafana at `grafana.yourdomain.com`
@@ -65,3 +65,5 @@ Note:
 Note:
 
 1. Whenever prometheus config map is updated thanos automatically reloads all prometheus servers so no manual update needed. 
+2. Some basic alering rules are defined in the prometheus rules file which can be updated before deploying. You can also add more rules under the same groups or create new ones.
+3. Please update alertmanager config map with appropriate alert delivery endpoints. 
