@@ -3,13 +3,22 @@ kind: Namespace
 metadata:
   name: monitoring
 ---
-apiVersion: extensions/v1beta1
-kind: Deployment
+apiVersion: storage.k8s.io/v1beta1
+kind: StorageClass
+metadata:
+  name: fast
+  namespace: monitoring
+provisioner: kubernetes.io/gce-pd
+allowVolumeExpansion: true
+---
+apiVersion: apps/v1beta1
+kind: StatefulSet
 metadata:
   name: grafana
   namespace: monitoring
 spec:
   replicas: 1
+  serviceName: grafana
   template:
     metadata:
       labels:
@@ -49,6 +58,14 @@ spec:
       - name: ca-certificates
         hostPath:
           path: /etc/ssl/certs
-      - name: grafana-storage
-        emptyDir: {}
+  volumeClaimTemplates:
+  - metadata:
+      name: grafana-storage
+      namespace: monitoring
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: fast
+      resources:
+        requests:
+          storage: 5Gi
 ---
