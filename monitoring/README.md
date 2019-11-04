@@ -21,7 +21,7 @@ Some Important metrics which are not exposed by the kubelet, can be fetched usin
       - Name: DS_PROMETHEUS - Type: Prometheus 
       - URL: `http://prometheus-service:8080` 
       - Save and Test. You can now build your custon dashboards or simply import dashboards from grafana.net. Dashboard #315 and #1471 are good to start with.
-      - You can also import the dashboards from k8s/monitoring/dashboards
+      - You can also import the dashboards from `k8s/monitoring/dashboards`
 
 ### Note:
 
@@ -54,7 +54,7 @@ Some Important metrics which are not exposed by the kubelet, can be fetched usin
       - Name: DS_PROMETHEUS - Type: Prometheus 
       - URL: `http://thanos-querier:9090` 
       - Save and Test. You can now build your custon dashboards or simply import dashboards from grafana.net. Dashboard #315 and #1471 are good to start with.
-      - You can also import the dashboards from k8s/monitoring/dashboards
+      - You can also import the dashboards from `k8s/monitoring/dashboards`
 
 5. You can access 
     - Each prometheus replica at `prometheus-0.yourdomain.com`, `prometheus-1.yourdomain.com` and `prometheus-2.yourdomain.com`
