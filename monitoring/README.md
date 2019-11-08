@@ -27,7 +27,7 @@ Some Important metrics which are not exposed by the kubelet, can be fetched usin
 
 1. A Cluster-binding role for prometheus is already being created by the config. The role currently has admin permissions, however you can modify it to a viewer role only.
 2. if you need to update the prometheus config, it can be reloaded by making an api call to the prometheus server. `curl -XPOST http://<prom-service>:<prom-port>/-/reload`
-3. Some basic alering rules are defined in the prometheus rules file which can be updated before deploying. You can also add more rules under the same groups or create new ones. 
+3. Some basic alerting rules are defined in the prometheus rules file which can be updated before deploying. You can also add more rules under the same groups or create new ones. 
 4. Before deploying prometheus please create GCP PD-SSD or AWS EBS Volume of size 250Gi or more, and name it `pd-ssd-disk-01`.
 5. Please update `00-alertmanager-configmap.yaml` to reflect correct api_url for Slack and VictorOps. You can additionally add more receievers. Ref:  https://prometheus.io/docs/alerting/configuration/ 
 
@@ -65,7 +65,7 @@ Some Important metrics which are not exposed by the kubelet, can be fetched usin
 ### Note:
 
 1. Whenever prometheus config map is updated thanos automatically reloads all prometheus servers so no manual update needed. 
-2. Some basic alering rules are defined in the prometheus rules file which can be updated before deploying. You can also add more rules under the same groups or create new ones.
+2. Some basic alerting rules are defined in the prometheus rules file which can be updated before deploying. You can also add more rules under the same groups or create new ones.
 3. Please update alertmanager config map with appropriate alert delivery endpoints. 
 4. Instead of GCS as long term storage you can also use S3. Refer prometheus docs for the config change. 
 
