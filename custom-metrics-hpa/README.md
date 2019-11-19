@@ -73,7 +73,6 @@ root$ kubectl get --raw "/apis/custom.metrics.k8s.io/v1beta1/namespaces/nginx/po
 ```
 
 ### Create HPA based on these metrics. 
-
 ```
 apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
@@ -99,3 +98,4 @@ Now you can generate requests on your nginx service endpoint and the pod should 
 
 1. We are only getting a single custom metric in the prometheus adapter. 
 2. In order to get more metrics add rules in `custom-metrics-api/custom-metrics-config-map.yaml` and deploy it. You can find more rules [here](https://github.com/DirectXMan12/k8s-prometheus-adapter/blob/5afd30edcfce7f1914591948ea71ec2b5b34af31/deploy/manifests/custom-metrics-config-map.yaml#L8)
+3. Make sure you update the `--prometheus-url` argument in `custom-metrics-api/custom-metrics-apiserver-deployment.yaml` accordingly. Presently it is set to the thanos querier endpoint deployed as a part of Clustered Prometheus Set-Up
