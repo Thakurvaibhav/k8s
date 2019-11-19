@@ -2,7 +2,6 @@
 
 ## Monitoring and Alerting
 
-Prometheus based monitoring Setup
 1. [Standalone Prometheus](https://github.com/Thakurvaibhav/k8s/tree/master/monitoring#standalone-prometheus-setup) 
 2. [Clustered and Scalable Prometheus using Thanos](https://github.com/Thakurvaibhav/k8s/tree/master/monitoring#highly-available-and-scalable-clustered-prometheus-setup-using-thanos)
 
