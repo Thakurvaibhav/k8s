@@ -13,8 +13,9 @@ Kubernetes HPA by default scales pods using CPU/Memory requirement. However, we 
 
 2. Deploy the metrics adapter: `make deploy`
 
+## Testing the Set-up
 
-### Test if custom metrics are available: 
+### Check if custom metrics are available: 
 ```
 root$ kubectl get --raw "/apis/custom.metrics.k8s.io/v1beta1" | jq .
 
@@ -45,7 +46,7 @@ root$ kubectl get --raw "/apis/custom.metrics.k8s.io/v1beta1" | jq .
 }
 ```
 
-### Test the value of the available metrics
+### Check the current value of the available metrics (nginx_vts_server_requests_per_second)
 ```
 root$ kubectl get --raw "/apis/custom.metrics.k8s.io/v1beta1/namespaces/nginx/pods/*/nginx_vts_server_requests_per_second" | jq .
 
@@ -70,3 +71,31 @@ root$ kubectl get --raw "/apis/custom.metrics.k8s.io/v1beta1/namespaces/nginx/po
   ]
 }
 ```
+
+### Create HPA based on these metrics. 
+
+```
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: nginx-custom-hpa
+  namespace: nginx
+spec:
+  scaleTargetRef:
+    apiVersion: extensions/v1beta1
+    kind: Deployment
+    name: nginx-deployment
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  - type: Pods
+    pods:
+      metricName: nginx_vts_server_requests_per_second
+      targetAverageValue: 4000m
+```
+Now you can generate requests on your nginx service endpoint and the pod should scale accordingly. 
+
+## Note
+
+1. We are only getting a single custom metric in the prometheus adapter. 
+2. In order to get more metrics add rules in `custom-metrics-api/custom-metrics-config-map.yaml` and deploy it. You can find more rules [here](https://github.com/DirectXMan12/k8s-prometheus-adapter/blob/5afd30edcfce7f1914591948ea71ec2b5b34af31/deploy/manifests/custom-metrics-config-map.yaml#L8)
