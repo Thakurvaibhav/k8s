@@ -2,33 +2,30 @@
 
 Logging Stack for Kubernetes cluster and deployed applications. 
 
-Setup for fluentbit based logging:
+## Setup for fluentbit based logging:
 
-1. `kubectl apply -f ./fluent-bit`
-2. `kubectl apply -f kibana.yml`
+`kubectl apply -f ./fluent-bit`
 
+## Setup for filebeat based logging:
 
-Setup for filebeat based logging:
+`kubectl apply -f ./flebeat` 
 
-1. `kubectl apply -f ./flebeat`
-2. `kubectl apply -f kibana.yaml`
+## Setup for fluentd based logging:
 
+`kubectl apply -f ./fluentd`
 
-Setup for fluentd based logging:
+## Deploy Kibana
 
-1. `kubectl apply -f ./fluentd`
-2. `kubectl apply -f kibana.yaml`
+`kubectl apply -f kibana.yaml`
+Kibana Endpoint:  `http://<pub-ip-kibana-service>:5601/`
 
-Note: 
-  i.  Make sure you updated the config-map as per your use case. Mulitine JSON handling has been taken care of, please change the regex acc to app logs.
-  ii. The Dockerfile for the fluentd image can be found here `https://github.com/Thakurvaibhav/docker-library/tree/master/fluentd`
+### Note: 
 
-Endpoint:  `http://<pub-ip-kibana-service>:5601/`
+1. Make sure you updated the config-map as per your use case. Mulitine JSON handling has been taken care of, please change the regex acc to app logs.
 
+2. The Dockerfile for the fluentd image can be found [here](https://github.com/Thakurvaibhav/docker-library/tree/master/fluentd)
 
-Note:
-
-1. Update the endpoint for your ES cluster in fluent-bit/filebeat/fluentd Daemon Set config. 
+3. Update the endpoint for your ES cluster in fluent-bit/filebeat/fluentd Daemon Set config. 
 ```   
 ...	
 	spec:
@@ -41,7 +38,7 @@ Note:
 ...
 ```
 
-2. Similarly update the cluster name and endpoint in the kibana configuration as well.
+4. Similarly update the cluster name and endpoint in the kibana configuration as well.
 ```
 ...
     spec:
@@ -56,9 +53,9 @@ Note:
 ...
 ```
 
-3. Elasticsearch can be deployed by following this: `https://github.com/Thakurvaibhav/k8s/tree/master/databases/elasticsearch`
-4. Access for Kibana can be either through public enpoint/Ingress or even an Internal LB (recommended) for your GKE cluster. 
-5. Add more parsers in the config map depending upon your use case. 
+5. Elasticsearch can be deployed using [this](https://github.com/Thakurvaibhav/k8s/tree/master/databases/elasticsearch)
+6. Access for Kibana can be either through public enpoint/Ingress or even an Internal LB (recommended) for your GKE cluster. 
+7. Add more parsers in the config map depending upon your use case. 
 
 
 
