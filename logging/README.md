@@ -17,6 +17,7 @@ Logging Stack for Kubernetes cluster and deployed applications.
 ## Deploy Kibana
 
 `kubectl apply -f kibana.yaml`
+
 Kibana Endpoint:  `http://<pub-ip-kibana-service>:5601/`
 
 ### Note: 
