@@ -31,6 +31,6 @@
 	RUN `curl cheeses.mydomain.com\stilton` :Should return the stilton page and similarly for others\
     RUN `curl test.host.com`   :Should be redirected to default backend 
 
-##Note:
+### Note:
 
 1. FOR GKE: The user deploying these resources should be cluster admin. You can become cluster admin by `kubectl create clusterrolebinding myname-cluster-admin-binding --clusterrole=cluster-admin --user=<email-for-gcp>`
