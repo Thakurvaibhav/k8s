@@ -1,15 +1,16 @@
 # Traefik Ingress Controller
 
-Setup:
+## Setup:
 
 1. Controller: kubectl apply -f traefik/ingress-controller.yaml
 2. Controller UI: kubectl apply -f traefik/ui.yaml
 
-Access:
+## Access:
+
 1. External IP of the created ELB(in case of AWS) or GLB(in case of GKE) can be found by `kubectl get svc -n kube-system`  Service named traefik-ingress-service should have a public ip.
 2. In order to test run the following,
-	kubectl apply -f traefik/cheese.yaml\
-	kubectl apply -f traefik/ingress.yaml\ 
+	`kubectl apply -f ./traefik/cheese.yaml`
+	`kubectl apply -f ./traefik/ingress.yaml` 
 	Now, Access the services by making a entry for foo.bar.com and bar.baz.com on your local machine's /etc/hosts
 	```
 	cat /etc/hosts
@@ -30,8 +31,6 @@ Access:
 	RUN `curl cheeses.mydomain.com\stilton` :Should return the stilton page and similarly for others\
     RUN `curl test.host.com`   :Should be redirected to default backend 
 
-
-
-Note:
+##Note:
 
 1. FOR GKE: The user deploying these resources should be cluster admin. You can become cluster admin by `kubectl create clusterrolebinding myname-cluster-admin-binding --clusterrole=cluster-admin --user=<email-for-gcp>`

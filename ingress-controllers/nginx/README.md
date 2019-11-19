@@ -2,15 +2,13 @@
 
 Ingress-Controllers Runs in HA. Immune to Node/Pod failure. Cluster should have atleast 3 workers for the Affinity policy to be respected. 
 
-Setup:
+## Setup:
+
+1. AWS: `kubectl apply -f aws/ingress-controller.yaml`
+2. GKE: `kubectl apply -f gke/ingress-controller.yaml`
 
 
-
-1. AWS: kubectl apply -f aws/ingress-controller.yaml
-2. GKE: kubectl apply -f gke/ingress-controller.yaml
-
-
-Access:
+## Access:
 1. External IP of the created ELB(in case of AWS) or GLB(in case of GKE) can be found by `kubectl get svc -n ingress-nginx` Only one service should have a public ip.
 2. In order to test run the following,
 	kubectl run echoheaders --image=gcr.io/google_containers/echoserver:1.4 --replicas=1 --port=8080\
@@ -39,8 +37,6 @@ Access:
     RUN `curl test.host.com`   :Should be redirected to default backend
 3. VTS metrics can been seen at `http://<pub-ip-lb>:18080/nginx_status`
 
-
-
-Note:
+## Note:
 
 1. FOR GKE: The user deploying these resources should be cluster admin. You can become cluster admin by `kubectl create clusterrolebinding myname-cluster-admin-binding --clusterrole=cluster-admin --user=<email-for-gcp>`

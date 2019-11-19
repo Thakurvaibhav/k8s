@@ -21,6 +21,10 @@ data:
       providers:
         - type: kubernetes
           hints.enabled: true
+          include_annotations: ["artifact.spinnaker.io/name","ad.datadoghq.com/tags"] #Add custom include_annotations
+          annotations.dedot: true
+          include_labels: ["app.kubernetes.io/name"] #Add custom labels
+          labels.dedot: true
           templates:
             - condition:
                 equals:

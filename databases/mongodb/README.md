@@ -2,18 +2,18 @@
 
 Production Grade Replicated Mongo Set-Up with 3 nodes. Each node provisions and formats its own persistent volume. 
 
-Setup:
+## Setup:
 
-1. kubectl apply -f configure-node.yml   `This will configure the host machines kernel`
-2. kubeclt apply -f mongo.yml `Creates namespace,sc,stateful set and headless service`
-3. kubectl apply -f internal-lb-svc.yml `Creates 3 internal GCP loadbalancers for in case you want to access the db from outside the K8s cluster.`
+1. `kubectl apply -f configure-node.yml`   This will configure the host machines kernel
+2. `kubeclt apply -f mongo.yml` Creates namespace,sc,stateful set and headless service
+3. `kubectl apply -f internal-lb-svc.yml` Creates 3 internal GCP loadbalancers for in case you want to access the db from outside the K8s cluster.
 
-Test:
+## Test:
 
-1. kubectl -n mongo exec -it mongo-0 -c mongo mongo
-2. RUN rs.status()
+1. `kubectl -n mongo exec -it mongo-0 -c mongo mongo`
+2. `RUN rs.status()`
 
-Note:
+## Note:
 
 1. A Cluster-binding role is already being created by the config. The role currently has admin permissions, however you can modify it to a viewer role only.
 2. Please allocate resources to your mongo container as per you node limit and accordingly set wiredTiredcache size.

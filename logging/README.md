@@ -4,20 +4,20 @@ Logging Stack for Kubernetes cluster and deployed applications.
 
 Setup for fluentbit based logging:
 
-1. kubectl apply -f fluent-bit/
-2. kubectl apply -f kibana.yml
+1. `kubectl apply -f ./fluent-bit`
+2. `kubectl apply -f kibana.yml`
 
 
 Setup for filebeat based logging:
 
-1. kubectl apply -f flebeat/
-2. kubectl apply -f kibana.yaml
+1. `kubectl apply -f ./flebeat`
+2. `kubectl apply -f kibana.yaml`
 
 
 Setup for fluentd based logging:
 
-1. kubectl apply -f fluentd/
-2. kubectl apply -f kibana.yaml
+1. `kubectl apply -f ./fluentd`
+2. `kubectl apply -f kibana.yaml`
 
 Note: 
   i.  Make sure you updated the config-map as per your use case. Mulitine JSON handling has been taken care of, please change the regex acc to app logs.

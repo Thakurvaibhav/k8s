@@ -3,19 +3,18 @@
 Production Grade ES Set-Up with 2 Data Nodes, 2 Client Nodes and 3 Master Nodes. Each 
 data node provisions and formats its own persistent volume. 
 
-Setup:
+## Setup:
 
-1. kubectl apply -f es-data.yml 
-2. kubectl apply -f es-client.yml
-3. kubectl apply -f es-master.yml
-4. kubectl apply -f es-hq.yml
+1. `kubectl apply -f es-data.yml` 
+2. `kubectl apply -f es-client.yml`
+3. `kubectl apply -f es-master.yml`
+4. `kubectl apply -f es-hq.yml`
 
-Test:
+## Test:
 
 1. curl `http://<pub-ip-client-service>:9200/_cluster/health?pretty`
 
-
-Note:
+## Note:
 
 1. Data Nodes are deployed as a stateful set and thus need a headless svc to access them.
 2. Client and Master nodes are deployed as stateless services. Client node service is exposed publicy or for the apps.
