@@ -1,6 +1,6 @@
 # Kubernetes Horizontal Pod Auto-Scaling using Prometheus Metrics
 
-Kubernetes HPA by default scales pods using CPU/Memory requirement. However, we sometimes need to scale based on some custom metrics. This will deploy a prometheus adapter which can pull some or all of the metrics available in prometheus. 
+Kubernetes HPA by default scales pods using CPU/Memory metrics. However, we sometimes need to scale based on some custom metrics. This will deploy a prometheus adapter which can pull some or all of the metrics available in prometheus, which can be used for Pod autoscaling. 
 
 ### Pre-requisite
 
