@@ -35,6 +35,13 @@ spec:
             containerPort: 10902
           - name: grpc
             containerPort: 10901
+          resources:
+            limits:
+              cpu: 1
+              memory: 5Gi
+            requests:
+              cpu: 0.5
+              memory: 1Gi
           livenessProbe:
             httpGet:
               port: 10902
