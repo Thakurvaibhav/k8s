@@ -33,3 +33,7 @@
 
 1. [MongoDB](https://github.com/Thakurvaibhav/k8s/tree/master/databases/mongodb#prodcution-grade-mongo-db-set-up) 
 2. [Elasticsearch](https://github.com/Thakurvaibhav/k8s/tree/master/databases/elasticsearch#prodcution-grade-elastic-search-db-set-up) 
+
+## AWS ADDONS
+
+1. [Cluster Autoscaler](https://github.com/Thakurvaibhav/k8s/tree/master/aws-addons/cluster-autoscaler#cluster-autoscaler-for-kubernetes-on-aws)
