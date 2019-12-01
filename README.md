@@ -21,7 +21,7 @@
 
 #### BLOG 
 
-1. [Continuous Delivery Pipeline for Kubernetes using Spinnaker](https://medium.com/faun/continuous-delivery-pipeline-for-kubernetes-using-spinnaker-225fe9c9a6e6)
+[Continuous Delivery Pipeline for Kubernetes using Spinnaker](https://medium.com/faun/continuous-delivery-pipeline-for-kubernetes-using-spinnaker-225fe9c9a6e6)
 
 ## AWS Resource Access
 
@@ -30,7 +30,7 @@
 
 #### BLOG 
 
-1. [AWS Resource Access from Kubernetes](https://www.metricfire.com/blog/kubernetes-on-aws-resources)
+[AWS Resource Access from Kubernetes](https://www.metricfire.com/blog/kubernetes-on-aws-resources)
 
 ## Ingress Controllers
 
@@ -48,8 +48,8 @@
 
 #### BLOG 
 
-1. [Scaling MongoDB on Kubernetes](https://medium.com/faun/scaling-mongodb-on-kubernetes-32e446c16b82)
-2. [Highly Available and Scalable Elasticsearch on Kubernetes](https://medium.com/faun/https-medium-com-thakur-vaibhav23-ha-es-k8s-7e655c1b7b61)
+[Scaling MongoDB on Kubernetes](https://medium.com/faun/scaling-mongodb-on-kubernetes-32e446c16b82)
+[Highly Available and Scalable Elasticsearch on Kubernetes](https://medium.com/faun/https-medium-com-thakur-vaibhav23-ha-es-k8s-7e655c1b7b61)
 
 ## AWS ADDONS
 
