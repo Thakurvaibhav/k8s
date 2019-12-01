@@ -48,7 +48,7 @@
 
 #### BLOG 
 
-[Scaling MongoDB on Kubernetes](https://medium.com/faun/scaling-mongodb-on-kubernetes-32e446c16b82)
+[Scaling MongoDB on Kubernetes](https://medium.com/faun/scaling-mongodb-on-kubernetes-32e446c16b82)  
 [Highly Available and Scalable Elasticsearch on Kubernetes](https://medium.com/faun/https-medium-com-thakur-vaibhav23-ha-es-k8s-7e655c1b7b61)
 
 ## AWS ADDONS
