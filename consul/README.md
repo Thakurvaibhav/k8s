@@ -1,6 +1,6 @@
 # Consul Helm Chart
 
-This helm chart deploys a highly available, persistent storage backed consul cluster. 
+This helm chart deploys a highly available, persistent storage backed consul cluster. Orginally forked from [here.](https://github.com/hashicorp/consul-helm)
 
 # Pre-Deploy
 
