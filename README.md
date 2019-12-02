@@ -54,3 +54,7 @@
 ## AWS ADDONS
 
 1. [Cluster Autoscaler](https://github.com/Thakurvaibhav/k8s/tree/master/aws-addons/cluster-autoscaler#cluster-autoscaler-for-kubernetes-on-aws)
+
+## Distributed KV Stores
+
+1. [Consul](https://github.com/Thakurvaibhav/k8s/tree/master/consul#consul-helm-chart)
