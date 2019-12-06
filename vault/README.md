@@ -11,7 +11,7 @@ This helm chart deploys a highly available, persistent storage backed consul clu
 
 # Install the helm chart
 
-### Create the consul namespace
+### Create the vault namespace
 
 `kubectl create ns vault`
 
