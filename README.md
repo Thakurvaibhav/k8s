@@ -58,3 +58,7 @@
 ## Distributed KV Stores
 
 1. [Consul](https://github.com/Thakurvaibhav/k8s/tree/master/consul#consul-helm-chart)
+
+## Distirbuted Secret Stores
+
+1. [Vault](https://github.com/Thakurvaibhav/k8s/tree/master/vault#vault-helm-chart)
