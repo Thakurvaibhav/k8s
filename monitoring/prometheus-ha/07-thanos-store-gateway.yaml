@@ -19,14 +19,14 @@ spec:
     spec:
       containers:
         - name: thanos
-          image: quay.io/thanos/thanos:v0.8.0
+          image: quay.io/thanos/thanos:v0.9.0
           args:
           - "store"
+          - --grpc-address=0.0.0.0:10901
+          - --http-address=0.0.0.0:10902
           - "--log.level=debug"
           - "--data-dir=/data"
           - "--objstore.config={type: GCS, config: {bucket: prometheus-long-term}}"
-          - "--index-cache-size=500MB"
-          - "--chunk-pool-size=500MB"
           env:
             - name : GOOGLE_APPLICATION_CREDENTIALS
               value: /etc/secret/thanos-gcs-credentials.json
@@ -38,18 +38,19 @@ spec:
           resources:
             limits:
               cpu: 1
-              memory: 5Gi
+              memory: 8Gi
             requests:
               cpu: 0.5
               memory: 1Gi
-          livenessProbe:
-            httpGet:
-              port: 10902
-              path: /-/healthy
           readinessProbe:
+            failureThreshold: 6
             httpGet:
               port: 10902
               path: /-/ready
+            periodSeconds: 20
+            successThreshold: 1
+            timeoutSeconds: 5
+          terminationMessagePolicy: FallbackToLogsOnError
           volumeMounts:
             - name: thanos-gcs-credentials
               mountPath: /etc/secret

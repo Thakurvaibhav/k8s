@@ -38,18 +38,21 @@ spec:
     spec:
       containers:
         - name: thanos
-          image: quay.io/thanos/thanos:v0.8.0
+          image: quay.io/thanos/thanos:v0.9.0
           args:
             - rule
+            - --grpc-address=0.0.0.0:10901
+            - --http-address=0.0.0.0:10902
             - --log.level=debug
             - --data-dir=/data
-            - --eval-interval=15s
+            - --eval-interval=10s
             - --rule-file=/etc/thanos-ruler/*.rules.yaml
             - --alertmanagers.url=http://alertmanager:9093
             - --query=thanos-querier:9090
             - "--objstore.config={type: GCS, config: {bucket: thanos-ruler}}"
             - --label=ruler_cluster="prometheus-ha"
             - --label=replica="$(POD_NAME)"
+            - --alert.label-drop="replica"
           env:
             - name : GOOGLE_APPLICATION_CREDENTIALS
               value: /etc/secret/thanos-gcs-credentials.json
@@ -63,13 +66,26 @@ spec:
             - name: grpc
               containerPort: 10901
           livenessProbe:
+            failureThreshold: 4
             httpGet:
-              port: http
               path: /-/healthy
+              port: 10902
+              scheme: HTTP
+            periodSeconds: 30
           readinessProbe:
             httpGet:
-              port: http
               path: /-/ready
+              port: 10902
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: 50m
+              memory: 100Mi
           volumeMounts:
             - mountPath: /etc/thanos-ruler
               name: config
