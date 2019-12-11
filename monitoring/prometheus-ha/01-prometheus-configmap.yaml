@@ -13,7 +13,7 @@ data:
       external_labels:
         cluster: prometheus-ha
         # Each Prometheus has to have unique labels.
-        replica: $(POD_NAME)
+        prometheus_replica: $(POD_NAME)
 
     rule_files:
       - /etc/prometheus/rules/*rules.yaml
