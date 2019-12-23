@@ -2,7 +2,9 @@
 
 Kubelet natively exposes cadvisor metrics at https://kubernetes.default.svc:443/api/v1/nodes/{node-name}/proxy/metrics/cadvisor and we can use a prometheus server to scrape this endpoint. These metrics can then be visualized using Grafana. Metrics can alse be scraped from pods and service endpoints if they expose metircs on /metrics (as in the case of nginx-ingress-controller), alternatively you can sepcify custom scrape target in the prometheus config map. 
 
-Some Important metrics which are not exposed by the kubelet, can be fetched using kube-state-metrics and then pulled by prometheus. 
+Some Important metrics which are not exposed by the kubelet, can be fetched using kube-state-metrics and then pulled by prometheus.
+
+The Prometheus Pushgateway exists to allow ephemeral and batch jobs to expose their metrics to Prometheus. Since these kinds of jobs may not exist long enough to be scraped, they can instead push their metrics to a Pushgateway. The Pushgateway then exposes these metrics to Prometheus. 
 
 ## Standalone Prometheus Setup:
 
@@ -14,6 +16,7 @@ Some Important metrics which are not exposed by the kubelet, can be fetched usin
     - Deploy Kube-state-metrics: `kubectl apply -f k8s/monitoring/kube-state-metrics`
     - Deploy Node-Exporter: `kubectl apply -f k8s/monitoring/node-exporter`
     - Deploy Grafana: `kubectl apply -f k8s/monitoring/grafana`
+    - Deploy Pushgateway: `kubectl apply -f k8s/monitoring/pushgateway`
 
 3. Once grafana is running:
     - Access grafana at `grafana.yourdomain.com` in case of Ingress or http://<LB-IP>:3000 in case of type: LoadBalancer
@@ -46,7 +49,8 @@ Some Important metrics which are not exposed by the kubelet, can be fetched usin
     - Deploy Prometheus: `kubectl apply -f k8s/monitoring/prometheus-ha`. This will deploy Prometheus and Thanos Stateful sets. The required volumes are provisioned dynamically. 
     - Deploy Kube-state-metrics: `kubectl apply -f k8s/monitoring/kube-state-metrics`
     - Deploy Node-Exporter: `kubectl apply -f k8s/monitoring/node-exporter`
-    - Deploy Grafana: `kubectl apply -f k8s/monitoring/grafana`. Storage volume is provisioned dynamically. 
+    - Deploy Grafana: `kubectl apply -f k8s/monitoring/grafana`. Storage volume is provisioned dynamically.
+    - Deploy Pushgateway: `kubectl apply -f k8s/monitoring/pushgateway`
 
 4. Once grafana is running:
     - Access grafana at `grafana.yourdomain.com`

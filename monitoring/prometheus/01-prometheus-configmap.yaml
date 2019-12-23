@@ -59,6 +59,11 @@ data:
           target_label: systemd_service_name
           replacement: '${1}'
 
+    - job_name: 'pushgateway'
+      honor_labels: true
+      static_configs:
+        - targets: ['pushgateway-service:9091']
+        
     - job_name: 'kubernetes-pods'
       kubernetes_sd_configs:
         - role: pod
