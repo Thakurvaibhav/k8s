@@ -58,7 +58,7 @@ The Prometheus Pushgateway exists to allow ephemeral and batch jobs to expose th
       - Name: DS_PROMETHEUS - Type: Prometheus 
       - URL: `http://thanos-querier:9090` 
       - Save and Test. You can now build your custon dashboards or simply import dashboards from grafana.net. Dashboard #315 and #1471 are good to start with.
-      - You can also import the dashboards from `k8s/monitoring/dashboards`
+      - You can also import the dashboards from `k8s/monitoring/dashboards-ha`
 
 5. You can access 
     - Each prometheus replica at `prometheus-0.yourdomain.com`, `prometheus-1.yourdomain.com` and `prometheus-2.yourdomain.com`

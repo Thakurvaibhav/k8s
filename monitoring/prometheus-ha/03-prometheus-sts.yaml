@@ -23,7 +23,7 @@ spec:
       serviceAccountName: monitoring
       containers:
         - name: prometheus
-          image: prom/prometheus:v2.4.3
+          image: prom/prometheus:v2.14.0
           args:
             - "--config.file=/etc/prometheus-shared/prometheus.yaml"
             - "--storage.tsdb.path=/prometheus/"

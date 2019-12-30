@@ -23,7 +23,7 @@ data:
       # We want our alerts to be deduplicated
       # from different replicas.
       alert_relabel_configs:
-      - regex: replica
+      - regex: prometheus_replica
         action: labeldrop
 
       alertmanagers:
