@@ -36,7 +36,7 @@ The Prometheus Pushgateway exists to allow ephemeral and batch jobs to expose th
 
 ## Highly Available and Scalable Clustered Prometheus Setup Using Thanos:
 
-1. It is highly recommended to deploy an ingress-controller in order to reduce the number of public endpints created. This set-up uses Nginx Ingress Controller. 
+1. It is highly recommended to deploy an ingress-controller in order to reduce the number of endpoints created. This set-up uses Nginx Ingress Controller.
 
 2. This set-up uses a GCS bucket as long term storage for prometheus data, to which it will be uploaded and compacted by Thanos. In order to configure that
     - Create 2 GCS buckets and name them as `prometheus-long-term` and `thanos-ruler`
