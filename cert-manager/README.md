@@ -88,3 +88,5 @@ kubectl apply -f ./certificate.yaml
 
 1. Once you have deployed the certfifcate you should the logs for cert-manager deployment to check whether it got issued or not: `kubectl -n cert-manager logs -f deploy/cert-manager`
 2. You can also check the status of certificate in the application namespace: `kubectl -n <APPLICATION_NAMESPCE> get certificate <APPLICATION>-certificate`
+3. The issued certificate will be available as secret named `<APPLICATION>-certificate-secret` and can be used directly in any Ingress resource available in the namespace. 
+  
