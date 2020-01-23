@@ -53,7 +53,8 @@ spec:
             name: cert-manager-credentials
             key: gcp-dns-admin.json
 EOF
-
+```
+```
 kubectl apply -f ./cert_clusterissuer.yaml
 ```
 
@@ -79,7 +80,9 @@ EOF
 ```
 Make sure you specify `<APPLICATION>-certificate-secret` for the TLS secret in the ingress configuration
 
-`kubectl apply -f ./certificate.yaml`
+```
+kubectl apply -f ./certificate.yaml
+```
 
 ### Notes
 
