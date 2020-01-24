@@ -23,9 +23,11 @@ gcloud projects add-iam-policy-binding ${GCP_PROJECT} --member=serviceAccount:dn
 ## Deploy cert-manager
 
 ```
+kubectl create ns cert-manager
+
 kubectl -n cert-manager create secret generic cert-manager-credentials --from-file=./gcp-dns-admin.json
 
-kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v0.12.0/cert-manager.yaml
+kubectl -n cert-manager apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v0.12.0/cert-manager.yaml
 ```
 
 ## Deploy cluster issuer for certificates
