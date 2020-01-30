@@ -1,43 +1,8 @@
 {
-  "__inputs": [
-    {
-      "name": "DS_DS_PROMETHEUS",
-      "label": "DS_Prometheus",
-      "description": "",
-      "type": "datasource",
-      "pluginId": "prometheus",
-      "pluginName": "Prometheus"
-    }
-  ],
-  "__requires": [
-    {
-      "type": "grafana",
-      "id": "grafana",
-      "name": "Grafana",
-      "version": "v5.0.4"
-    },
-    {
-      "type": "panel",
-      "id": "graph",
-      "name": "Graph",
-      "version": "5.0.0"
-    },
-    {
-      "type": "datasource",
-      "id": "prometheus",
-      "name": "Prometheus",
-      "version": "5.0.0"
-    },
-    {
-      "type": "panel",
-      "id": "singlestat",
-      "name": "Singlestat",
-      "version": "5.0.0"
-    }
-  ],
   "annotations": {
     "list": [
       {
+        "$$hashKey": "object:1336",
         "builtIn": 1,
         "datasource": "-- Grafana --",
         "enable": true,
@@ -52,8 +17,8 @@
   "editable": true,
   "gnetId": 747,
   "graphTooltip": 0,
-  "id": null,
-  "iteration": 1577744322253,
+  "id": 14,
+  "iteration": 1580408439251,
   "links": [],
   "panels": [
     {
@@ -75,7 +40,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DS_PROMETHEUS}",
+      "datasource": "DS_Prometheus",
       "fill": 1,
       "gridPos": {
         "h": 6,
@@ -109,7 +74,8 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "increase(kube_pod_container_status_restarts_total{cluster=\"$Cluster\",namespace=\"$namespace\",pod_template_hash=\"\",pod=\"$Pod\",container_name=\"$container\",container_name!=\"\"}[1h])  ",
+          "$$hashKey": "object:1501",
+          "expr": "increase(kube_pod_container_status_restarts_total{cluster=\"$Cluster\",namespace=\"$namespace\",pod_template_hash=\"\",pod=\"$Pod\",container=\"$container\",container!=\"\"}[1h])  ",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "{{ container }}",
@@ -166,7 +132,7 @@
         "rgba(237, 129, 40, 0.89)",
         "rgba(50, 172, 45, 0.97)"
       ],
-      "datasource": "${DS_DS_PROMETHEUS}",
+      "datasource": "DS_Prometheus",
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -218,7 +184,8 @@
       "tableColumn": "__name__",
       "targets": [
         {
-          "expr": "kube_pod_container_status_restarts_total{pod_template_hash=\"\",pod=\"$Pod\", container_name=\"$container\",container_name!=\"\",cluster=\"$Cluster\"} ",
+          "$$hashKey": "object:1552",
+          "expr": "kube_pod_container_status_restarts_total{pod_template_hash=\"\",pod=\"$Pod\", container=\"$container\",container!=\"\",cluster=\"$Cluster\"} ",
           "format": "time_series",
           "intervalFactor": 1,
           "refId": "A",
@@ -247,7 +214,7 @@
         "rgba(237, 129, 40, 0.89)",
         "rgba(50, 172, 45, 0.97)"
       ],
-      "datasource": "${DS_DS_PROMETHEUS}",
+      "datasource": "DS_Prometheus",
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -299,7 +266,8 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "kube_pod_container_status_running{pod_template_hash=\"\",namespace=\"$namespace\", pod=\"$Pod\",container_name=\"$container\",container_name!=\"\",cluster=\"$Cluster\"}",
+          "$$hashKey": "object:1603",
+          "expr": "kube_pod_container_status_running{pod_template_hash=\"\",namespace=\"$namespace\", pod=\"$Pod\",container=\"$container\",container!=\"\",cluster=\"$Cluster\"}",
           "format": "time_series",
           "intervalFactor": 2,
           "refId": "A",
@@ -347,7 +315,7 @@
         "rgba(237, 129, 40, 0.89)",
         "rgba(50, 172, 45, 0.97)"
       ],
-      "datasource": "${DS_DS_PROMETHEUS}",
+      "datasource": "DS_Prometheus",
       "editable": true,
       "error": false,
       "format": "none",
@@ -401,7 +369,8 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "sum(kube_pod_container_status_last_terminated_reason{namespace=\"$namespace\",container_name=\"$container\",container_name!=\"\",cluster=\"$Cluster\",pod_template_hash=\"\",reason=\"Error\"})",
+          "$$hashKey": "object:1826",
+          "expr": "sum(kube_pod_container_status_last_terminated_reason{namespace=\"$namespace\",container=\"$container\",container!=\"\",cluster=\"$Cluster\",pod_template_hash=\"\",reason=\"Error\"})",
           "format": "time_series",
           "intervalFactor": 2,
           "refId": "A",
@@ -430,7 +399,7 @@
         "rgba(237, 129, 40, 0.89)",
         "rgba(50, 172, 45, 0.97)"
       ],
-      "datasource": "${DS_DS_PROMETHEUS}",
+      "datasource": "DS_Prometheus",
       "editable": true,
       "error": false,
       "format": "none",
@@ -484,7 +453,8 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "sum(kube_pod_container_status_last_terminated_reason{namespace=\"$namespace\",container_name=\"$container\",container_name!=\"\",cluster=\"$Cluster\",pod_template_hash=\"\",reason=\"OOMKilled\"})",
+          "$$hashKey": "object:1775",
+          "expr": "sum(kube_pod_container_status_last_terminated_reason{namespace=\"$namespace\",container=\"$container\",container!=\"\",cluster=\"$Cluster\",pod_template_hash=\"\",reason=\"OOMKilled\"})",
           "format": "time_series",
           "intervalFactor": 1,
           "refId": "A",
@@ -513,7 +483,7 @@
         "rgba(237, 129, 40, 0.89)",
         "rgba(50, 172, 45, 0.97)"
       ],
-      "datasource": "${DS_DS_PROMETHEUS}",
+      "datasource": "DS_Prometheus",
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -565,7 +535,8 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "sum(kube_pod_container_status_last_terminated_reason{namespace=\"$namespace\",container_name=\"$container\",container_name!=\"\",cluster=\"$Cluster\",pod_template_hash=\"\",reason=\"ContainerCannotRun\"})",
+          "$$hashKey": "object:1724",
+          "expr": "sum(kube_pod_container_status_last_terminated_reason{namespace=\"$namespace\",container=\"$container\",container!=\"\",cluster=\"$Cluster\",pod_template_hash=\"\",reason=\"ContainerCannotRun\"})",
           "format": "time_series",
           "intervalFactor": 2,
           "refId": "A",
@@ -594,7 +565,7 @@
         "rgba(237, 129, 40, 0.89)",
         "rgba(50, 172, 45, 0.97)"
       ],
-      "datasource": "${DS_DS_PROMETHEUS}",
+      "datasource": "DS_Prometheus",
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -646,7 +617,8 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "kube_pod_container_status_last_terminated_reason{reason!=\"\", namespace=\"$namespace\",container_name=\"$container\",container_name!=\"\",cluster=\"$Cluster\",pod_template_hash=\"\",pod=\"$Pod\"} > 0",
+          "$$hashKey": "object:1654",
+          "expr": "kube_pod_container_status_last_terminated_reason{reason!=\"\", namespace=\"$namespace\",container=\"$container\",container!=\"\",cluster=\"$Cluster\",pod_template_hash=\"\",pod=\"$Pod\"} > 0",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "{{ reason }}",
@@ -690,7 +662,7 @@
         "rgba(237, 129, 40, 0.89)",
         "rgba(50, 172, 45, 0.97)"
       ],
-      "datasource": "${DS_DS_PROMETHEUS}",
+      "datasource": "DS_Prometheus",
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -743,6 +715,7 @@
       "tableColumn": "",
       "targets": [
         {
+          "$$hashKey": "object:1877",
           "expr": "kube_pod_container_status_waiting_reason{reason!=\"\", namespace=\"$namespace\",pod_template_hash=\"\",pod=\"$Pod\",cluster=\"$Cluster\"} > 0",
           "format": "time_series",
           "intervalFactor": 2,
@@ -787,7 +760,7 @@
         "rgba(237, 129, 40, 0.89)",
         "rgba(245, 54, 54, 0.9)"
       ],
-      "datasource": "${DS_DS_PROMETHEUS}",
+      "datasource": "DS_Prometheus",
       "editable": true,
       "error": false,
       "format": "percent",
@@ -873,7 +846,7 @@
         "rgba(237, 129, 40, 0.89)",
         "rgba(245, 54, 54, 0.9)"
       ],
-      "datasource": "${DS_DS_PROMETHEUS}",
+      "datasource": "DS_Prometheus",
       "decimals": 2,
       "editable": true,
       "error": false,
@@ -959,7 +932,7 @@
         "rgba(237, 129, 40, 0.89)",
         "rgba(50, 172, 45, 0.97)"
       ],
-      "datasource": "${DS_DS_PROMETHEUS}",
+      "datasource": "DS_Prometheus",
       "editable": true,
       "error": false,
       "format": "bytes",
@@ -1014,7 +987,9 @@
       "tableColumn": "",
       "targets": [
         {
+          "$$hashKey": "object:1971",
           "expr": "sum (container_memory_working_set_bytes{pod_name=~\"^$Pod$\",cluster=\"$Cluster\"})",
+          "format": "time_series",
           "intervalFactor": 2,
           "refId": "A",
           "step": 43200
@@ -1042,7 +1017,7 @@
         "rgba(237, 129, 40, 0.89)",
         "rgba(50, 172, 45, 0.97)"
       ],
-      "datasource": "${DS_DS_PROMETHEUS}",
+      "datasource": "DS_Prometheus",
       "editable": true,
       "error": false,
       "format": "bytes",
@@ -1097,6 +1072,7 @@
       "tableColumn": "",
       "targets": [
         {
+          "$$hashKey": "object:1924",
           "expr": "sum (machine_memory_bytes{kubernetes_io_hostname=~\"^$Node$\",cluster=\"$Cluster\"})",
           "format": "time_series",
           "intervalFactor": 2,
@@ -1126,7 +1102,7 @@
         "rgba(237, 129, 40, 0.89)",
         "rgba(50, 172, 45, 0.97)"
       ],
-      "datasource": "${DS_DS_PROMETHEUS}",
+      "datasource": "DS_Prometheus",
       "editable": true,
       "error": false,
       "format": "none",
@@ -1210,7 +1186,7 @@
         "rgba(237, 129, 40, 0.89)",
         "rgba(50, 172, 45, 0.97)"
       ],
-      "datasource": "${DS_DS_PROMETHEUS}",
+      "datasource": "DS_Prometheus",
       "editable": true,
       "error": false,
       "format": "none",
@@ -1294,7 +1270,7 @@
         "rgba(237, 129, 40, 0.89)",
         "rgba(245, 54, 54, 0.9)"
       ],
-      "datasource": "${DS_DS_PROMETHEUS}",
+      "datasource": "DS_Prometheus",
       "decimals": 2,
       "editable": true,
       "error": false,
@@ -1389,7 +1365,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DS_PROMETHEUS}",
+      "datasource": "DS_Prometheus",
       "decimals": 3,
       "editable": true,
       "error": false,
@@ -1501,7 +1477,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DS_PROMETHEUS}",
+      "datasource": "DS_Prometheus",
       "decimals": 3,
       "editable": true,
       "error": false,
@@ -1541,6 +1517,7 @@
       "steppedLine": false,
       "targets": [
         {
+          "$$hashKey": "object:2024",
           "expr": "sum (rate (container_cpu_usage_seconds_total{id!=\"/\",pod_name=~\"^$Pod$\",cluster=\"$Cluster\"}[1m])) by (id)",
           "format": "time_series",
           "hide": false,
@@ -1612,7 +1589,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DS_PROMETHEUS}",
+      "datasource": "DS_Prometheus",
       "decimals": 2,
       "editable": true,
       "error": false,
@@ -1723,7 +1700,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DS_PROMETHEUS}",
+      "datasource": "DS_Prometheus",
       "decimals": 2,
       "editable": true,
       "error": false,
@@ -1834,7 +1811,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DS_PROMETHEUS}",
+      "datasource": "DS_Prometheus",
       "fill": 1,
       "gridPos": {
         "h": 7,
@@ -1868,6 +1845,7 @@
       "steppedLine": false,
       "targets": [
         {
+          "$$hashKey": "object:2173",
           "expr": "sum(irate(container_cpu_usage_seconds_total{container_name=\"$container\",container_name!=\"\",cluster=\"$Cluster\", namespace=\"$namespace\"}[30s])) by (namespace,container_name) / sum(container_spec_cpu_quota{container_name=\"$container\",container_name!=\"\",cluster=\"$Cluster\", namespace=\"$namespace\"} / container_spec_cpu_period{container_name=\"$container\",container_name!=\"\",cluster=\"$Cluster\", namespace=\"$namespace\"}) by (namespace,container_name)",
           "format": "time_series",
           "intervalFactor": 1,
@@ -1921,7 +1899,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DS_PROMETHEUS}",
+      "datasource": "DS_Prometheus",
       "fill": 1,
       "gridPos": {
         "h": 7,
@@ -2022,7 +2000,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DS_PROMETHEUS}",
+      "datasource": "DS_Prometheus",
       "fill": 1,
       "gridPos": {
         "h": 7,
@@ -2056,6 +2034,7 @@
       "steppedLine": false,
       "targets": [
         {
+          "$$hashKey": "object:2077",
           "expr": "sum(irate(container_cpu_usage_seconds_total{container_name=\"$container\",container_name!=\"\",cluster=\"$Cluster\", namespace=\"$namespace\"}[30s])) by (id,pod_name)",
           "format": "time_series",
           "intervalFactor": 2,
@@ -2064,6 +2043,7 @@
           "step": 3600
         },
         {
+          "$$hashKey": "object:2078",
           "expr": "sum(container_spec_cpu_quota{container_name=\"$container\",container_name!=\"\",cluster=\"$Cluster\", namespace=\"$namespace\"} / container_spec_cpu_period{container_name=\"$container\",container_name!=\"\",cluster=\"$Cluster\", namespace=\"$namespace\"}) by (namespace,container_name) / count(container_memory_usage_bytes{container_name=\"$container\",container_name!=\"\",cluster=\"$Cluster\", namespace=\"$namespace\"}) by (namespace,container_name) ",
           "format": "time_series",
           "intervalFactor": 2,
@@ -2072,6 +2052,7 @@
           "step": 3600
         },
         {
+          "$$hashKey": "object:2079",
           "expr": "sum(container_spec_cpu_shares{container_name=\"$container\",container_name!=\"\",cluster=\"$Cluster\", namespace=\"$namespace\"} / 1024) by (namespace,container_name) / count(container_spec_cpu_shares{container_name=\"$container\",container_name!=\"\",cluster=\"$Cluster\", namespace=\"$namespace\"}) by (namespace,container_name) ",
           "format": "time_series",
           "intervalFactor": 2,
@@ -2125,7 +2106,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DS_PROMETHEUS}",
+      "datasource": "DS_Prometheus",
       "fill": 1,
       "gridPos": {
         "h": 7,
@@ -2159,6 +2140,7 @@
       "steppedLine": false,
       "targets": [
         {
+          "$$hashKey": "object:2380",
           "expr": "sum(container_memory_usage_bytes{container_name=\"$container\",container_name!=\"\",cluster=\"$Cluster\", namespace=\"$namespace\"}) by (id,pod_name)",
           "format": "time_series",
           "intervalFactor": 2,
@@ -2167,6 +2149,7 @@
           "step": 3600
         },
         {
+          "$$hashKey": "object:2381",
           "expr": "sum(container_spec_memory_limit_bytes{container_name=\"$container\",container_name!=\"\",cluster=\"$Cluster\", namespace=\"$namespace\"}) by (namespace,container_name) / count(container_memory_usage_bytes{container_name=\"$container\",container_name!=\"\",cluster=\"$Cluster\", namespace=\"$namespace\"}) by (container_name,namespace)",
           "format": "time_series",
           "intervalFactor": 2,
@@ -2175,7 +2158,8 @@
           "step": 3600
         },
         {
-          "expr": "sum(kube_pod_container_resource_requests_memory_bytes{container_name=\"$container\",container_name!=\"\",cluster=\"$Cluster\", namespace=\"$namespace\"}) by (namespace,container) / count(kube_pod_container_resource_requests_memory_bytes{container_name=\"$container\",container_name!=\"\",cluster=\"$Cluster\", namespace=\"$namespace\"}) by (namespace,container)",
+          "$$hashKey": "object:2382",
+          "expr": "sum(kube_pod_container_resource_requests_memory_bytes{container=\"$container\",container!=\"\",cluster=\"$Cluster\", namespace=\"$namespace\"}) by (namespace,container) / count(kube_pod_container_resource_requests_memory_bytes{container=\"$container\",container!=\"\",cluster=\"$Cluster\", namespace=\"$namespace\"}) by (namespace,container)",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "request",
@@ -2241,7 +2225,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DS_PROMETHEUS}",
+      "datasource": "DS_Prometheus",
       "fill": 1,
       "gridPos": {
         "h": 7,
@@ -2344,7 +2328,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DS_PROMETHEUS}",
+      "datasource": "DS_Prometheus",
       "fill": 1,
       "gridPos": {
         "h": 7,
@@ -2378,6 +2362,7 @@
       "steppedLine": false,
       "targets": [
         {
+          "$$hashKey": "object:2564",
           "expr": "sum(container_memory_usage_bytes{container_name=\"$container\",container_name!=\"\",cluster=\"$Cluster\", namespace=\"$namespace\"}) by (namespace,container_name) / count(container_memory_usage_bytes{container_name=\"$container\",container_name!=\"\",cluster=\"$Cluster\", namespace=\"$namespace\"}) by (namespace,container_name) ",
           "format": "time_series",
           "intervalFactor": 2,
@@ -2386,6 +2371,7 @@
           "step": 3600
         },
         {
+          "$$hashKey": "object:2565",
           "expr": "sum(container_spec_memory_limit_bytes{container_name=\"$container\",container_name!=\"\",cluster=\"$Cluster\", namespace=\"$namespace\"}) by (namespace,container_name) / count(container_memory_usage_bytes{container_name=\"$container\",container_name!=\"\",cluster=\"$Cluster\", namespace=\"$namespace\"}) by (namespace,container_name) ",
           "format": "time_series",
           "intervalFactor": 2,
@@ -2394,7 +2380,8 @@
           "step": 3600
         },
         {
-          "expr": "sum(kube_pod_container_resource_requests_memory_bytes{container_name=\"$container\",container_name!=\"\",cluster=\"$Cluster\", namespace=\"$namespace\"}) by (namespace,container) / count(kube_pod_container_resource_requests_memory_bytes{container_name=\"$container\",container_name!=\"\",cluster=\"$Cluster\", namespace=\"$namespace\"}) by (namespace,container)",
+          "$$hashKey": "object:2566",
+          "expr": "sum(kube_pod_container_resource_requests_memory_bytes{container=\"$container\",container!=\"\",cluster=\"$Cluster\", namespace=\"$namespace\"}) by (namespace,container) / count(kube_pod_container_resource_requests_memory_bytes{container=\"$container\",container!=\"\",cluster=\"$Cluster\", namespace=\"$namespace\"}) by (namespace,container)",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "request",
@@ -2460,7 +2447,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DS_PROMETHEUS}",
+      "datasource": "DS_Prometheus",
       "fill": 1,
       "gridPos": {
         "h": 7,
@@ -2563,7 +2550,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DS_PROMETHEUS}",
+      "datasource": "DS_Prometheus",
       "fill": 1,
       "gridPos": {
         "h": 7,
@@ -2597,6 +2584,7 @@
       "steppedLine": false,
       "targets": [
         {
+          "$$hashKey": "object:2671",
           "expr": "sum(container_memory_usage_bytes{container_name=\"$container\",container_name!=\"\",cluster=\"$Cluster\", namespace=\"$namespace\"}) by (namespace,container_name) / count(container_memory_usage_bytes{container_name=\"$container\",container_name!=\"\",cluster=\"$Cluster\", namespace=\"$namespace\"}) by (namespace,container_name)",
           "format": "time_series",
           "intervalFactor": 2,
@@ -2605,6 +2593,7 @@
           "step": 3600
         },
         {
+          "$$hashKey": "object:2672",
           "expr": "sum(container_spec_memory_limit_bytes{container_name=\"$container\",container_name!=\"\",cluster=\"$Cluster\", namespace=\"$namespace\"}) by (namespace,container_name) / count(container_spec_memory_limit_bytes{container_name=\"$container\",container_name!=\"\",cluster=\"$Cluster\", namespace=\"$namespace\"}) by (namespace,container_name)",
           "format": "time_series",
           "intervalFactor": 2,
@@ -2613,7 +2602,8 @@
           "step": 3600
         },
         {
-          "expr": "sum(kube_pod_container_resource_requests_memory_bytes{container_name=\"$container\",container_name!=\"\",cluster=\"$Cluster\", namespace=\"$namespace\"}) by (namespace,container) / count(kube_pod_container_resource_requests_memory_bytes{container_name=\"$container\",container_name!=\"\",cluster=\"$Cluster\", namespace=\"$namespace\"}) by (namespace,container)",
+          "$$hashKey": "object:2673",
+          "expr": "sum(kube_pod_container_resource_requests_memory_bytes{container=\"$container\",container!=\"\",cluster=\"$Cluster\", namespace=\"$namespace\"}) by (namespace,container) / count(kube_pod_container_resource_requests_memory_bytes{container=\"$container\",container!=\"\",cluster=\"$Cluster\", namespace=\"$namespace\"}) by (namespace,container)",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "request",
@@ -2679,7 +2669,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DS_PROMETHEUS}",
+      "datasource": "DS_Prometheus",
       "decimals": 2,
       "editable": true,
       "error": false,
@@ -2802,7 +2792,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DS_PROMETHEUS}",
+      "datasource": "DS_Prometheus",
       "decimals": 2,
       "editable": true,
       "error": false,
@@ -2923,7 +2913,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DS_PROMETHEUS}",
+      "datasource": "DS_Prometheus",
       "decimals": 2,
       "editable": true,
       "error": false,
@@ -3036,8 +3026,11 @@
     "list": [
       {
         "allValue": null,
-        "current": {},
-        "datasource": "${DS_DS_PROMETHEUS}",
+        "current": {
+          "text": "mew-prometheus",
+          "value": "mew-prometheus"
+        },
+        "datasource": "DS_Prometheus",
         "hide": 0,
         "includeAll": false,
         "label": null,
@@ -3056,8 +3049,11 @@
       },
       {
         "allValue": ".*",
-        "current": {},
-        "datasource": "${DS_DS_PROMETHEUS}",
+        "current": {
+          "text": "gke-mew-permanent-1-5da6a60e-186r",
+          "value": "gke-mew-permanent-1-5da6a60e-186r"
+        },
+        "datasource": "DS_Prometheus",
         "hide": 2,
         "includeAll": false,
         "label": null,
@@ -3076,8 +3072,11 @@
       },
       {
         "allValue": null,
-        "current": {},
-        "datasource": "${DS_DS_PROMETHEUS}",
+        "current": {
+          "text": "monitoring",
+          "value": "monitoring"
+        },
+        "datasource": "DS_Prometheus",
         "hide": 0,
         "includeAll": false,
         "label": null,
@@ -3096,8 +3095,11 @@
       },
       {
         "allValue": ".*",
-        "current": {},
-        "datasource": "${DS_DS_PROMETHEUS}",
+        "current": {
+          "text": "prometheus-0",
+          "value": "prometheus-0"
+        },
+        "datasource": "DS_Prometheus",
         "hide": 0,
         "includeAll": false,
         "label": "Pod",
@@ -3116,8 +3118,11 @@
       },
       {
         "allValue": null,
-        "current": {},
-        "datasource": "${DS_DS_PROMETHEUS}",
+        "current": {
+          "text": "thanos",
+          "value": "thanos"
+        },
+        "datasource": "DS_Prometheus",
         "hide": 0,
         "includeAll": false,
         "label": null,
@@ -3137,7 +3142,7 @@
     ]
   },
   "time": {
-    "from": "now-30m",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {
@@ -3168,5 +3173,5 @@
   "timezone": "browser",
   "title": "Kubernetes Pod Metrics",
   "uid": "gRGG1CBik",
-  "version": 16
+  "version": 13
 }
