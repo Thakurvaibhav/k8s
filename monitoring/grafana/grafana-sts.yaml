@@ -25,12 +25,39 @@ spec:
         task: monitoring
         k8s-app: grafana
     spec:
+      securityContext:
+        fsGroup: 472
+        runAsUser: 472
+      initContainers:
+      - args:
+        - mkdir -p /var/lib/grafana && chown -R 472:472 /var/lib/grafana
+        command:
+        - /bin/sh
+        - -c
+        image: busybox:1.31.1
+        imagePullPolicy: IfNotPresent
+        name: init-chown-data
+        securityContext:
+          runAsUser: 0
+        volumeMounts:
+        - mountPath: /var
+          name: grafana-storage
       containers:
       - name: grafana
-        image: k8s.gcr.io/heapster-grafana-amd64:v5.0.4
+        image: grafana/grafana:6.6.1
         ports:
         - containerPort: 3000
-          protocol: TCP
+          name: http
+        livenessProbe:
+          httpGet:
+            port: http
+            path: /login
+        readinessProbe:
+          httpGet:
+            port: http
+            path: /login
+        securityContext:
+          runAsUser: 472
         volumeMounts:
         - mountPath: /etc/ssl/certs
           name: ca-certificates
@@ -67,5 +94,5 @@ spec:
       storageClassName: fast
       resources:
         requests:
-          storage: 5Gi
+          storage: 10Gi
 ---
