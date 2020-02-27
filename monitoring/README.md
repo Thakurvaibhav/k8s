@@ -55,7 +55,7 @@ The Prometheus Pushgateway exists to allow ephemeral and batch jobs to expose th
 4. Once grafana is running:
     - Access grafana at `grafana.yourdomain.com`
     - Add DataSource: 
-      - Name: DS_PROMETHEUS - Type: Prometheus 
+      - Name: `DS_Prometheus` 
       - URL: `http://thanos-querier:9090` 
       - Save and Test. You can now build your custon dashboards or simply import dashboards from grafana.net. Dashboard #315 and #1471 are good to start with.
       - You can also import the dashboards from `k8s/monitoring/dashboards-ha`
