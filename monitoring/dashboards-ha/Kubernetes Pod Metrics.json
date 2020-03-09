@@ -17,7 +17,7 @@
   "gnetId": 747,
   "graphTooltip": 0,
   "id": 4,
-  "iteration": 1582841822262,
+  "iteration": 1583726485764,
   "links": [],
   "panels": [
     {
@@ -997,7 +997,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "sum (container_memory_working_set_bytes{image!=\"\",name=~\"^k8s_.*\",pod_name=\"$Pod\",pod_template_hash=\"\",cluster=\"$Cluster\"})",
+          "expr": "sum(container_memory_working_set_bytes{image!=\"\",name=~\"^k8s_.*\",pod_name=\"$Pod\",pod_template_hash=\"\",cluster=\"$Cluster\"})",
           "format": "time_series",
           "intervalFactor": 2,
           "refId": "A",
@@ -1982,7 +1982,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(container_memory_usage_bytes{image!=\"\",name=~\"^k8s_.*\",pod_name=\"$Pod\",pod_template_hash=\"\",cluster=\"$Cluster\"}) by (namespace,container_name) / sum(container_spec_memory_limit_bytes{image!=\"\",name=~\"^k8s_.*\",pod_name=\"$Pod\",pod_template_hash=\"\",cluster=\"$Cluster\"}) by (namespace,container_name)",
+          "expr": "sum(container_memory_working_set_bytes{container_name=\"$container\",image!=\"\",name=~\"^k8s_.*\",pod_name=\"$Pod\",pod_template_hash=\"\",cluster=\"$Cluster\"}) by (container_name) / sum(container_spec_memory_limit_bytes{container_name=\"$container\",image!=\"\",name=~\"^k8s_.*\",pod_name=\"$Pod\",pod_template_hash=\"\",cluster=\"$Cluster\"}) by (container_name)",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "actual",
@@ -2199,7 +2199,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(container_memory_usage_bytes{image!=\"\",name=~\"^k8s_.*\",pod_name=\"$Pod\",pod_template_hash=\"\",cluster=\"$Cluster\"}) by (id,pod_name)",
+          "expr": "sum(container_memory_working_set_bytes{container_name=\"$container\",image!=\"\",name=~\"^k8s_.*\",pod_name=\"$Pod\",pod_template_hash=\"\",cluster=\"$Cluster\"}) by (pod_name)",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "{{pod_name}}",
@@ -2207,7 +2207,7 @@
           "step": 3600
         },
         {
-          "expr": "sum(container_spec_memory_limit_bytes{image!=\"\",name=~\"^k8s_.*\",pod_name=\"$Pod\",pod_template_hash=\"\",cluster=\"$Cluster\"}) by (namespace,container_name) / count(container_memory_usage_bytes{image!=\"\",name=~\"^k8s_.*\",pod_name=\"$Pod\",pod_template_hash=\"\",cluster=\"$Cluster\"}) by (container_name,namespace)",
+          "expr": "sum(container_spec_memory_limit_bytes{container_name=\"$container\",image!=\"\",name=~\"^k8s_.*\",pod_name=\"$Pod\",pod_template_hash=\"\",cluster=\"$Cluster\"}) by (container_name) / count(container_memory_usage_bytes{container_name=\"$container\",image!=\"\",name=~\"^k8s_.*\",pod_name=\"$Pod\",pod_template_hash=\"\",cluster=\"$Cluster\"}) by (container_name)",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "limit",
@@ -2215,11 +2215,14 @@
           "step": 3600
         },
         {
-          "expr": "sum(kube_pod_container_resource_requests_memory_bytes{image!=\"\",name=~\"^k8s_.*\",pod_name=\"$Pod\",pod_template_hash=\"\",cluster=\"$Cluster\"}) by (namespace,container) / count(kube_pod_container_resource_requests_memory_bytes{image!=\"\",name=~\"^k8s_.*\",pod_name=\"$Pod\",pod_template_hash=\"\",cluster=\"$Cluster\"}) by (namespace,container)",
+          "expr": "sum(kube_pod_container_resource_requests_memory_bytes{container=\"$container\",container!=\"\",cluster=\"$Cluster\", namespace=\"$namespace\"}) by (namespace,container) / count(kube_pod_container_resource_requests_memory_bytes{container=\"$container\",container!=\"\",cluster=\"$Cluster\", namespace=\"$namespace\"}) by (namespace,container)",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "request",
           "refId": "C"
+        },
+        {
+          "refId": "D"
         }
       ],
       "thresholds": [],
@@ -2431,7 +2434,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(container_memory_usage_bytes{container_name=\"$container\",container_name!=\"\",cluster=\"$Cluster\", namespace=\"$namespace\"}) by (namespace,container_name) / count(container_memory_usage_bytes{container_name=\"$container\",container_name!=\"\",cluster=\"$Cluster\", namespace=\"$namespace\"}) by (namespace,container_name) ",
+          "expr": "sum(container_memory_working_set_bytes{container_name=\"$container\",image!=\"\",name=~\"^k8s_.*\",pod_name=\"$Pod\",pod_template_hash=\"\",cluster=\"$Cluster\"}) by (namespace,container_name) / count(container_memory_working_set_bytes{container_name=\"$container\",image!=\"\",name=~\"^k8s_.*\",pod_name=\"$Pod\",pod_template_hash=\"\",cluster=\"$Cluster\"})by (namespace,container_name) ",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "actual",
@@ -2663,7 +2666,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(container_memory_usage_bytes{container_name=\"$container\",container_name!=\"\",cluster=\"$Cluster\", namespace=\"$namespace\"}) by (namespace,container_name) / count(container_memory_usage_bytes{container_name=\"$container\",container_name!=\"\",cluster=\"$Cluster\", namespace=\"$namespace\"}) by (namespace,container_name)",
+          "expr": "sum(container_memory_working_set_bytes{container_name=\"$container\",image!=\"\",name=~\"^k8s_.*\",pod_name=\"$Pod\",pod_template_hash=\"\",cluster=\"$Cluster\"})",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "actual",
@@ -3251,7 +3254,7 @@
     ]
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-15m",
     "to": "now"
   },
   "timepicker": {
@@ -3282,5 +3285,5 @@
   "timezone": "browser",
   "title": "Kubernetes Pod Metrics",
   "uid": "gRGG1CBik",
-  "version": 13
+  "version": 20
 }
