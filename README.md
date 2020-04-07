@@ -7,6 +7,8 @@
 
 #### BLOG
 
+[Kubernetes Multi-Cluster Monitoring using Prometheus and Thanos](https://medium.com/faun/kubernetes-multi-cluster-monitoring-using-prometheus-and-thanos-7549a9b0d0ae)
+
 [Prodcution Grade Kubernetes Monitoring using Prometheus](https://medium.com/faun/production-grade-kubernetes-monitoring-using-prometheus-78144b835b60)
 
 ## Logging
