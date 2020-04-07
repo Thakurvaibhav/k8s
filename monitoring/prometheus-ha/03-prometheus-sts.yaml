@@ -6,7 +6,7 @@ metadata:
 provisioner: kubernetes.io/gce-pd
 allowVolumeExpansion: true
 ---
-apiVersion: apps/v1beta1
+apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: prometheus
@@ -14,6 +14,10 @@ metadata:
 spec:
   replicas: 3
   serviceName: prometheus-service
+  selector:
+    matchLabels:
+      app: prometheus
+      thanos-store-api: "true"
   template:
     metadata:
       labels:
