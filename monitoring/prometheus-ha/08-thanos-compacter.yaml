@@ -11,6 +11,10 @@ spec:
     matchLabels:
       app: thanos-compactor
   serviceName: thanos-compactor
+  selector:
+    matchLabels:
+      app: prometheus
+      thanos-store-api: "true"
   template:
     metadata:
       labels:

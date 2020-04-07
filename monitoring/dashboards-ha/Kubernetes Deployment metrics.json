@@ -16,8 +16,8 @@
   "editable": true,
   "gnetId": 741,
   "graphTooltip": 0,
-  "id": 7,
-  "iteration": 1583428354833,
+  "id": 8,
+  "iteration": 1584075682722,
   "links": [],
   "panels": [
     {
@@ -85,7 +85,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "sum (container_memory_working_set_bytes{cluster=~\"^$Cluster$\",container_name!=\"\",id!=\"/\",pod_name=~\"^$Deployment.*$\",container_name!=\"POD\"}) / sum (machine_memory_bytes{cluster=~\"^$Cluster$\",kubernetes_io_hostname=~\"^$Node$\"}) * 100",
+          "expr": "sum (container_memory_working_set_bytes{cluster=~\"^$Cluster$\",container!=\"\",id!=\"/\",pod=~\"^$Deployment.*$\",container!=\"POD\"}) / sum (machine_memory_bytes{cluster=~\"^$Cluster$\",kubernetes_io_hostname=~\"^$Node$\"}) * 100",
           "format": "time_series",
           "interval": "10s",
           "intervalFactor": 1,
@@ -172,7 +172,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "sum (rate (container_cpu_usage_seconds_total{cluster=~\"^$Cluster$\",pod_name=~\"^$Deployment.*$\",container_name!=\"POD\"}[1m])) / sum (machine_cpu_cores{cluster=~\"^$Cluster$\",kubernetes_io_hostname=~\"^$Node$\"}) * 100",
+          "expr": "sum (rate (container_cpu_usage_seconds_total{cluster=~\"^$Cluster$\",pod=~\"^$Deployment.*$\",container!=\"POD\"}[1m])) / sum (machine_cpu_cores{cluster=~\"^$Cluster$\",kubernetes_io_hostname=~\"^$Node$\"}) * 100",
           "format": "time_series",
           "interval": "10s",
           "intervalFactor": 1,
@@ -343,7 +343,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "sum (container_memory_working_set_bytes{cluster=~\"^$Cluster$\",container_name!=\"\",id!=\"/\",pod_name=~\"^$Deployment.*$\",container_name!=\"POD\"})",
+          "expr": "sum (container_memory_working_set_bytes{cluster=~\"^$Cluster$\",container!=\"\",id!=\"/\",pod=~\"^$Deployment.*$\",container!=\"POD\"})",
           "format": "time_series",
           "intervalFactor": 2,
           "refId": "A",
@@ -513,7 +513,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "sum (rate (container_cpu_usage_seconds_total{pod_name=~\"^$Deployment.*$\",container_name!=\"POD\"}[1m]))",
+          "expr": "sum (rate (container_cpu_usage_seconds_total{pod=~\"^$Deployment.*$\",container!=\"POD\"}[1m]))",
           "format": "time_series",
           "intervalFactor": 2,
           "refId": "A",
@@ -931,11 +931,11 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum (rate (container_cpu_usage_seconds_total{cluster=~\"^$Cluster$\",container_name!=\"\",image!=\"\",name=~\"^k8s_.*\",pod_name=~\"^$Deployment.*$\",container_name!=\"POD\"}[1m])) by (pod_name)",
+          "expr": "sum (rate (container_cpu_usage_seconds_total{cluster=~\"^$Cluster$\",container!=\"\",image!=\"\",name=~\"^k8s_.*\",pod=~\"^$Deployment.*$\",container!=\"POD\"}[1m])) by (pod)",
           "format": "time_series",
           "interval": "10s",
           "intervalFactor": 1,
-          "legendFormat": "{{ pod_name }}",
+          "legendFormat": "{{ pod }}",
           "metric": "container_cpu",
           "refId": "A",
           "step": 60
@@ -1037,12 +1037,12 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum (rate (container_cpu_usage_seconds_total{cluster=~\"^$Cluster$\",image!=\"\",name=~\"^k8s_.*\",container_name!=\"POD\",pod_name=~\"^$Deployment.*$\",container_name!=\"POD\"}[1m])) by (container_name, pod_name)",
+          "expr": "sum (rate (container_cpu_usage_seconds_total{cluster=~\"^$Cluster$\",image!=\"\",name=~\"^k8s_.*\",container!=\"POD\",pod=~\"^$Deployment.*$\",container!=\"POD\"}[1m])) by (container, pod)",
           "format": "time_series",
           "hide": false,
           "interval": "10s",
           "intervalFactor": 1,
-          "legendFormat": "pod: {{ pod_name }} | {{ container_name }}",
+          "legendFormat": "pod: {{ pod }} | {{ container }}",
           "metric": "container_cpu",
           "refId": "A",
           "step": 60
@@ -1140,12 +1140,12 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum (rate (container_cpu_usage_seconds_total{cluster=~\"^$Cluster$\",id!=\"/\",pod_name=~\"^$Deployment.*$\",container_name!=\"POD\",container_name!=\"\"}[1m])) by (container_name)",
+          "expr": "sum (rate (container_cpu_usage_seconds_total{cluster=~\"^$Cluster$\",id!=\"/\",pod=~\"^$Deployment.*$\",container!=\"POD\",container!=\"\"}[1m])) by (container)",
           "format": "time_series",
           "hide": false,
           "interval": "10s",
           "intervalFactor": 1,
-          "legendFormat": "{{ container_name  }}",
+          "legendFormat": "{{ container  }}",
           "metric": "container_cpu",
           "refId": "A",
           "step": 60
@@ -1244,11 +1244,11 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum (container_memory_working_set_bytes{image!=\"\",name=~\"^k8s_.*\",pod_name=~\"^$Deployment.*$\",container_name!=\"POD\"}) by (pod_name)",
+          "expr": "sum (container_memory_working_set_bytes{image!=\"\",name=~\"^k8s_.*\",pod=~\"^$Deployment.*$\",container!=\"POD\"}) by (pod)",
           "format": "time_series",
           "interval": "10s",
           "intervalFactor": 1,
-          "legendFormat": "{{ pod_name }}",
+          "legendFormat": "{{ pod }}",
           "metric": "container_memory_usage:sort_desc",
           "refId": "A",
           "step": 60
@@ -1347,7 +1347,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum (container_memory_working_set_bytes{cluster=~\"^$Cluster$\",container_name!=\"\",id!=\"/\",pod_name=~\"^$Deployment.*$\",container_name!=\"POD\"}) by (id)",
+          "expr": "sum (container_memory_working_set_bytes{cluster=~\"^$Cluster$\",container!=\"\",id!=\"/\",pod=~\"^$Deployment.*$\",container!=\"POD\"}) by (id)",
           "format": "time_series",
           "interval": "10s",
           "intervalFactor": 1,
@@ -1450,21 +1450,21 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum (rate (container_network_receive_bytes_total{cluster=~\"^$Cluster$\",container_name!=\"\",image!=\"\",name=~\"^k8s_.*\",pod_name=~\"^$Deployment.*$\",container_name=\"POD\",}[1m])) by (pod_name)",
+          "expr": "sum (rate (container_network_receive_bytes_total{cluster=~\"^$Cluster$\",container!=\"\",image!=\"\",name=~\"^k8s_.*\",pod=~\"^$Deployment.*$\",container=\"POD\",}[1m])) by (pod)",
           "format": "time_series",
           "interval": "10s",
           "intervalFactor": 1,
-          "legendFormat": "-> {{ pod_name }}",
+          "legendFormat": "-> {{ pod }}",
           "metric": "network",
           "refId": "A",
           "step": 60
         },
         {
-          "expr": "- sum (rate (container_network_transmit_bytes_total{cluster=~\"^$Cluster$\",container_name!=\"\",image!=\"\",name=~\"^k8s_.*\",pod_name=~\"^$Deployment.*$\",container_name=\"POD\",}[1m])) by (pod_name)",
+          "expr": "- sum (rate (container_network_transmit_bytes_total{cluster=~\"^$Cluster$\",container!=\"\",image!=\"\",name=~\"^k8s_.*\",pod=~\"^$Deployment.*$\",container=\"POD\",}[1m])) by (pod)",
           "format": "time_series",
           "interval": "10s",
           "intervalFactor": 1,
-          "legendFormat": "<- {{ pod_name }}",
+          "legendFormat": "<- {{ pod }}",
           "metric": "network",
           "refId": "B",
           "step": 60
@@ -1563,7 +1563,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum (rate (container_network_receive_bytes_total{cluster=~\"^$Cluster$\",container_name!=\"\",id!=\"/\",pod_name=~\"^$Deployment.*$\",container_name=\"POD\"}[1m])) by (id)",
+          "expr": "sum (rate (container_network_receive_bytes_total{cluster=~\"^$Cluster$\",container!=\"\",id!=\"/\",pod=~\"^$Deployment.*$\",container=\"POD\"}[1m])) by (id)",
           "format": "time_series",
           "interval": "10s",
           "intervalFactor": 1,
@@ -1573,7 +1573,7 @@
           "step": 60
         },
         {
-          "expr": "- sum (rate (container_network_transmit_bytes_total{cluster=~\"^$Cluster$\",container_name!=\"\",id!=\"/\",pod_name=~\"^$Deployment.*$\",container_name=\"POD\"}[1m])) by (id)",
+          "expr": "- sum (rate (container_network_transmit_bytes_total{cluster=~\"^$Cluster$\",container!=\"\",id!=\"/\",pod=~\"^$Deployment.*$\",container=\"POD\"}[1m])) by (id)",
           "format": "time_series",
           "interval": "10s",
           "intervalFactor": 1,
@@ -1638,8 +1638,8 @@
         "allValue": null,
         "current": {
           "selected": true,
-          "text": "mew-prometheus",
-          "value": "mew-prometheus"
+          "text": "wd-prometheus",
+          "value": "wd-prometheus"
         },
         "datasource": "DS_Prometheus",
         "definition": "",
@@ -1663,8 +1663,8 @@
       {
         "allValue": ".*",
         "current": {
-          "text": "calico-usage",
-          "value": "calico-usage"
+          "text": "thanos-querier",
+          "value": "thanos-querier"
         },
         "datasource": "DS_Prometheus",
         "definition": "",
@@ -1688,7 +1688,7 @@
       {
         "allValue": ".*",
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "All",
           "value": "$__all"
         },
@@ -1714,7 +1714,7 @@
     ]
   },
   "time": {
-    "from": "now-5m",
+    "from": "now-15m",
     "to": "now"
   },
   "timepicker": {
@@ -1745,5 +1745,5 @@
   "timezone": "browser",
   "title": "Kubernetes Deployment metrics",
   "uid": "XOE4JCfmz",
-  "version": 4
+  "version": 1
 }

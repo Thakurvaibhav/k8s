@@ -111,7 +111,7 @@ spec:
       labels:
         k8s-app: kube-state-metrics
     spec:
-      serviceAccountName: kube-state-metrics
+      serviceAccountName: monitoring
       containers:
       - name: kube-state-metrics
         image: quay.io/mxinden/kube-state-metrics:v1.4.0-gzip.3

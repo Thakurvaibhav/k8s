@@ -11,7 +11,7 @@ metadata:
 provisioner: kubernetes.io/gce-pd
 allowVolumeExpansion: true
 ---
-apiVersion: apps/v1beta1
+apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: grafana
@@ -19,6 +19,9 @@ metadata:
 spec:
   replicas: 1
   serviceName: grafana
+  selector:
+    matchLabels:
+      k8s-app: grafana
   template:
     metadata:
       labels:

@@ -29,6 +29,7 @@ spec:
   selector:
     matchLabels:
       app: thanos-ruler
+      thanos-store-api: "true"
   serviceName: thanos-ruler
   template:
     metadata:

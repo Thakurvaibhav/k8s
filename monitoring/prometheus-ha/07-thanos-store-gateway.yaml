@@ -10,6 +10,7 @@ spec:
   selector:
     matchLabels:
       app: thanos-store-gateway
+      thanos-store-api: "true"
   serviceName: thanos-store-gateway
   template:
     metadata:
