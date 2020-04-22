@@ -20,12 +20,11 @@ spec:
     spec:
       containers:
         - name: thanos
-          image: quay.io/thanos/thanos:v0.9.0
+          image: quay.io/thanos/thanos:v0.12.0
           args:
           - "store"
           - --grpc-address=0.0.0.0:10901
           - --http-address=0.0.0.0:10902
-          - "--log.level=debug"
           - "--data-dir=/data"
           - "--objstore.config={type: GCS, config: {bucket: prometheus-long-term}}"
           env:
