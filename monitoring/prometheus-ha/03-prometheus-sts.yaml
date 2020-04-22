@@ -46,7 +46,7 @@ spec:
             - name: prometheus-rules
               mountPath: /etc/prometheus/rules
         - name: thanos
-          image: quay.io/thanos/thanos:v0.9.0
+          image: quay.io/thanos/thanos:v0.12.0
           args:
             - "sidecar"
             - "--log.level=debug"
