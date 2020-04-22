@@ -1,8 +1,10 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: alertmanager
+  name: thanos-querier
   namespace: monitoring
+  labels:
+    app: alertmanager
 spec:
   replicas: 1
   selector:
@@ -10,7 +12,6 @@ spec:
       app: alertmanager
   template:
     metadata:
-      name: alertmanager
       labels:
         app: alertmanager
     spec:
