@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-server-conf
+  labels:
+    name: prometheus-server-conf
+  namespace: {{ .Values.namespace }}
+data:
+  prometheus.yaml.tmpl: |-
+{{ .Values.prometheus.config | indent 4 }}

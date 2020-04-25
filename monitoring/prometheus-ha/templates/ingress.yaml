@@ -1,0 +1,44 @@
+{{- if .Values.ingress.enabled -}}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: monitoring-ingress
+  namespace: {{ .Values.namespace }}
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  rules:
+  - host: {{ .Values.ingress.grafana.host }}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: grafana
+          servicePort: 3000
+
+  - host: {{ .Values.ingress.alertmanager.host }}
+    http: 
+      paths:
+      - path: /
+        backend:
+          serviceName: alertmanager
+          servicePort: 9093
+
+  - host: {{ .Values.ingress.query.host }}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: thanos-querier
+          servicePort: 9090
+
+  - host: {{ .Values.ingress.ruler.host }}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: thanos-ruler
+          servicePort: 9090
+{{- end }}

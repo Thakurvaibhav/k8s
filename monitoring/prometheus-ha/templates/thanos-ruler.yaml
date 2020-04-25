@@ -2,30 +2,20 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: thanos-ruler-rules
-  namespace: monitoring
+  namespace: {{ .Values.namespace }}
 data:
-  alert_down_services.rules.yaml: |
-    groups:
-    - name: metamonitoring
-      rules:
-      - alert: PrometheusReplicaDown
-        annotations:
-          message: Prometheus replica in cluster {{$labels.cluster}} has disappeared from Prometheus target discovery.
-        expr: |
-          sum(up{cluster="prometheus-ha", instance=~".*:9090", job="kubernetes-service-endpoints"}) by (job,cluster) < 3
-        for: 15s
-        labels:
-          severity: critical
+  rules.yaml: |
+{{ .Values.thanos.ruler.config | indent 4 }}
 ---
-apiVersion: apps/v1beta1
+apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   labels:
     app: thanos-ruler
   name: thanos-ruler
-  namespace: monitoring
+  namespace: {{ .Values.namespace }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.thanos.ruler.replicas }}
   selector:
     matchLabels:
       app: thanos-ruler
@@ -39,7 +29,7 @@ spec:
     spec:
       containers:
         - name: thanos
-          image: quay.io/thanos/thanos:v0.12.0
+          image: {{ .Values.thanos.image }}
           args:
             - rule
             - --grpc-address=0.0.0.0:10901
@@ -50,10 +40,10 @@ spec:
             - --rule-file=/etc/thanos-ruler/*.rules.yaml
             - --alertmanagers.url=http://alertmanager:9093
             - --query=thanos-querier:9090
-            - "--objstore.config={type: GCS, config: {bucket: thanos-ruler}}"
+            - "--objstore.config={type: GCS, config: {bucket: {{ .Values.thanos.ruler.rules_bucket }} }}"
             - --label=ruler_cluster="prometheus-ha"
             - --label=replica="$(POD_NAME)"
-            - --alert.label-drop="replica"
+            - --alert.label-drop="prometheus_replica"
           env:
             - name : GOOGLE_APPLICATION_CREDENTIALS
               value: /etc/secret/thanos-gcs-credentials.json
@@ -81,12 +71,7 @@ spec:
             initialDelaySeconds: 10
             periodSeconds: 30
           resources:
-            limits:
-              cpu: "1"
-              memory: 1Gi
-            requests:
-              cpu: 50m
-              memory: 100Mi
+            {{- toYaml .Values.thanos.ruler.resources | nindent 12 }}
           volumeMounts:
             - mountPath: /etc/thanos-ruler
               name: config
@@ -99,7 +84,7 @@ spec:
           name: config
         - name: thanos-gcs-credentials
           secret:
-            secretName: thanos-gcs-credentials
+            secretName: {{ .Values.thanos.gcs_secret }}
 ---
 apiVersion: v1
 kind: Service
@@ -107,8 +92,9 @@ metadata:
   labels:
     app: thanos-ruler
   name: thanos-ruler
-  namespace: monitoring
+  namespace: {{ .Values.namespace }}
 spec:
+  type: {{ .Values.thanos.ruler.service.type }}
   ports:
     - port: 9090
       protocol: TCP
