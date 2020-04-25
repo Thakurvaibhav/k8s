@@ -67,5 +67,5 @@ The Prometheus Pushgateway exists to allow ephemeral and batch jobs to expose th
 1. Whenever prometheus config map is updated thanos automatically reloads all prometheus servers so no manual update needed. 
 2. Some basic alerting rules are defined in the prometheus rules file which can be updated before deploying. You can also add more rules under the same groups or create new ones.
 3. Please update alertmanager config map with appropriate alert delivery endpoints. 
-4. Instead of GCS as long term storage you can also use S3. Refer prometheus docs for the config change. 
+4. Instead of GCS as long term storage you can also use S3. Refer Thanos docs for the config change. 
 
