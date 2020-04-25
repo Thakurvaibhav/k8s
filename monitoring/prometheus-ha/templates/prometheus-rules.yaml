@@ -7,4 +7,4 @@ metadata:
   namespace: {{ .Values.namespace }}
 data:
   alert-rules.yaml: |-
-{{ .Values.prometheus.rules.config | indent 4 }}
+{{ .Files.Get "configs/prometheus-rules.yaml" | indent 4 }}

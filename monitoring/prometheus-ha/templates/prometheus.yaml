@@ -50,6 +50,8 @@ spec:
             - --reloader.config-envsubst-file=/etc/prometheus-shared/prometheus.yaml
             - --reloader.rule-dir=/etc/prometheus/rules/
           env:
+            - name: CLUSTER_NAME
+              value: {{ .Values.prometheus.clusterName }}
             - name: POD_NAME
               valueFrom:
                 fieldRef:

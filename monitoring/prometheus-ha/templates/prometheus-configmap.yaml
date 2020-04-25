@@ -7,4 +7,4 @@ metadata:
   namespace: {{ .Values.namespace }}
 data:
   prometheus.yaml.tmpl: |-
-{{ .Values.prometheus.config | indent 4 }}
+{{ .Files.Get "configs/prometheus-config.yaml" | indent 4 }}

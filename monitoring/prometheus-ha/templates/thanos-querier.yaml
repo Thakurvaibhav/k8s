@@ -25,6 +25,9 @@ spec:
         - --grpc-address=0.0.0.0:10901
         - --http-address=0.0.0.0:9090
         - --store=dnssrv+thanos-store-gateway:10901
+      {{- range $key, $value := .Values.thanos.query.extraArgs }}
+        - --{{ $key }}={{ $value }}
+      {{- end }}
         ports:
         - name: http
           containerPort: 9090

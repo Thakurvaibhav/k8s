@@ -5,7 +5,7 @@ metadata:
   namespace: {{ .Values.namespace }}
 data:
   rules.yaml: |
-{{ .Values.thanos.ruler.config | indent 4 }}
+{{ .Files.Get "configs/ruler-config.yaml" | indent 4 }}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
