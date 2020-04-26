@@ -44,7 +44,7 @@ The Prometheus Pushgateway exists to allow ephemeral and batch jobs to expose th
     - Download the key file as json credentials and name it as `thanos-gcs-credentials.json`
     - Create the namespace, `kubectl create ns monitoring`
     - Create kubernetes secret using the credentials, `kubectl create secret generic thanos-gcs-credentials --from-file=thanos-gcs-credentials.json -n monitoring` This secret name is also set in `values.yaml`
-    - Make sure you correctl set cluster name in prometheus configmap. This can be modified in the `values.yaml`
+    - Make sure you correctl set prometheus cluster name in the `values.yaml`
     - Set correct domain names for ingress controller in `values.yaml`
 
 3. Deployment: 

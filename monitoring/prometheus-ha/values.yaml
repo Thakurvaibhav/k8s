@@ -39,7 +39,7 @@ pushgateway:
     type: ClusterIP
 
 thanos:
-  archive_bucket: vt-prom-long-term
+  archive_bucket: prometheus-long-term
   gcs_secret: thanos-gcs-credentials
   image: quay.io/thanos/thanos:v0.12.0 
 
@@ -80,7 +80,7 @@ thanos:
 
   ruler:
     replicas: 1
-    rules_bucket: vt-prom-ruler   
+    rules_bucket: thanos-ruler
     service:
       type: ClusterIP
     resources: 
