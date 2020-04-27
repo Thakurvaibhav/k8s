@@ -1,19 +1,10 @@
-apiVersion: storage.k8s.io/v1beta1
-kind: StorageClass
-metadata:
-  name: fast
-  namespace: monitoring
-provisioner: kubernetes.io/gce-pd
-allowVolumeExpansion: true
----
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: prometheus
-  namespace: monitoring
+  namespace: {{ .Values.namespace }}
 spec:
-  replicas: 3
-  serviceName: prometheus-service
+  replicas: {{ .Values.prometheus.replicas }}
   selector:
     matchLabels:
       app: prometheus
@@ -27,7 +18,7 @@ spec:
       serviceAccountName: monitoring
       containers:
         - name: prometheus
-          image: prom/prometheus:v2.14.0
+          image: {{ .Values.prometheus.image }}
           args:
             - "--config.file=/etc/prometheus-shared/prometheus.yaml"
             - "--storage.tsdb.path=/prometheus/"
@@ -38,6 +29,8 @@ spec:
           ports:
             - name: prometheus
               containerPort: 9090
+          resources:
+            {{- toYaml .Values.prometheus.resources | nindent 12 }}
           volumeMounts:
             - name: prometheus-storage
               mountPath: /prometheus/
@@ -46,17 +39,19 @@ spec:
             - name: prometheus-rules
               mountPath: /etc/prometheus/rules
         - name: thanos
-          image: quay.io/thanos/thanos:v0.12.0
+          image: {{ .Values.thanos.image }}
           args:
-            - "sidecar"
-            - "--log.level=debug"
-            - "--tsdb.path=/prometheus"
-            - "--prometheus.url=http://127.0.0.1:9090"
-            - "--objstore.config={type: GCS, config: {bucket: prometheus-long-term}}"
-            - "--reloader.config-file=/etc/prometheus/prometheus.yaml.tmpl"
-            - "--reloader.config-envsubst-file=/etc/prometheus-shared/prometheus.yaml"
-            - "--reloader.rule-dir=/etc/prometheus/rules/"
+            - sidecar
+            - --log.level=debug
+            - --tsdb.path=/prometheus
+            - --prometheus.url=http://127.0.0.1:9090
+            - "--objstore.config={type: GCS, config: {bucket: {{.Values.thanos.archive_bucket}} }}"
+            - --reloader.config-file=/etc/prometheus/prometheus.yaml.tmpl
+            - --reloader.config-envsubst-file=/etc/prometheus-shared/prometheus.yaml
+            - --reloader.rule-dir=/etc/prometheus/rules/
           env:
+            - name: CLUSTER_NAME
+              value: {{ .Values.prometheus.clusterName }}
             - name: POD_NAME
               valueFrom:
                 fieldRef:
@@ -69,13 +64,15 @@ spec:
             - name: grpc
               containerPort: 10901
           livenessProbe:
-              httpGet:
-                port: 10902
-                path: /-/healthy
+            httpGet:
+              port: 10902
+              path: /-/healthy
           readinessProbe:
             httpGet:
               port: 10902
               path: /-/ready
+          resources:
+            {{- toYaml .Values.thanos.query.resources | nindent 12 }}
           volumeMounts:
             - name: prometheus-storage
               mountPath: /prometheus
@@ -104,14 +101,14 @@ spec:
             name: prometheus-rules
         - name: thanos-gcs-credentials
           secret:
-            secretName: thanos-gcs-credentials
+            secretName: {{ .Values.thanos.gcs_secret }}
   volumeClaimTemplates:
   - metadata:
       name: prometheus-storage
-      namespace: monitoring
+      namespace: {{ .Values.namespace }}
     spec:
       accessModes: [ "ReadWriteOnce" ]
-      storageClassName: fast
+      storageClassName: {{ .Values.storageClass.name }}
       resources:
         requests:
-          storage: 20Gi
+          storage: {{ .Values.prometheus.storage }}

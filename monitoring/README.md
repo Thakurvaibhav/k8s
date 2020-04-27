@@ -38,30 +38,26 @@ The Prometheus Pushgateway exists to allow ephemeral and batch jobs to expose th
 
 1. It is highly recommended to deploy an ingress-controller in order to reduce the number of endpoints created. This set-up uses Nginx Ingress Controller.
 
-2. This set-up uses a GCS bucket as long term storage for prometheus data, to which it will be uploaded and compacted by Thanos. In order to configure that
-    - Create 2 GCS buckets and name them as `prometheus-long-term` and `thanos-ruler`
+2. Configuration
+    - Create 2 GCS buckets and name them as `prometheus-long-term` and `thanos-ruler`, if you create buckets with some-other name make sure you update that in `values.yaml` These will be used for archiving prometheus and alertmanager data. 
     - Create a service account with the roles as Storage Object Creator and Storage Object Viewer
     - Download the key file as json credentials and name it as `thanos-gcs-credentials.json`
-    - Create kubernetes secret using the credentials, `kubectl create secret generic thanos-gcs-credentials --from-file=thanos-gcs-credentials.json -n monitoring`
+    - Create the namespace, `kubectl create ns monitoring`
+    - Create kubernetes secret using the credentials, `kubectl create secret generic thanos-gcs-credentials --from-file=thanos-gcs-credentials.json -n monitoring` This secret name is also set in `values.yaml`
+    - Make sure you correctl set prometheus cluster name in the `values.yaml`
+    - Set correct domain names for ingress controller in `values.yaml`
 
 3. Deployment: 
-    - Deploy Alertmanger: `kubectl apply -f k8s/monitoring/alertmanager`
-    - Deploy Prometheus: `kubectl apply -f k8s/monitoring/prometheus-ha`. This will deploy Prometheus and Thanos Stateful sets. The required volumes are provisioned dynamically. 
-    - Deploy Kube-state-metrics: `kubectl apply -f k8s/monitoring/kube-state-metrics`
-    - Deploy Node-Exporter: `kubectl apply -f k8s/monitoring/node-exporter`
-    - Deploy Grafana: `kubectl apply -f k8s/monitoring/grafana`. Storage volume is provisioned dynamically.
-    - Deploy Pushgateway: `kubectl apply -f k8s/monitoring/pushgateway`
+    - Helm Install `helm upgrade --install <RELEASE_NAME> prometheus-ha/`
 
 4. Once grafana is running:
     - Access grafana at `grafana.yourdomain.com`
     - Add DataSource: 
       - Name: `DS_Prometheus` 
       - URL: `http://thanos-querier:9090` 
-      - Save and Test. You can now build your custon dashboards or simply import dashboards from grafana.net. Dashboard #315 and #1471 are good to start with.
       - You can also import the dashboards from `k8s/monitoring/dashboards-ha`
 
 5. You can access 
-    - Each prometheus replica at `prometheus-0.yourdomain.com`, `prometheus-1.yourdomain.com` and `prometheus-2.yourdomain.com`
     - Thanos-querier with de-deuplicated data at `thanos-querier.yourdomain.com`
     - Thanos-ruler at `thanos-ruler.yourdomain.com`
     - Alermanager at `alertmanager.yourdomain.com`
@@ -71,5 +67,5 @@ The Prometheus Pushgateway exists to allow ephemeral and batch jobs to expose th
 1. Whenever prometheus config map is updated thanos automatically reloads all prometheus servers so no manual update needed. 
 2. Some basic alerting rules are defined in the prometheus rules file which can be updated before deploying. You can also add more rules under the same groups or create new ones.
 3. Please update alertmanager config map with appropriate alert delivery endpoints. 
-4. Instead of GCS as long term storage you can also use S3. Refer prometheus docs for the config change. 
+4. Instead of GCS as long term storage you can also use S3. Refer Thanos docs for the config change. 
 

@@ -16,8 +16,8 @@
   "editable": true,
   "gnetId": 315,
   "graphTooltip": 0,
-  "id": 1,
-  "iteration": 1584073172426,
+  "id": 2,
+  "iteration": 1587792157388,
   "links": [],
   "panels": [
     {
@@ -2169,7 +2169,7 @@
       }
     }
   ],
-  "refresh": "10s",
+  "refresh": "5s",
   "schemaVersion": 22,
   "style": "dark",
   "tags": [
@@ -2180,8 +2180,9 @@
       {
         "allValue": null,
         "current": {
-          "text": "wd-prometheus",
-          "value": "wd-prometheus"
+          "selected": true,
+          "text": "prometheus-ha",
+          "value": "prometheus-ha"
         },
         "datasource": "DS_Prometheus",
         "definition": "label_values(machine_memory_bytes{},cluster)",
@@ -2190,15 +2191,9 @@
         "label": "",
         "multi": false,
         "name": "Cluster",
-        "options": [
-          {
-            "selected": true,
-            "text": "wd-prometheus",
-            "value": "wd-prometheus"
-          }
-        ],
+        "options": [],
         "query": "label_values(machine_memory_bytes{},cluster)",
-        "refresh": 0,
+        "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
         "sort": 1,
@@ -2212,8 +2207,8 @@
         "allValue": ".*",
         "current": {
           "selected": true,
-          "text": "worker-01",
-          "value": "worker-01"
+          "text": "gke-vaibhavthakur-bz-3kl-default-pool-2259a79a-j501",
+          "value": "gke-vaibhavthakur-bz-3kl-default-pool-2259a79a-j501"
         },
         "datasource": "DS_Prometheus",
         "definition": "",
@@ -2268,5 +2263,5 @@
   "timezone": "browser",
   "title": "Kubernetes Cluster Monitoring",
   "uid": "-2kz1jfik",
-  "version": 5
+  "version": 3
 }

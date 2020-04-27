@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pushgateway
+  namespace: {{ .Values.namespace }}
+  labels:
+     app: pushgateway
+spec:
+   replicas: {{ .Values.pushgateway.replicas }}
+   selector:
+     matchLabels:
+       app: pushgateway
+   template:
+      metadata:
+         labels:
+           app: pushgateway
+      spec:
+        containers:
+         - name: pushgateway
+           image: {{ .Values.pushgateway.image }}
+           ports:
+           - containerPort: 9091
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: pushgateway
+  namespace: {{ .Values.namespace }}
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9091"
+spec:
+  selector:
+    app: pushgateway
+  type: {{ .Values.pushgateway.service.type }}
+  ports:
+  - name: pushgateway
+    protocol: TCP
+    port: 9091
+    targetPort: 9091
+---
