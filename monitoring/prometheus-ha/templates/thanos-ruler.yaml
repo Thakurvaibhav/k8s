@@ -41,7 +41,7 @@ spec:
             - --alertmanagers.url=http://alertmanager:9093
             - --query=thanos-querier:9090
             - "--objstore.config={type: GCS, config: {bucket: {{ .Values.thanos.ruler.rules_bucket }} }}"
-            - --label=ruler_cluster="prometheus-ha"
+            - --label=ruler_cluster="{{ .Values.prometheus.clusterName }}"
             - --label=replica="$(POD_NAME)"
             - --alert.label-drop="prometheus_replica"
           env:

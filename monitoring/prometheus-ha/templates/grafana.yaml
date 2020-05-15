@@ -15,12 +15,14 @@ spec:
         task: monitoring
         k8s-app: grafana
     spec:
+      serviceAccountName: monitoring
       securityContext:
         fsGroup: 472
         runAsUser: 472
+        runAsGroup: 472
       initContainers:
       - args:
-        - mkdir -p /var/lib/grafana && chown -R 472:472 /var/lib/grafana
+        - mkdir -p /var/lib/grafana/ && chown -R 472:472 /var/lib/grafana
         command:
         - /bin/sh
         - -c
@@ -46,14 +48,16 @@ spec:
           httpGet:
             port: http
             path: /login
-        securityContext:
-          runAsUser: 472
         volumeMounts:
         - mountPath: /etc/ssl/certs
           name: ca-certificates
           readOnly: true
         - mountPath: /var
           name: grafana-storage
+        - mountPath: /etc/grafana/provisioning/datasources/
+          name: grafana-datasource
+        - mountPath: /etc/grafana/provisioning/dashboards/
+          name: grafana-dashboards
         env:
         - name: GF_SERVER_HTTP_PORT
           value: "3000"
@@ -69,6 +73,12 @@ spec:
       - name: ca-certificates
         hostPath:
           path: /etc/ssl/certs
+      - name: grafana-datasource
+        configMap:
+          name: grafana-datasource-conf
+      - name: grafana-dashboards
+        configMap:
+          name: grafana-dashboards
   volumeClaimTemplates:
   - metadata:
       name: grafana-storage

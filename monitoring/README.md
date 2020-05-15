@@ -32,11 +32,11 @@ The Prometheus Pushgateway exists to allow ephemeral and batch jobs to expose th
 2. if you need to update the prometheus config, it can be reloaded by making an api call to the prometheus server. `curl -XPOST http://<prom-service>:<prom-port>/-/reload`
 3. Some basic alerting rules are defined in the prometheus rules file which can be updated before deploying. You can also add more rules under the same groups or create new ones. 
 4. Before deploying prometheus please create GCP PD-SSD or AWS EBS Volume of size 250Gi or more, and name it `pd-ssd-disk-01`.
-5. Please update `00-alertmanager-configmap.yaml` to reflect correct api_url for Slack and VictorOps. You can additionally add more receievers. Ref:  https://prometheus.io/docs/alerting/configuration/ 
+5. Please update `00-alertmanager-configmap.yaml` to reflect correct api_url for Slack and VictorOps. You can additionally add more [receievers](https://prometheus.io/docs/alerting/configuration/).
 
 ## Highly Available and Scalable Clustered Prometheus Setup Using Thanos:
 
-1. It is highly recommended to deploy an ingress-controller in order to reduce the number of endpoints created. This set-up uses Nginx Ingress Controller.
+1. It is highly recommended to deploy an ingress-controller in order to reduce the number of endpoints created. This set-up uses [Nginx Ingress Controller](https://github.com/Thakurvaibhav/k8s/tree/master/ingress-controllers/nginx#ingress-controllers-for-aws-and-gke-based-kubernetes-clusters).
 
 2. Configuration
     - Create 2 GCS buckets and name them as `prometheus-long-term` and `thanos-ruler`, if you create buckets with some-other name make sure you update that in `values.yaml` These will be used for archiving prometheus and alertmanager data. 
@@ -44,21 +44,20 @@ The Prometheus Pushgateway exists to allow ephemeral and batch jobs to expose th
     - Download the key file as json credentials and name it as `thanos-gcs-credentials.json`
     - Create the namespace, `kubectl create ns monitoring`
     - Create kubernetes secret using the credentials, `kubectl create secret generic thanos-gcs-credentials --from-file=thanos-gcs-credentials.json -n monitoring` This secret name is also set in `values.yaml`
-    - Make sure you correctl set prometheus cluster name in the `values.yaml`
-    - Set correct domain names for ingress controller in `values.yaml`
+    - Update alertmanager configuraton at `configs/alertmanager-config.yaml` with appropriate alert delivery endpoints
+    - Make sure you set prometheus cluster name in the `values.yaml`
+
 
 3. Deployment: 
     - Helm Install `helm upgrade --install <RELEASE_NAME> prometheus-ha/`
 
 4. Once grafana is running:
     - Access grafana at `grafana.yourdomain.com`
-    - Add DataSource: 
-      - Name: `DS_Prometheus` 
-      - URL: `http://thanos-querier:9090` 
-      - You can also import the dashboards from `k8s/monitoring/dashboards-ha`
+    - If ingress disabled, `kubectl -n monitoring port-forward service/grafna 3000` , now go to `http://localhost:3000`
+    - All your dashboards will be present. 
 
 5. You can access 
-    - Thanos-querier with de-deuplicated data at `thanos-querier.yourdomain.com`
+    - Thanos-query with de-deuplicated data at `thanos-querier.yourdomain.com`
     - Thanos-ruler at `thanos-ruler.yourdomain.com`
     - Alermanager at `alertmanager.yourdomain.com`
 

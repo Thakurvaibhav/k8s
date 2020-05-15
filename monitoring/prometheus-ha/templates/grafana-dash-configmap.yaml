@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards
+  labels:
+    name: grafana-dashboards
+  namespace: {{ .Values.namespace }}
+data:
+  dashboards.yaml: |-
+{{ .Files.Get "configs/grafana-dashboard.yaml" | indent 4 }}
+  podmetrics.json: |-
+{{ .Files.Get "configs/pod-metrics.json" | indent 4 }}
+  deploymentmetrics.json: |-
+{{ .Files.Get "configs/deployment-metrics.json" | indent 4 }}
+  clustermetrics.json: |-
+{{ .Files.Get "configs/cluster-metrics.json" | indent 4 }}
+  nodemetrics.json: |-
+{{ .Files.Get "configs/node-metrics.json" | indent 4 }}
