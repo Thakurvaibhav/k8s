@@ -5,6 +5,7 @@ metadata:
   namespace: {{ .Values.namespace }}
 spec:
   replicas: {{ .Values.prometheus.replicas }}
+  serviceName: prometheus-0-service
   selector:
     matchLabels:
       app: prometheus
