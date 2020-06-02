@@ -16,8 +16,7 @@
   "editable": true,
   "gnetId": 315,
   "graphTooltip": 0,
-  "id": 2,
-  "iteration": 1587792157388,
+  "iteration": 1591040690632,
   "links": [],
   "panels": [
     {
@@ -29,6 +28,12 @@
       "decimals": 2,
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "grid": {},
@@ -146,6 +151,12 @@
       "datasource": "DS_Prometheus",
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "percent",
       "gauge": {
         "maxValue": 100,
@@ -178,7 +189,6 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
-      "options": {},
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -233,6 +243,12 @@
       "decimals": 2,
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "percent",
       "gauge": {
         "maxValue": 100,
@@ -265,7 +281,6 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
-      "options": {},
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -320,6 +335,12 @@
       "decimals": 2,
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "percent",
       "gauge": {
         "maxValue": 100,
@@ -352,7 +373,6 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
-      "options": {},
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -409,6 +429,12 @@
       "decimals": 2,
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "bytes",
       "gauge": {
         "maxValue": 100,
@@ -441,7 +467,6 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
-      "options": {},
       "postfix": "",
       "postfixFontSize": "20%",
       "prefix": "",
@@ -496,6 +521,12 @@
       "decimals": 2,
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "bytes",
       "gauge": {
         "maxValue": 100,
@@ -528,7 +559,6 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
-      "options": {},
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -582,6 +612,12 @@
       "decimals": 2,
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -614,7 +650,6 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
-      "options": {},
       "postfix": " cores",
       "postfixFontSize": "30%",
       "prefix": "",
@@ -669,6 +704,12 @@
       "decimals": 2,
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -701,7 +742,6 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
-      "options": {},
       "postfix": " cores",
       "postfixFontSize": "30%",
       "prefix": "",
@@ -755,6 +795,12 @@
       "decimals": 2,
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "bytes",
       "gauge": {
         "maxValue": 100,
@@ -787,7 +833,6 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
-      "options": {},
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -842,6 +887,12 @@
       "decimals": 2,
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "bytes",
       "gauge": {
         "maxValue": 100,
@@ -874,7 +925,6 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
-      "options": {},
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -925,6 +975,12 @@
       "decimals": 3,
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 0,
       "fillGradient": 0,
       "grid": {},
@@ -1028,6 +1084,12 @@
       "decimals": 3,
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 0,
       "fillGradient": 0,
       "grid": {},
@@ -1132,6 +1194,12 @@
       "decimals": 3,
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 0,
       "fillGradient": 0,
       "grid": {},
@@ -1260,6 +1328,12 @@
       "decimals": 3,
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 0,
       "fillGradient": 0,
       "grid": {},
@@ -1362,6 +1436,12 @@
       "decimals": 2,
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 0,
       "fillGradient": 0,
       "grid": {},
@@ -1465,6 +1545,12 @@
       "decimals": 2,
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 0,
       "fillGradient": 0,
       "grid": {},
@@ -1568,6 +1654,12 @@
       "decimals": 2,
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 0,
       "fillGradient": 0,
       "grid": {},
@@ -1691,6 +1783,12 @@
       "decimals": 2,
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 0,
       "fillGradient": 0,
       "grid": {},
@@ -1794,6 +1892,12 @@
       "decimals": 2,
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "grid": {},
@@ -1907,6 +2011,12 @@
       "decimals": 2,
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "grid": {},
@@ -2066,6 +2176,12 @@
       "decimals": 2,
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "grid": {},
@@ -2170,7 +2286,7 @@
     }
   ],
   "refresh": "5s",
-  "schemaVersion": 22,
+  "schemaVersion": 25,
   "style": "dark",
   "tags": [
     "kubernetes"
@@ -2181,8 +2297,8 @@
         "allValue": null,
         "current": {
           "selected": true,
-          "text": "prometheus-ha",
-          "value": "prometheus-ha"
+          "text": "vt11-ts-prometheus",
+          "value": "vt11-ts-prometheus"
         },
         "datasource": "DS_Prometheus",
         "definition": "label_values(machine_memory_bytes{},cluster)",
@@ -2206,19 +2322,19 @@
       {
         "allValue": ".*",
         "current": {
-          "selected": true,
-          "text": "gke-vaibhavthakur-bz-3kl-default-pool-2259a79a-j501",
-          "value": "gke-vaibhavthakur-bz-3kl-default-pool-2259a79a-j501"
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
         },
         "datasource": "DS_Prometheus",
-        "definition": "",
+        "definition": "label_values(machine_memory_bytes{cluster=~\"$Cluster\"},kubernetes_io_hostname)",
         "hide": 0,
         "includeAll": true,
         "label": null,
         "multi": false,
         "name": "Node",
         "options": [],
-        "query": "label_values(machine_memory_bytes{},kubernetes_io_hostname)",
+        "query": "label_values(machine_memory_bytes{cluster=~\"$Cluster\"},kubernetes_io_hostname)",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -2237,7 +2353,6 @@
   },
   "timepicker": {
     "refresh_intervals": [
-      "5s",
       "10s",
       "30s",
       "1m",
@@ -2262,6 +2377,6 @@
   },
   "timezone": "browser",
   "title": "Kubernetes Cluster Monitoring",
-  "uid": "-2kz1jfik",
-  "version": 3
+  "uid": "-2kz1fik",
+  "version": 1
 }

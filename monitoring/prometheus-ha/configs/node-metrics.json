@@ -16,26 +16,39 @@
   "editable": true,
   "gnetId": 405,
   "graphTooltip": 0,
-  "id": null,
-  "iteration": 1577744282040,
+  "iteration": 1591041793561,
   "links": [],
   "panels": [
     {
       "content": "",
+      "datasource": null,
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "gridPos": {
         "h": 3,
-        "w": 12,
+        "w": 24,
         "x": 0,
         "y": 0
       },
       "id": 11,
       "links": [],
-      "minSpan": 4,
+      "maxPerRow": 6,
       "mode": "html",
       "repeat": "node",
       "repeatDirection": "h",
+      "scopedVars": {
+        "node": {
+          "selected": true,
+          "text": "10.128.0.44:9100",
+          "value": "10.128.0.44:9100"
+        }
+      },
       "style": {},
       "title": "$node",
       "type": "text"
@@ -52,6 +65,12 @@
       "datasource": "DS_Prometheus",
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -62,9 +81,9 @@
       },
       "gridPos": {
         "h": 3,
-        "w": 12,
+        "w": 24,
         "x": 0,
-        "y": 3
+        "y": 18
       },
       "id": 20,
       "interval": null,
@@ -81,7 +100,7 @@
         }
       ],
       "maxDataPoints": 100,
-      "minSpan": 4,
+      "maxPerRow": 6,
       "nullPointMode": "connected",
       "nullText": null,
       "postfix": "",
@@ -96,6 +115,13 @@
         }
       ],
       "repeat": "node",
+      "scopedVars": {
+        "node": {
+          "selected": true,
+          "text": "10.128.0.44:9100",
+          "value": "10.128.0.44:9100"
+        }
+      },
       "sparkline": {
         "fillColor": "rgba(31, 118, 189, 0.18)",
         "full": false,
@@ -138,14 +164,22 @@
       "decimals": 3,
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 10,
+      "fillGradient": 0,
       "grid": {},
       "gridPos": {
         "h": 7,
-        "w": 12,
+        "w": 24,
         "x": 0,
-        "y": 6
+        "y": 36
       },
+      "hiddenSeries": false,
       "id": 7,
       "legend": {
         "alignAsTable": false,
@@ -162,13 +196,23 @@
       "lines": true,
       "linewidth": 0,
       "links": [],
-      "minSpan": 4,
+      "maxPerRow": 6,
       "nullPointMode": "connected",
+      "options": {
+        "dataLinks": []
+      },
       "percentage": true,
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
       "repeat": "node",
+      "scopedVars": {
+        "node": {
+          "selected": true,
+          "text": "10.128.0.44:9100",
+          "value": "10.128.0.44:9100"
+        }
+      },
       "seriesOverrides": [],
       "spaceLength": 10,
       "stack": true,
@@ -258,6 +302,7 @@
         }
       ],
       "timeFrom": null,
+      "timeRegions": [],
       "timeShift": null,
       "title": "CPU",
       "tooltip": {
@@ -308,14 +353,22 @@
       "decimals": 2,
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
+      "fillGradient": 0,
       "grid": {},
       "gridPos": {
         "h": 7,
-        "w": 12,
+        "w": 24,
         "x": 0,
-        "y": 13
+        "y": 78
       },
+      "hiddenSeries": false,
       "id": 17,
       "legend": {
         "avg": false,
@@ -329,13 +382,23 @@
       "lines": true,
       "linewidth": 2,
       "links": [],
-      "minSpan": 4,
+      "maxPerRow": 6,
       "nullPointMode": "connected",
+      "options": {
+        "dataLinks": []
+      },
       "percentage": false,
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
       "repeat": "node",
+      "scopedVars": {
+        "node": {
+          "selected": true,
+          "text": "10.128.0.44:9100",
+          "value": "10.128.0.44:9100"
+        }
+      },
       "seriesOverrides": [
         {
           "alias": "/Apps|Buffers|Cached|Free|Slab|SwapCached|PageTables|VmallocUsed/",
@@ -467,6 +530,7 @@
       ],
       "thresholds": [],
       "timeFrom": null,
+      "timeRegions": [],
       "timeShift": null,
       "title": "Memory",
       "tooltip": {
@@ -513,14 +577,22 @@
       "datasource": "DS_Prometheus",
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
+      "fillGradient": 0,
       "grid": {},
       "gridPos": {
         "h": 7,
-        "w": 12,
+        "w": 24,
         "x": 0,
-        "y": 20
+        "y": 120
       },
+      "hiddenSeries": false,
       "id": 13,
       "legend": {
         "avg": false,
@@ -534,13 +606,23 @@
       "lines": true,
       "linewidth": 2,
       "links": [],
-      "minSpan": 4,
+      "maxPerRow": 6,
       "nullPointMode": "connected",
+      "options": {
+        "dataLinks": []
+      },
       "percentage": false,
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
       "repeat": "node",
+      "scopedVars": {
+        "node": {
+          "selected": true,
+          "text": "10.128.0.44:9100",
+          "value": "10.128.0.44:9100"
+        }
+      },
       "seriesOverrides": [],
       "spaceLength": 10,
       "stack": false,
@@ -560,6 +642,7 @@
       ],
       "thresholds": [],
       "timeFrom": null,
+      "timeRegions": [],
       "timeShift": null,
       "title": "Load",
       "tooltip": {
@@ -606,14 +689,22 @@
       "decimals": 3,
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
+      "fillGradient": 0,
       "grid": {},
       "gridPos": {
         "h": 7,
-        "w": 12,
+        "w": 24,
         "x": 0,
-        "y": 27
+        "y": 162
       },
+      "hiddenSeries": false,
       "id": 9,
       "legend": {
         "avg": false,
@@ -627,13 +718,23 @@
       "lines": true,
       "linewidth": 2,
       "links": [],
-      "minSpan": 4,
+      "maxPerRow": 6,
       "nullPointMode": "connected",
+      "options": {
+        "dataLinks": []
+      },
       "percentage": false,
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
       "repeat": "node",
+      "scopedVars": {
+        "node": {
+          "selected": true,
+          "text": "10.128.0.44:9100",
+          "value": "10.128.0.44:9100"
+        }
+      },
       "seriesOverrides": [],
       "spaceLength": 10,
       "stack": false,
@@ -652,6 +753,7 @@
       ],
       "thresholds": [],
       "timeFrom": null,
+      "timeRegions": [],
       "timeShift": null,
       "title": "Disk Space Used",
       "tooltip": {
@@ -697,13 +799,19 @@
       "datasource": "DS_Prometheus",
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
       "grid": {},
       "gridPos": {
         "h": 7,
-        "w": 12,
+        "w": 24,
         "x": 0,
-        "y": 34
+        "y": 204
       },
       "id": 19,
       "legend": {
@@ -718,13 +826,20 @@
       "lines": true,
       "linewidth": 2,
       "links": [],
-      "minSpan": 4,
+      "maxPerRow": 6,
       "nullPointMode": "connected",
       "percentage": false,
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
       "repeat": "node",
+      "scopedVars": {
+        "node": {
+          "selected": true,
+          "text": "10.128.0.44:9100",
+          "value": "10.128.0.44:9100"
+        }
+      },
       "seriesOverrides": [],
       "spaceLength": 10,
       "stack": false,
@@ -788,13 +903,19 @@
       "datasource": "DS_Prometheus",
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
       "grid": {},
       "gridPos": {
         "h": 7,
-        "w": 12,
+        "w": 24,
         "x": 0,
-        "y": 41
+        "y": 246
       },
       "id": 14,
       "legend": {
@@ -809,13 +930,20 @@
       "lines": true,
       "linewidth": 2,
       "links": [],
-      "minSpan": 4,
+      "maxPerRow": 6,
       "nullPointMode": "connected",
       "percentage": false,
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
       "repeat": "node",
+      "scopedVars": {
+        "node": {
+          "selected": true,
+          "text": "10.128.0.44:9100",
+          "value": "10.128.0.44:9100"
+        }
+      },
       "seriesOverrides": [
         {
           "alias": "/.*_read$/",
@@ -893,13 +1021,19 @@
       "datasource": "DS_Prometheus",
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
       "grid": {},
       "gridPos": {
         "h": 7,
-        "w": 12,
+        "w": 24,
         "x": 0,
-        "y": 48
+        "y": 288
       },
       "id": 18,
       "legend": {
@@ -914,13 +1048,20 @@
       "lines": true,
       "linewidth": 2,
       "links": [],
-      "minSpan": 4,
+      "maxPerRow": 6,
       "nullPointMode": "connected",
       "percentage": false,
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
       "repeat": "node",
+      "scopedVars": {
+        "node": {
+          "selected": true,
+          "text": "10.128.0.44:9100",
+          "value": "10.128.0.44:9100"
+        }
+      },
       "seriesOverrides": [
         {
           "alias": "/.*_read/",
@@ -998,13 +1139,19 @@
       "datasource": "DS_Prometheus",
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
       "grid": {},
       "gridPos": {
         "h": 7,
-        "w": 12,
+        "w": 24,
         "x": 0,
-        "y": 55
+        "y": 330
       },
       "id": 25,
       "legend": {
@@ -1019,13 +1166,20 @@
       "lines": true,
       "linewidth": 2,
       "links": [],
-      "minSpan": 4,
+      "maxPerRow": 6,
       "nullPointMode": "connected",
       "percentage": false,
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
       "repeat": "node",
+      "scopedVars": {
+        "node": {
+          "selected": true,
+          "text": "10.128.0.44:9100",
+          "value": "10.128.0.44:9100"
+        }
+      },
       "seriesOverrides": [],
       "spaceLength": 10,
       "stack": false,
@@ -1089,13 +1243,19 @@
       "datasource": "DS_Prometheus",
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
       "grid": {},
       "gridPos": {
         "h": 7,
-        "w": 12,
+        "w": 24,
         "x": 0,
-        "y": 62
+        "y": 372
       },
       "id": 22,
       "legend": {
@@ -1110,13 +1270,20 @@
       "lines": true,
       "linewidth": 2,
       "links": [],
-      "minSpan": 4,
+      "maxPerRow": 6,
       "nullPointMode": "connected",
       "percentage": false,
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
       "repeat": "node",
+      "scopedVars": {
+        "node": {
+          "selected": true,
+          "text": "10.128.0.44:9100",
+          "value": "10.128.0.44:9100"
+        }
+      },
       "seriesOverrides": [],
       "spaceLength": 10,
       "stack": false,
@@ -1180,13 +1347,19 @@
       "datasource": "DS_Prometheus",
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
       "grid": {},
       "gridPos": {
         "h": 7,
-        "w": 12,
+        "w": 24,
         "x": 0,
-        "y": 69
+        "y": 414
       },
       "id": 12,
       "legend": {
@@ -1201,13 +1374,20 @@
       "lines": true,
       "linewidth": 2,
       "links": [],
-      "minSpan": 4,
+      "maxPerRow": 6,
       "nullPointMode": "connected",
       "percentage": false,
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
       "repeat": "node",
+      "scopedVars": {
+        "node": {
+          "selected": true,
+          "text": "10.128.0.44:9100",
+          "value": "10.128.0.44:9100"
+        }
+      },
       "seriesOverrides": [
         {
           "alias": "/.*_in/",
@@ -1285,13 +1465,19 @@
       "datasource": "DS_Prometheus",
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
       "grid": {},
       "gridPos": {
         "h": 7,
-        "w": 12,
+        "w": 24,
         "x": 0,
-        "y": 76
+        "y": 456
       },
       "id": 21,
       "legend": {
@@ -1306,13 +1492,20 @@
       "lines": true,
       "linewidth": 2,
       "links": [],
-      "minSpan": 4,
+      "maxPerRow": 6,
       "nullPointMode": "connected",
       "percentage": false,
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
       "repeat": "node",
+      "scopedVars": {
+        "node": {
+          "selected": true,
+          "text": "10.128.0.44:9100",
+          "value": "10.128.0.44:9100"
+        }
+      },
       "seriesOverrides": [],
       "spaceLength": 10,
       "stack": false,
@@ -1374,13 +1567,19 @@
       "datasource": "DS_Prometheus",
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
       "grid": {},
       "gridPos": {
         "h": 7,
-        "w": 12,
+        "w": 24,
         "x": 0,
-        "y": 83
+        "y": 498
       },
       "id": 23,
       "legend": {
@@ -1395,13 +1594,20 @@
       "lines": true,
       "linewidth": 2,
       "links": [],
-      "minSpan": 4,
+      "maxPerRow": 6,
       "nullPointMode": "connected",
       "percentage": false,
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
       "repeat": "node",
+      "scopedVars": {
+        "node": {
+          "selected": true,
+          "text": "10.128.0.44:9100",
+          "value": "10.128.0.44:9100"
+        }
+      },
       "seriesOverrides": [
         {
           "alias": "/.*Out.*/",
@@ -1494,13 +1700,19 @@
       "datasource": "DS_Prometheus",
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
       "grid": {},
       "gridPos": {
         "h": 7,
-        "w": 12,
+        "w": 24,
         "x": 0,
-        "y": 90
+        "y": 540
       },
       "id": 24,
       "legend": {
@@ -1515,13 +1727,20 @@
       "lines": true,
       "linewidth": 2,
       "links": [],
-      "minSpan": 4,
+      "maxPerRow": 6,
       "nullPointMode": "connected",
       "percentage": false,
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
       "repeat": "node",
+      "scopedVars": {
+        "node": {
+          "selected": true,
+          "text": "10.128.0.44:9100",
+          "value": "10.128.0.44:9100"
+        }
+      },
       "seriesOverrides": [],
       "spaceLength": 10,
       "stack": false,
@@ -1578,7 +1797,7 @@
     }
   ],
   "refresh": "5s",
-  "schemaVersion": 16,
+  "schemaVersion": 25,
   "style": "dark",
   "tags": [
     "kubernetes"
@@ -1587,8 +1806,13 @@
     "list": [
       {
         "allValue": null,
-        "current": {},
+        "current": {
+          "selected": true,
+          "text": "vt12-ts-prometheus",
+          "value": "vt12-ts-prometheus"
+        },
         "datasource": "DS_Prometheus",
+        "definition": "",
         "hide": 0,
         "includeAll": false,
         "label": null,
@@ -1598,6 +1822,7 @@
         "query": "label_values(machine_memory_bytes{},cluster)",
         "refresh": 1,
         "regex": "",
+        "skipUrlSync": false,
         "sort": 1,
         "tagValuesQuery": "",
         "tags": [],
@@ -1608,8 +1833,16 @@
       {
         "allFormat": "glob",
         "allValue": null,
-        "current": {},
+        "current": {
+          "selected": true,
+          "tags": [],
+          "text": "10.128.0.44:9100",
+          "value": [
+            "10.128.0.44:9100"
+          ]
+        },
         "datasource": "DS_Prometheus",
+        "definition": "label_values(node_exporter_build_info{cluster=~\"$Cluster\"}, instance)",
         "hide": 0,
         "includeAll": false,
         "label": "",
@@ -1617,9 +1850,10 @@
         "multiFormat": "regex values",
         "name": "node",
         "options": [],
-        "query": "label_values(node_exporter_build_info, instance)",
+        "query": "label_values(node_exporter_build_info{cluster=~\"$Cluster\"}, instance)",
         "refresh": 1,
         "regex": "",
+        "skipUrlSync": false,
         "sort": 1,
         "tagValuesQuery": "",
         "tags": [],
@@ -1636,7 +1870,6 @@
   "timepicker": {
     "now": true,
     "refresh_intervals": [
-      "5s",
       "10s",
       "30s",
       "1m",
@@ -1661,6 +1894,6 @@
   },
   "timezone": "browser",
   "title": "Kubernetes Nodes",
-  "uid": "5oUKj2_mk",
-  "version": 5
+  "uid": "5oUKj2mk",
+  "version": 1
 }

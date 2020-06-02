@@ -16,8 +16,7 @@
   "editable": true,
   "gnetId": 747,
   "graphTooltip": 0,
-  "id": 4,
-  "iteration": 1584071811724,
+  "iteration": 1591040371416,
   "links": [],
   "panels": [
     {
@@ -41,6 +40,12 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "DS_Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -138,6 +143,12 @@
         "rgba(50, 172, 45, 0.97)"
       ],
       "datasource": "DS_Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -169,7 +180,6 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
-      "options": {},
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -187,7 +197,7 @@
         "lineColor": "rgb(31, 120, 193)",
         "show": false
       },
-      "tableColumn": "",
+      "tableColumn": "kube_pod_container_status_restarts_total{cluster=\"vt12-ts-prometheus\", container=\"calico-kube-controllers\", instance=\"10.24.2.13:8080\", job=\"kubernetes-service-endpoints\", k8s_app=\"kube-state-metrics\", kubernetes_name=\"kube-state-metrics\", kubernetes_namespace=\"monitoring\", namespace=\"calico-system\", pod=\"calico-kube-controllers-5596445979-w4cjp\"}",
       "targets": [
         {
           "expr": "kube_pod_container_status_restarts_total{pod_template_hash=\"\",pod=\"$Pod\", container=\"$container\",container!=\"\",cluster=\"$Cluster\"} ",
@@ -220,6 +230,12 @@
         "rgba(50, 172, 45, 0.97)"
       ],
       "datasource": "DS_Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -251,7 +267,6 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
-      "options": {},
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -269,7 +284,7 @@
         "lineColor": "rgb(31, 120, 193)",
         "show": false
       },
-      "tableColumn": "",
+      "tableColumn": "kube_pod_container_status_running{cluster=\"vt12-ts-prometheus\", container=\"calico-kube-controllers\", instance=\"10.24.2.13:8080\", job=\"kubernetes-service-endpoints\", k8s_app=\"kube-state-metrics\", kubernetes_name=\"kube-state-metrics\", kubernetes_namespace=\"monitoring\", namespace=\"calico-system\", pod=\"calico-kube-controllers-5596445979-w4cjp\"}",
       "targets": [
         {
           "expr": "kube_pod_container_status_running{pod_template_hash=\"\",namespace=\"$namespace\", pod=\"$Pod\",container=\"$container\",container!=\"\",cluster=\"$Cluster\"}",
@@ -324,6 +339,12 @@
       "datasource": "DS_Prometheus",
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -355,7 +376,6 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
-      "options": {},
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -408,6 +428,12 @@
       "datasource": "DS_Prometheus",
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -439,7 +465,6 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
-      "options": {},
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -490,6 +515,12 @@
         "rgba(50, 172, 45, 0.97)"
       ],
       "datasource": "DS_Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -521,7 +552,6 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
-      "options": {},
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -572,6 +602,12 @@
         "rgba(50, 172, 45, 0.97)"
       ],
       "datasource": "DS_Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -603,7 +639,6 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
-      "options": {},
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -670,6 +705,12 @@
         "rgba(50, 172, 45, 0.97)"
       ],
       "datasource": "DS_Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -702,7 +743,6 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
-      "options": {},
       "postfix": "",
       "postfixFontSize": "20%",
       "prefix": "",
@@ -771,6 +811,12 @@
       "datasource": "DS_Prometheus",
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "percent",
       "gauge": {
         "maxValue": 100,
@@ -803,7 +849,6 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
-      "options": {},
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -858,6 +903,12 @@
       "decimals": 2,
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "percent",
       "gauge": {
         "maxValue": 100,
@@ -890,7 +941,6 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
-      "options": {},
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -944,6 +994,12 @@
       "datasource": "DS_Prometheus",
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "bytes",
       "gauge": {
         "maxValue": 100,
@@ -976,7 +1032,6 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
-      "options": {},
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -1029,6 +1084,12 @@
       "datasource": "DS_Prometheus",
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "bytes",
       "gauge": {
         "maxValue": 100,
@@ -1061,7 +1122,6 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
-      "options": {},
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -1114,6 +1174,12 @@
       "datasource": "DS_Prometheus",
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -1146,7 +1212,6 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
-      "options": {},
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -1199,6 +1264,12 @@
       "datasource": "DS_Prometheus",
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -1231,7 +1302,6 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
-      "options": {},
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -1285,6 +1355,12 @@
       "decimals": 2,
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "bytes",
       "gauge": {
         "maxValue": 100,
@@ -1317,7 +1393,6 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
-      "options": {},
       "postfix": "",
       "postfixFontSize": "20%",
       "prefix": "",
@@ -1382,6 +1457,12 @@
       "decimals": 3,
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 0,
       "fillGradient": 0,
       "grid": {},
@@ -1500,6 +1581,12 @@
       "decimals": 3,
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 0,
       "fillGradient": 0,
       "grid": {},
@@ -1618,6 +1705,12 @@
       "decimals": 2,
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 0,
       "fillGradient": 0,
       "grid": {},
@@ -1736,6 +1829,12 @@
       "decimals": 2,
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 0,
       "fillGradient": 0,
       "grid": {},
@@ -1851,6 +1950,12 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "DS_Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1944,6 +2049,12 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "DS_Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -2052,6 +2163,12 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "DS_Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -2161,6 +2278,12 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "DS_Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -2287,6 +2410,12 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "DS_Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -2396,6 +2525,12 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "DS_Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -2519,6 +2654,12 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "DS_Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -2628,6 +2769,12 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "DS_Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -2754,6 +2901,12 @@
       "decimals": 2,
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "grid": {},
@@ -2883,6 +3036,12 @@
       "decimals": 2,
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "grid": {},
@@ -3011,6 +3170,12 @@
       "decimals": 2,
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "grid": {},
@@ -3117,7 +3282,7 @@
     }
   ],
   "refresh": "5s",
-  "schemaVersion": 22,
+  "schemaVersion": 25,
   "style": "dark",
   "tags": [
     "kubernetes"
@@ -3128,8 +3293,8 @@
         "allValue": null,
         "current": {
           "selected": true,
-          "text": "wd-prometheus",
-          "value": "wd-prometheus"
+          "text": "vt12-ts-prometheus",
+          "value": "vt12-ts-prometheus"
         },
         "datasource": "DS_Prometheus",
         "definition": "",
@@ -3153,18 +3318,19 @@
       {
         "allValue": ".*",
         "current": {
-          "text": "",
-          "value": ""
+          "selected": false,
+          "text": "gke-vt12-ts-default-pool-5d437ee7-fl46",
+          "value": "gke-vt12-ts-default-pool-5d437ee7-fl46"
         },
         "datasource": "DS_Prometheus",
-        "definition": "",
+        "definition": "label_values(machine_memory_bytes{cluster=~\"$Cluster\"},kubernetes_io_hostname)",
         "hide": 2,
         "includeAll": false,
         "label": null,
         "multi": false,
         "name": "Node",
         "options": [],
-        "query": "label_values(machine_memory_bytes{},kubernetes_io_hostname)",
+        "query": "label_values(machine_memory_bytes{cluster=~\"$Cluster\"},kubernetes_io_hostname)",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -3178,18 +3344,19 @@
       {
         "allValue": null,
         "current": {
+          "selected": false,
           "text": "calico-system",
           "value": "calico-system"
         },
         "datasource": "DS_Prometheus",
-        "definition": "label_values(container_memory_usage_bytes{namespace=~\".+\",container!=\"POD\"},namespace)",
+        "definition": "label_values(container_memory_usage_bytes{cluster=~\"$Cluster\",namespace=~\".+\",container!=\"POD\"},namespace)",
         "hide": 0,
         "includeAll": false,
         "label": null,
         "multi": false,
         "name": "namespace",
         "options": [],
-        "query": "label_values(container_memory_usage_bytes{namespace=~\".+\",container!=\"POD\"},namespace)",
+        "query": "label_values(container_memory_usage_bytes{cluster=~\"$Cluster\",namespace=~\".+\",container!=\"POD\"},namespace)",
         "refresh": 2,
         "regex": "",
         "skipUrlSync": false,
@@ -3203,18 +3370,19 @@
       {
         "allValue": ".*",
         "current": {
-          "text": "calico-node-45z2d",
-          "value": "calico-node-45z2d"
+          "selected": false,
+          "text": "calico-kube-controllers-5596445979-w4cjp",
+          "value": "calico-kube-controllers-5596445979-w4cjp"
         },
         "datasource": "DS_Prometheus",
-        "definition": "label_values(container_memory_usage_bytes{namespace=~\"$namespace\",container!=\"POD\"},pod)",
+        "definition": "label_values(container_memory_usage_bytes{cluster=~\"$Cluster\",namespace=~\"$namespace\",container!=\"POD\"},pod)",
         "hide": 0,
         "includeAll": false,
         "label": "Pod",
         "multi": false,
         "name": "Pod",
         "options": [],
-        "query": "label_values(container_memory_usage_bytes{namespace=~\"$namespace\",container!=\"POD\"},pod)",
+        "query": "label_values(container_memory_usage_bytes{cluster=~\"$Cluster\",namespace=~\"$namespace\",container!=\"POD\"},pod)",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -3228,18 +3396,19 @@
       {
         "allValue": null,
         "current": {
-          "text": "calico-node",
-          "value": "calico-node"
+          "selected": false,
+          "text": "calico-kube-controllers",
+          "value": "calico-kube-controllers"
         },
         "datasource": "DS_Prometheus",
-        "definition": "label_values(container_memory_usage_bytes{namespace=~\"$namespace\",container!=\"POD\",pod=\"$Pod\"},container)",
+        "definition": "label_values(container_memory_usage_bytes{cluster=~\"$Cluster\",namespace=~\"$namespace\",container!=\"POD\",pod=\"$Pod\"},container)",
         "hide": 0,
         "includeAll": false,
         "label": null,
         "multi": false,
         "name": "container",
         "options": [],
-        "query": "label_values(container_memory_usage_bytes{namespace=~\"$namespace\",container!=\"POD\",pod=\"$Pod\"},container)",
+        "query": "label_values(container_memory_usage_bytes{cluster=~\"$Cluster\",namespace=~\"$namespace\",container!=\"POD\",pod=\"$Pod\"},container)",
         "refresh": 2,
         "regex": "",
         "skipUrlSync": false,
@@ -3253,12 +3422,11 @@
     ]
   },
   "time": {
-    "from": "now-15m",
+    "from": "now-5m",
     "to": "now"
   },
   "timepicker": {
     "refresh_intervals": [
-      "5s",
       "10s",
       "30s",
       "1m",
@@ -3284,5 +3452,5 @@
   "timezone": "browser",
   "title": "Kubernetes Pod Metrics",
   "uid": "gRGG1CBik",
-  "version": 10
+  "version": 1
 }

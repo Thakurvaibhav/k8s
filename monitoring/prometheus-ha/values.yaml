@@ -17,7 +17,7 @@ grafana:
   storage: 10Gi
 
 kube_state_metrics:
-  image: quay.io/mxinden/kube-state-metrics:v1.4.0-gzip.3
+  image: quay.io/coreos/kube-state-metrics:v1.9.5
 
 prometheus:
   image: prom/prometheus:v2.14.0

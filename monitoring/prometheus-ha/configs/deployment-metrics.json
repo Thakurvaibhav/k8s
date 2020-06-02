@@ -16,8 +16,7 @@
   "editable": true,
   "gnetId": 741,
   "graphTooltip": 0,
-  "id": 8,
-  "iteration": 1584075682722,
+  "iteration": 1591042052479,
   "links": [],
   "panels": [
     {
@@ -32,6 +31,12 @@
       "datasource": "DS_Prometheus",
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "percent",
       "gauge": {
         "maxValue": 100,
@@ -64,7 +69,6 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
-      "options": {},
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -119,6 +123,12 @@
       "decimals": 2,
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "percent",
       "gauge": {
         "maxValue": 100,
@@ -151,7 +161,6 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
-      "options": {},
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -205,6 +214,12 @@
       "datasource": "DS_Prometheus",
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "percent",
       "gauge": {
         "maxValue": 100,
@@ -237,7 +252,6 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
-      "options": {},
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -290,6 +304,12 @@
       "datasource": "DS_Prometheus",
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "bytes",
       "gauge": {
         "maxValue": 100,
@@ -322,7 +342,6 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
-      "options": {},
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -375,6 +394,12 @@
       "datasource": "DS_Prometheus",
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "bytes",
       "gauge": {
         "maxValue": 100,
@@ -407,7 +432,6 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
-      "options": {},
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -460,6 +484,12 @@
       "datasource": "DS_Prometheus",
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -492,7 +522,6 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
-      "options": {},
       "postfix": " cores",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -545,6 +574,12 @@
       "datasource": "DS_Prometheus",
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -577,7 +612,6 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
-      "options": {},
       "postfix": " cores",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -630,6 +664,12 @@
       "datasource": "DS_Prometheus",
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -662,7 +702,6 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
-      "options": {},
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -715,6 +754,12 @@
       "datasource": "DS_Prometheus",
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -747,7 +792,6 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
-      "options": {},
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -794,6 +838,12 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "DS_Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -889,6 +939,12 @@
       "decimals": 3,
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 0,
       "fillGradient": 0,
       "grid": {},
@@ -992,6 +1048,12 @@
       "decimals": 3,
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 0,
       "fillGradient": 0,
       "grid": {},
@@ -1099,6 +1161,12 @@
       "decimals": 3,
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 0,
       "fillGradient": 0,
       "grid": {},
@@ -1202,6 +1270,12 @@
       "decimals": 2,
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 0,
       "fillGradient": 0,
       "grid": {},
@@ -1305,6 +1379,12 @@
       "decimals": 2,
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 0,
       "fillGradient": 0,
       "grid": {},
@@ -1408,6 +1488,12 @@
       "decimals": 2,
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "grid": {},
@@ -1521,6 +1607,12 @@
       "decimals": 2,
       "editable": true,
       "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "grid": {},
@@ -1627,7 +1719,7 @@
     }
   ],
   "refresh": false,
-  "schemaVersion": 22,
+  "schemaVersion": 25,
   "style": "dark",
   "tags": [
     "kubernetes"
@@ -1638,8 +1730,8 @@
         "allValue": null,
         "current": {
           "selected": true,
-          "text": "wd-prometheus",
-          "value": "wd-prometheus"
+          "text": "vt12-ts-prometheus",
+          "value": "vt12-ts-prometheus"
         },
         "datasource": "DS_Prometheus",
         "definition": "",
@@ -1663,18 +1755,19 @@
       {
         "allValue": ".*",
         "current": {
-          "text": "thanos-querier",
-          "value": "thanos-querier"
+          "selected": false,
+          "text": "alertmanager",
+          "value": "alertmanager"
         },
         "datasource": "DS_Prometheus",
-        "definition": "",
+        "definition": "label_values(kube_deployment_labels{cluster=~\"$Cluster\"},deployment)",
         "hide": 0,
         "includeAll": true,
         "label": null,
         "multi": false,
         "name": "Deployment",
         "options": [],
-        "query": "label_values(deployment)",
+        "query": "label_values(kube_deployment_labels{cluster=~\"$Cluster\"},deployment)",
         "refresh": 2,
         "regex": "",
         "skipUrlSync": false,
@@ -1693,14 +1786,14 @@
           "value": "$__all"
         },
         "datasource": "DS_Prometheus",
-        "definition": "",
+        "definition": "label_values(machine_memory_bytes{cluster=~\"$Cluster\"},kubernetes_io_hostname)",
         "hide": 2,
         "includeAll": true,
         "label": null,
         "multi": false,
         "name": "Node",
         "options": [],
-        "query": "label_values(machine_memory_bytes{},kubernetes_io_hostname)",
+        "query": "label_values(machine_memory_bytes{cluster=~\"$Cluster\"},kubernetes_io_hostname)",
         "refresh": 2,
         "regex": "",
         "skipUrlSync": false,
@@ -1719,7 +1812,6 @@
   },
   "timepicker": {
     "refresh_intervals": [
-      "5s",
       "10s",
       "30s",
       "1m",
@@ -1744,6 +1836,6 @@
   },
   "timezone": "browser",
   "title": "Kubernetes Deployment metrics",
-  "uid": "XOE4JCfmz",
+  "uid": "XOE4Cfmz",
   "version": 1
 }
