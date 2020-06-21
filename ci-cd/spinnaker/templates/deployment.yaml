@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: halyard
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: halyard
+    role: server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: halyard
+  template:
+    metadata:
+      labels:
+        app: halyard
+        role: server
+    spec:
+      containers:
+      - name: halyard
+        image: {{ .Values.image }}
+        command: [ "/entrypoint.sh" ]
+        terminationMessagePolicy: FallbackToLogsOnError
+        volumeMounts:
+        - name: root-volume
+          mountPath: /root
+      volumes:
+      - name: root-volume
+        persistentVolumeClaim:
+          claimName: {{ .Values.persistentVolumeClaim.name }}

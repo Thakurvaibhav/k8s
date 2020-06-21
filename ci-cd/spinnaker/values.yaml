@@ -1,0 +1,27 @@
+namespace: spinnaker
+
+image: vaibhavthakur/halyard:v0.2
+
+storageClass: 
+  name: fast
+  provisioner: kubernetes.io/aws-ebs
+  parameters:
+    type: gp2 
+    iopsPerGB: "10"     
+    fsType: ext4
+
+persistentVolumeClaim:
+  name: halyard
+  capacity: 10Gi
+
+backup:
+  enabled: true
+  awsBucket: vt-spinnaker-01
+  awsSecret: spinnaker-aws
+
+ingress:
+  enabled: false
+  host: spinnaker.example.com
+
+service:
+  type: ClusterIP

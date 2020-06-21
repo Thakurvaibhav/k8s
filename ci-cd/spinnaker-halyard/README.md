@@ -9,7 +9,9 @@
 1. Exec into the halyard pod: `kubectl -n spinnaker exec -it <POD_NAME> /bin/bash`
 2. Run commands as spinnaker user: `su - spinnaker`
 3. Check if hal is up: `hal version list`
-4. Add AWS S3 as persistent storage for kubernetes: `hal config storage s3 edit --bucket <BUCKET_NAME> --access-key-id <ACCESS_KEY_ID> --secret-access-key --region us-east-2`
+4. Add AWS S3 as persistent storage for kubernetes:
+	- `hal config storage s3 edit --bucket <BUCKET_NAME> --access-key-id <ACCESS_KEY_ID> --secret-access-key --region us-east-2`
+	- `hal config storage edit --type s3`
 5. Enter the AWS SECRETE KEY when prompted
 6. Configure kubectl to access your kubernetes installation. 
 7. Add kubernetes account to spinnaker: 
