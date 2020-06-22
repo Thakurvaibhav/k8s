@@ -1,3 +1,4 @@
+{{- if .Values.alertmanager.enabled -}}
 kind: ConfigMap
 apiVersion: v1
 metadata:
@@ -16,7 +17,7 @@ metadata:
   labels:
     app: alertmanager
 spec:
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       app: alertmanager
@@ -66,4 +67,4 @@ spec:
     protocol: TCP
     port: 9093
     targetPort: 9093
-
+{{- end }}

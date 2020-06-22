@@ -45,4 +45,4 @@ receivers:
     state_message: 'Alert: {{ .CommonLabels.alertname }}. Summary:{{ .CommonAnnotations.summary }}. RawData: {{ .CommonLabels }}'
   slack_configs:
   - channel: '#k8-alerts'
-    send_resolved: true  
+    send_resolved: true

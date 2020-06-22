@@ -1,3 +1,4 @@
+{{- if .Values.thanos.query.enabled -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -62,18 +63,4 @@ spec:
   selector:
     app: thanos-querier
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    app: thanos-querier
-  name: thanos-querier-scrape
-  namespace: {{ .Values.namespace }}
-spec:
-  ports:
-  - port: 10901
-    protocol: TCP
-    targetPort: grpc
-    name: grpc
-  selector:
-    app: thanos-querier
+{{- end }}

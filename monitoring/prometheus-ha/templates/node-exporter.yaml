@@ -1,3 +1,4 @@
+{{- if .Values.nodeExporter.enabled -}}
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
@@ -22,7 +23,7 @@ spec:
       hostNetwork: true
       containers:
         - name: node-exporter
-          image: prom/node-exporter:v0.18.1
+          image: {{ .Values.nodeExporter.image }}
           securityContext:
             privileged: true
           args:
@@ -64,3 +65,4 @@ spec:
       - key: node-role.kubernetes.io/master
         operator: Exists
         effect: NoSchedule
+{{- end }}

@@ -1,30 +1,37 @@
-
 namespace: monitoring
 
-storageClass: 
+storageClass:
   name: fast
   provisioner: kubernetes.io/gce-pd
 
 alertmanager:
+  enabled: true
   image: prom/alertmanager:v0.20.0
   service:
     type: ClusterIP
- 
+
 grafana:
-  image: grafana/grafana:6.6.1
+  enabled: true
+  image: grafana/grafana
   service:
     type: ClusterIP
   storage: 10Gi
 
 kube_state_metrics:
+  enabled: true
   image: quay.io/coreos/kube-state-metrics:v1.9.5
 
+nodeExporter:
+  enabled: true
+  image: prom/node-exporter:v0.18.1
+
 prometheus:
+  enabled: true
   image: prom/prometheus:v2.14.0
-  clusterName: prometheus-thanos
-  replicas: 3
+  clusterName: my-prometheus
+  replicas: 1
   storage: 20Gi
-  resources: 
+  resources:
     limits:
       cpu: "1"
       memory: 1Gi
@@ -33,22 +40,24 @@ prometheus:
       memory: 256Mi
 
 pushgateway:
+  enabled: true
   image: prom/pushgateway:v1.0.1
   replicas: 1
   service:
     type: ClusterIP
 
 thanos:
-  archive_bucket: prometheus-long-term
+  archive_bucket: prometheus-metrics-archive
   gcs_secret: thanos-gcs-credentials
-  image: quay.io/thanos/thanos:v0.12.1 
+  image: quay.io/thanos/thanos:v0.12.1
 
   query:
+    enabled: true
     replicas: 1
     # Other Query or Store Endpoints which need to be stacked should be specified here.
     extraArgs: {}
     #  store: <IP>:<PORT>
-    resources: 
+    resources:
       limits:
         cpu: "1"
         memory: 1Gi
@@ -56,11 +65,17 @@ thanos:
         cpu: 100m
         memory: 256Mi
     service:
-      type: ClusterIP  
+      type: ClusterIP
+    scrape:
+      enabled: false
+      type: LoadBalancer
+      annotations:
+        cloud.google.com/load-balancer-type: Internal
 
   compactor:
+    enabled: true
     replicas: 1
-    resources: 
+    resources:
       limits:
         cpu: "1"
         memory: 1Gi
@@ -69,21 +84,23 @@ thanos:
         memory: 256Mi
 
   store:
+    enabled: true
     replicas: 1
     resources:
       limits:
         cpu: 1
-        memory: 8Gi
+        memory: 4Gi
       requests:
         cpu: 0.5
         memory: 1Gi
 
   ruler:
+    enabled: true
     replicas: 1
-    rules_bucket: thanos-ruler
+    rules_bucket: prometheus-rules-archive
     service:
       type: ClusterIP
-    resources: 
+    resources:
       limits:
         cpu: "1"
         memory: 1Gi
@@ -93,9 +110,8 @@ thanos:
 
 ingress:
   enabled: true
-  annotations: 
+  annotations:
     kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
   grafana:
     host: grafana.yourdomain.com
   alertmanager:
@@ -103,6 +119,4 @@ ingress:
   query:
     host: thanos-query.yourdomain.com
   ruler:
-    host: thanos-ruler.yourdomain.com 
-
-
+    host: thanos-ruler.yourdomain.com

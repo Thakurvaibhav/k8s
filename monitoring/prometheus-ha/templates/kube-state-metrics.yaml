@@ -1,3 +1,4 @@
+{{- if .Values.kube_state_metrics.enabled -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -77,4 +78,4 @@ spec:
     protocol: TCP
   selector:
     k8s-app: kube-state-metrics
-
+{{- end }}

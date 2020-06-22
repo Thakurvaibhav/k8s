@@ -1,3 +1,4 @@
+{{- if .Values.thanos.store.enabled -}}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -73,3 +74,4 @@ spec:
       targetPort: grpc
   selector:
     thanos-store-api: "true"
+{{- end }}

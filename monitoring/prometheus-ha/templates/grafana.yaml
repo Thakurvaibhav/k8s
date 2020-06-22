@@ -1,3 +1,4 @@
+{{- if .Values.grafana.enabled -}}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -20,6 +21,7 @@ spec:
         fsGroup: 472
         runAsUser: 472
         runAsGroup: 472
+
       initContainers:
       - args:
         - mkdir -p /var/lib/grafana/ && chown -R 472:472 /var/lib/grafana
@@ -105,3 +107,4 @@ spec:
     targetPort: 3000
   selector:
     k8s-app: grafana
+{{- end }}

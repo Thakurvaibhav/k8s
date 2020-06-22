@@ -16,7 +16,7 @@
   "editable": true,
   "gnetId": 741,
   "graphTooltip": 0,
-  "iteration": 1591042052479,
+  "iteration": 1592255799386,
   "links": [],
   "panels": [
     {
@@ -274,7 +274,9 @@
         {
           "expr": "sum(kube_deployment_status_replicas_available{cluster=~\"^$Cluster$\",deployment=~\"^$Deployment$\",pod_template_hash=\"\"}) / sum(kube_deployment_status_replicas{cluster=~\"^$Cluster$\",deployment=~\"^$Deployment$\",pod_template_hash=\"\"}) * 100",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 2,
+          "legendFormat": "",
           "refId": "A",
           "step": 1800
         }
@@ -364,7 +366,9 @@
         {
           "expr": "sum (container_memory_working_set_bytes{cluster=~\"^$Cluster$\",container!=\"\",id!=\"/\",pod=~\"^$Deployment.*$\",container!=\"POD\"})",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 2,
+          "legendFormat": "",
           "refId": "A",
           "step": 1800
         }
@@ -452,9 +456,11 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "sum (container_memory_working_set_bytes{kubernetes_io_hostname=~\"^$Node.*$\"})",
+          "expr": "sum (container_memory_working_set_bytes{cluster=~\"^$Cluster$\",kubernetes_io_hostname=~\"^$Node.*$\"})",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 2,
+          "legendFormat": "",
           "refId": "A",
           "step": 1800
         }
@@ -542,9 +548,11 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "sum (rate (container_cpu_usage_seconds_total{pod=~\"^$Deployment.*$\",container!=\"POD\"}[1m]))",
+          "expr": "sum (rate (container_cpu_usage_seconds_total{cluster=~\"^$Cluster$\",pod=~\"^$Deployment.*$\",container!=\"POD\"}[1m]))",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 2,
+          "legendFormat": "",
           "refId": "A",
           "step": 1800
         }
@@ -632,9 +640,11 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "sum (machine_cpu_cores{kubernetes_io_hostname=~\"^$Node$\"})",
+          "expr": "sum (machine_cpu_cores{cluster=~\"^$Cluster$\",kubernetes_io_hostname=~\"^$Node$\"})",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 2,
+          "legendFormat": "",
           "refId": "A",
           "step": 1800
         }
@@ -722,9 +732,11 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "sum(kube_deployment_status_replicas_available{deployment=~\"^$Deployment$\",pod_template_hash=\"\"})",
+          "expr": "sum(kube_deployment_status_replicas_available{cluster=~\"^$Cluster$\",deployment=~\"^$Deployment$\",pod_template_hash=\"\"})",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 2,
+          "legendFormat": "",
           "refId": "A",
           "step": 1800
         }
@@ -812,9 +824,11 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "sum(kube_deployment_status_replicas{deployment=~\"^$Deployment$\",pod_template_hash=\"\"})",
+          "expr": "sum(kube_deployment_status_replicas{cluster=~\"^$Cluster$\",deployment=~\"^$Deployment$\",pod_template_hash=\"\"})",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 2,
+          "legendFormat": "",
           "refId": "A",
           "step": 1800
         }
@@ -1318,7 +1332,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum (container_memory_working_set_bytes{image!=\"\",name=~\"^k8s_.*\",pod=~\"^$Deployment.*$\",container!=\"POD\"}) by (pod)",
+          "expr": "sum (container_memory_working_set_bytes{cluster=~\"^$Cluster$\",image!=\"\",name=~\"^k8s_.*\",pod=~\"^$Deployment.*$\",container!=\"POD\"}) by (pod)",
           "format": "time_series",
           "interval": "10s",
           "intervalFactor": 1,
@@ -1729,9 +1743,9 @@
       {
         "allValue": null,
         "current": {
-          "selected": true,
-          "text": "vt12-ts-prometheus",
-          "value": "vt12-ts-prometheus"
+          "selected": false,
+          "text": "vt-ts-150-prometheus",
+          "value": "vt-ts-150-prometheus"
         },
         "datasource": "DS_Prometheus",
         "definition": "",
@@ -1756,8 +1770,8 @@
         "allValue": ".*",
         "current": {
           "selected": false,
-          "text": "alertmanager",
-          "value": "alertmanager"
+          "text": "default-http-backend",
+          "value": "default-http-backend"
         },
         "datasource": "DS_Prometheus",
         "definition": "label_values(kube_deployment_labels{cluster=~\"$Cluster\"},deployment)",

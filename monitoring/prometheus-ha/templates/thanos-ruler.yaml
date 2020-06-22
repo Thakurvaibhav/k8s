@@ -1,3 +1,4 @@
+{{- if .Values.thanos.ruler.enabled -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -102,3 +103,4 @@ spec:
       name: http
   selector:
     app: thanos-ruler
+{{- end }}

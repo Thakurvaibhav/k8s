@@ -1,3 +1,4 @@
+{{- if .Values.pushgateway.enabled -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -39,3 +40,4 @@ spec:
     port: 9091
     targetPort: 9091
 ---
+{{- end }}

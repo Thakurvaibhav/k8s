@@ -1,3 +1,4 @@
+{{- if .Values.prometheus.enabled -}}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -5,7 +6,6 @@ metadata:
   namespace: {{ .Values.namespace }}
 spec:
   replicas: {{ .Values.prometheus.replicas }}
-  serviceName: prometheus-0-service
   selector:
     matchLabels:
       app: prometheus
@@ -113,3 +113,4 @@ spec:
       resources:
         requests:
           storage: {{ .Values.prometheus.storage }}
+{{- end }}
