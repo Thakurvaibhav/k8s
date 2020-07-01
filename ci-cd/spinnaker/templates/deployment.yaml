@@ -17,6 +17,7 @@ spec:
         app: halyard
         role: server
     spec:
+      serviceAccountName: spinnaker
       containers:
       - name: halyard
         image: {{ .Values.image }}
