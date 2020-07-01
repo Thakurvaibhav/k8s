@@ -85,5 +85,5 @@
 	- Restore backup: `hal backup restore -q --backup-path <NAME_OF_BACKUP_FILE>`
 
 
-NOTE: This installtion is guide has basic settings like adding Kubernetes accounts and Jenkins as Trigger. We can make tons of other customizations like Slack Notifications, Docker registry accounts etc. Please refer to official Spinnaker documentation  `https://www.spinnaker.io/setup/` for it. 
+NOTE: This installation is guide has basic settings like adding Kubernetes accounts and Jenkins as Trigger. We can make tons of other customizations like Slack Notifications, Docker registry accounts etc. Please refer to official Spinnaker documentation  `https://www.spinnaker.io/setup/` for it.
 
