@@ -1,6 +1,6 @@
 namespace: spinnaker
 
-image: vaibhavthakur/halyard:latest
+image: vaibhavthakur/halyard:0.2
 
 storageClass: 
   name: fast

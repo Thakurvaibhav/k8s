@@ -17,6 +17,11 @@ spec:
     spec:
       template:
         spec:
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+          serviceAccountName: spinnaker
           restartPolicy: OnFailure
           containers:
           - name: halyard-cron
@@ -37,10 +42,10 @@ spec:
                   key: aws_secret_access_key
             terminationMessagePolicy: FallbackToLogsOnError
             volumeMounts:
-            - name: root-volume
-              mountPath: /root
+            - name: spinnaker-home
+              mountPath: /home/spinnaker
           volumes:
-          - name: root-volume
+          - name: spinnaker-home
             persistentVolumeClaim:
               claimName: halyard
 {{- end }}

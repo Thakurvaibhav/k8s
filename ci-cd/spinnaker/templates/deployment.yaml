@@ -17,6 +17,10 @@ spec:
         app: halyard
         role: server
     spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
       serviceAccountName: spinnaker
       containers:
       - name: halyard
@@ -24,9 +28,9 @@ spec:
         command: [ "/entrypoint.sh" ]
         terminationMessagePolicy: FallbackToLogsOnError
         volumeMounts:
-        - name: root-volume
-          mountPath: /root
+        - name: spinnaker-home
+          mountPath: /home/spinnaker
       volumes:
-      - name: root-volume
+      - name: spinnaker-home
         persistentVolumeClaim:
           claimName: {{ .Values.persistentVolumeClaim.name }}

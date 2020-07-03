@@ -6,18 +6,18 @@
 
 1. Create spinnaker namespace: `kubectl create ns spinnaker`
 
-2. Create AWS Secret for the backup job: `kubectl create secret generic spinnaker-aws --from-literal="aws_access_key_id=<AWS_ACCESS_KEY_ID>" --from-literal="aws_secret_access_key=<AWS_SECRET_ACCESS_KEY>"`
+2. Create AWS Secret for the backup job: `kubectl -n spinnaker create secret generic spinnaker-aws --from-literal="aws_access_key_id=<AWS_ACCESS_KEY_ID>" --from-literal="aws_secret_access_key=<AWS_SECRET_ACCESS_KEY>"`
 
 3. Install Halyard using helm: `helm upgrade --install <RELEASE_NAME> spinnaker/`
 
 ### Spinnaker Setup: [ Install Spinnaker in a Kubernetes cluster, add other kubernetes clusters (if any), Enable Jenkins as trigger ]
 
-1. Exec into the halyard pod: `kubectl -n spinnaker exec -it <HALYARD_POD_NAME> /bin/bash` and `su - spinnaker`
+1. Exec into the halyard pod: `kubectl -n spinnaker exec -it <HALYARD_POD_NAME> /bin/bash`
 2. Configure kubectl access to home cluster
 	- `kubectl config set-cluster default --server=https://kubernetes.default --certificate-authority=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt`
 	- `kubectl config set-context default --cluster=default`
 	- `token=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)`
-	- `kubectl config set-credentials user --token=$token`
+	- `kubectl config set-credentials spinnaker --token=$token`
 	- `kubectl config set-context default --user=spinnaker`
 	- `kubectl config use-context default`
 	- Alternatively, you can place the kubeconfig at ~/.kube/config and use it directly
@@ -30,11 +30,12 @@
 7. Add kubernetes account to spinnaker:
     - `CONTEXT=$(kubectl config current-context)`
     - `kubectl apply --context $CONTEXT -f https://spinnaker.io/downloads/kubernetes/service-account.yml`
-    - `TOKEN=$(kubectl get secret --context $CONTEXT $(kubectl get serviceaccount spinnaker-service-account --context $CONTEXT -n spinnaker -o jsonpath='{.secrets[0].name}') -n spinnaker -o jsonpath='{.data.token}' | base64 --decode)`
+    - `TOKEN=$(kubectl -n spinnaker get secret --context $CONTEXT $(kubectl -n spinnaker get serviceaccount spinnaker-service-account --context $CONTEXT -o jsonpath='{.secrets[0].name}') -o jsonpath='{.data.token}' | base64 -d)`
     - `kubectl config set-credentials ${CONTEXT}-token-user --token $TOKEN`
     - `kubectl config set-context $CONTEXT --user ${CONTEXT}-token-user`
+    - `ACCOUNT=<KUBERNETES_ACCOUNT_NAME>`
     - `hal config provider kubernetes enable`
-    - `hal config provider kubernetes account ​<KUBERNETES_ACCOUNT_NAME> --context $(kubectl config current-context)`
+    - `hal config provider kubernetes account add $ACCOUNT --context $(kubectl config current-context)`
     - `hal config features edit --artifacts-rewrite true`
 8. In order to add more than one kubernetes account to your spinnaker installation,
 	- Make sure you have kubectl access to that cluster and context is set correctly
