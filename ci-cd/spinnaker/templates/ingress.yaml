@@ -1,19 +1,21 @@
+{{- if .Values.ingress.enabled -}}
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: spinnaker-ingress
-  namespace: spinnaker
+  namespace: {{ .Values.namespace }}
 spec:
   rules:
-  - host: spingate.<YOUR_ORG>.com
+  - host: {{ .Values.ingress.host }}
     http:
       paths:
       - backend:
           serviceName: spin-gate
           servicePort: 8084
-  - host: spinnaker.<YOUR_ORG>.com
+  - host: {{ .Values.ingress.host }}
     http:
       paths:
       - backend:
           serviceName: spin-deck
           servicePort: 9000
+{{- end }}

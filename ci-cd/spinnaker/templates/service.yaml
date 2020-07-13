@@ -5,8 +5,9 @@ metadata:
     app: halyard
     role: service
   name: halyard
-  namespace: spinnaker
+  namespace: {{ .Values.namespace }}
 spec:
+  type: {{ .Values.service.type }}
   selector:
     app: halyard
     role: server
