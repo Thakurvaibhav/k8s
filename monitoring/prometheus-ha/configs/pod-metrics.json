@@ -16,7 +16,7 @@
   "editable": true,
   "gnetId": 747,
   "graphTooltip": 0,
-  "iteration": 1591040371416,
+  "iteration": 1598046210166,
   "links": [],
   "panels": [
     {
@@ -42,7 +42,8 @@
       "datasource": "DS_Prometheus",
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "custom": {},
+          "links": []
         },
         "overrides": []
       },
@@ -71,10 +72,8 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
       "percentage": false,
+      "pluginVersion": "7.1.4",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -197,7 +196,7 @@
         "lineColor": "rgb(31, 120, 193)",
         "show": false
       },
-      "tableColumn": "kube_pod_container_status_restarts_total{cluster=\"vt12-ts-prometheus\", container=\"calico-kube-controllers\", instance=\"10.24.2.13:8080\", job=\"kubernetes-service-endpoints\", k8s_app=\"kube-state-metrics\", kubernetes_name=\"kube-state-metrics\", kubernetes_namespace=\"monitoring\", namespace=\"calico-system\", pod=\"calico-kube-controllers-5596445979-w4cjp\"}",
+      "tableColumn": "kube_pod_container_status_restarts_total{cluster=\"doug-ts-200-management-prometheus\", container=\"elasticsearch\", instance=\"10.24.0.20:8080\", job=\"kubernetes-service-endpoints\", k8s_app=\"kube-state-metrics\", kubernetes_name=\"kube-state-metrics\", kubernetes_namespace=\"monitoring\", namespace=\"tigera-elasticsearch\", pod=\"tigera-secure-es-9bd8b7baa502d70d-0\"}",
       "targets": [
         {
           "expr": "kube_pod_container_status_restarts_total{pod_template_hash=\"\",pod=\"$Pod\", container=\"$container\",container!=\"\",cluster=\"$Cluster\"} ",
@@ -284,7 +283,7 @@
         "lineColor": "rgb(31, 120, 193)",
         "show": false
       },
-      "tableColumn": "kube_pod_container_status_running{cluster=\"vt12-ts-prometheus\", container=\"calico-kube-controllers\", instance=\"10.24.2.13:8080\", job=\"kubernetes-service-endpoints\", k8s_app=\"kube-state-metrics\", kubernetes_name=\"kube-state-metrics\", kubernetes_namespace=\"monitoring\", namespace=\"calico-system\", pod=\"calico-kube-controllers-5596445979-w4cjp\"}",
+      "tableColumn": "kube_pod_container_status_running{cluster=\"doug-ts-200-management-prometheus\", container=\"elasticsearch\", instance=\"10.24.0.20:8080\", job=\"kubernetes-service-endpoints\", k8s_app=\"kube-state-metrics\", kubernetes_name=\"kube-state-metrics\", kubernetes_namespace=\"monitoring\", namespace=\"tigera-elasticsearch\", pod=\"tigera-secure-es-9bd8b7baa502d70d-0\"}",
       "targets": [
         {
           "expr": "kube_pod_container_status_running{pod_template_hash=\"\",namespace=\"$namespace\", pod=\"$Pod\",container=\"$container\",container!=\"\",cluster=\"$Cluster\"}",
@@ -1434,13 +1433,295 @@
       "valueName": "current"
     },
     {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "DS_Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 6,
+        "w": 8,
+        "x": 0,
+        "y": 29
+      },
+      "hiddenSeries": false,
+      "id": 73,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "percentage": false,
+      "pluginVersion": "7.1.4",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "kubelet_volume_stats_used_bytes{cluster=\"$Cluster\",namespace=\"$namespace\"} / (1024*1024*1024)",
+          "interval": "",
+          "legendFormat": "{{ persistentvolumeclaim }}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Persistent Volume Usage (GB)",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:521",
+          "format": "decgbytes",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:522",
+          "format": "decgbytes",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "DS_Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 6,
+        "w": 8,
+        "x": 8,
+        "y": 29
+      },
+      "hiddenSeries": false,
+      "id": 75,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "percentage": false,
+      "pluginVersion": "7.1.4",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "kubelet_volume_stats_used_bytes{cluster=\"$Cluster\",namespace=\"$namespace\"} / kubelet_volume_stats_capacity_bytes{cluster=\"$Cluster\",namespace=\"$namespace\"}",
+          "interval": "",
+          "legendFormat": "{{ persistentvolumeclaim }}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Persistent Volume Usage %",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:521",
+          "format": "percent",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:522",
+          "format": "decgbytes",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "DS_Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 6,
+        "w": 8,
+        "x": 16,
+        "y": 29
+      },
+      "hiddenSeries": false,
+      "id": 74,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "percentage": false,
+      "pluginVersion": "7.1.4",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "kubelet_volume_stats_capacity_bytes{cluster=\"$Cluster\",namespace=\"$namespace\"} / (1024*1024*1024)",
+          "interval": "",
+          "legendFormat": "{{ persistentvolumeclaim }}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Persistent Volume Capacity",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:521",
+          "format": "decgbytes",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:522",
+          "format": "decgbytes",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
       "collapsed": false,
       "datasource": null,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 29
+        "y": 35
       },
       "id": 61,
       "panels": [],
@@ -1459,7 +1740,8 @@
       "error": false,
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "custom": {},
+          "links": []
         },
         "overrides": []
       },
@@ -1470,7 +1752,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 30
+        "y": 36
       },
       "height": "",
       "hiddenSeries": false,
@@ -1492,10 +1774,8 @@
       "linewidth": 2,
       "links": [],
       "nullPointMode": "connected",
-      "options": {
-        "dataLinks": []
-      },
       "percentage": false,
+      "pluginVersion": "7.1.4",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1564,7 +1844,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 37
+        "y": 43
       },
       "id": 62,
       "panels": [],
@@ -1583,7 +1863,8 @@
       "error": false,
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "custom": {},
+          "links": []
         },
         "overrides": []
       },
@@ -1594,7 +1875,7 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 38
+        "y": 44
       },
       "hiddenSeries": false,
       "id": 20,
@@ -1615,10 +1896,8 @@
       "linewidth": 2,
       "links": [],
       "nullPointMode": "connected",
-      "options": {
-        "dataLinks": []
-      },
       "percentage": false,
+      "pluginVersion": "7.1.4",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1688,7 +1967,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 48
+        "y": 54
       },
       "id": 63,
       "panels": [],
@@ -1707,7 +1986,8 @@
       "error": false,
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "custom": {},
+          "links": []
         },
         "overrides": []
       },
@@ -1718,7 +1998,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 49
+        "y": 55
       },
       "hiddenSeries": false,
       "id": 25,
@@ -1740,10 +2020,8 @@
       "linewidth": 2,
       "links": [],
       "nullPointMode": "connected",
-      "options": {
-        "dataLinks": []
-      },
       "percentage": false,
+      "pluginVersion": "7.1.4",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1812,7 +2090,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 56
+        "y": 62
       },
       "id": 64,
       "panels": [],
@@ -1831,7 +2109,8 @@
       "error": false,
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "custom": {},
+          "links": []
         },
         "overrides": []
       },
@@ -1842,7 +2121,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 57
+        "y": 63
       },
       "hiddenSeries": false,
       "id": 28,
@@ -1864,10 +2143,8 @@
       "linewidth": 2,
       "links": [],
       "nullPointMode": "connected",
-      "options": {
-        "dataLinks": []
-      },
       "percentage": false,
+      "pluginVersion": "7.1.4",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1936,7 +2213,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 66
+        "y": 72
       },
       "id": 65,
       "panels": [],
@@ -1952,7 +2229,8 @@
       "datasource": "DS_Prometheus",
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "custom": {},
+          "links": []
         },
         "overrides": []
       },
@@ -1962,7 +2240,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 67
+        "y": 73
       },
       "hiddenSeries": false,
       "id": 47,
@@ -1981,10 +2259,8 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
       "percentage": false,
+      "pluginVersion": "7.1.4",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -2051,7 +2327,8 @@
       "datasource": "DS_Prometheus",
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "custom": {},
+          "links": []
         },
         "overrides": []
       },
@@ -2061,7 +2338,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 67
+        "y": 73
       },
       "hiddenSeries": false,
       "id": 48,
@@ -2080,10 +2357,8 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
       "percentage": false,
+      "pluginVersion": "7.1.4",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -2149,7 +2424,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 74
+        "y": 80
       },
       "id": 66,
       "panels": [],
@@ -2165,7 +2440,8 @@
       "datasource": "DS_Prometheus",
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "custom": {},
+          "links": []
         },
         "overrides": []
       },
@@ -2175,7 +2451,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 75
+        "y": 81
       },
       "hiddenSeries": false,
       "id": 49,
@@ -2194,10 +2470,8 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
       "percentage": false,
+      "pluginVersion": "7.1.4",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -2280,7 +2554,8 @@
       "datasource": "DS_Prometheus",
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "custom": {},
+          "links": []
         },
         "overrides": []
       },
@@ -2290,7 +2565,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 75
+        "y": 81
       },
       "hiddenSeries": false,
       "id": 50,
@@ -2309,10 +2584,8 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
       "percentage": false,
+      "pluginVersion": "7.1.4",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -2396,7 +2669,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 82
+        "y": 88
       },
       "id": 67,
       "panels": [],
@@ -2412,7 +2685,8 @@
       "datasource": "DS_Prometheus",
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "custom": {},
+          "links": []
         },
         "overrides": []
       },
@@ -2422,7 +2696,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 83
+        "y": 89
       },
       "hiddenSeries": false,
       "id": 51,
@@ -2441,10 +2715,8 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
       "percentage": false,
+      "pluginVersion": "7.1.4",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -2527,7 +2799,8 @@
       "datasource": "DS_Prometheus",
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "custom": {},
+          "links": []
         },
         "overrides": []
       },
@@ -2537,7 +2810,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 83
+        "y": 89
       },
       "hiddenSeries": false,
       "id": 52,
@@ -2556,10 +2829,8 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
       "percentage": false,
+      "pluginVersion": "7.1.4",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -2640,7 +2911,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 90
+        "y": 96
       },
       "id": 68,
       "panels": [],
@@ -2656,7 +2927,8 @@
       "datasource": "DS_Prometheus",
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "custom": {},
+          "links": []
         },
         "overrides": []
       },
@@ -2666,7 +2938,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 91
+        "y": 97
       },
       "hiddenSeries": false,
       "id": 53,
@@ -2685,10 +2957,8 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
       "percentage": false,
+      "pluginVersion": "7.1.4",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -2771,7 +3041,8 @@
       "datasource": "DS_Prometheus",
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "custom": {},
+          "links": []
         },
         "overrides": []
       },
@@ -2781,7 +3052,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 91
+        "y": 97
       },
       "hiddenSeries": false,
       "id": 54,
@@ -2800,10 +3071,8 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
       "percentage": false,
+      "pluginVersion": "7.1.4",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -2884,7 +3153,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 98
+        "y": 104
       },
       "id": 69,
       "panels": [],
@@ -2903,7 +3172,8 @@
       "error": false,
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "custom": {},
+          "links": []
         },
         "overrides": []
       },
@@ -2914,7 +3184,7 @@
         "h": 5,
         "w": 24,
         "x": 0,
-        "y": 99
+        "y": 105
       },
       "height": "200px",
       "hiddenSeries": false,
@@ -2937,10 +3207,8 @@
       "linewidth": 2,
       "links": [],
       "nullPointMode": "connected",
-      "options": {
-        "dataLinks": []
-      },
       "percentage": false,
+      "pluginVersion": "7.1.4",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -3019,7 +3287,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 104
+        "y": 110
       },
       "id": 70,
       "panels": [],
@@ -3038,7 +3306,8 @@
       "error": false,
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "custom": {},
+          "links": []
         },
         "overrides": []
       },
@@ -3049,7 +3318,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 105
+        "y": 111
       },
       "hiddenSeries": false,
       "id": 16,
@@ -3071,10 +3340,8 @@
       "linewidth": 2,
       "links": [],
       "nullPointMode": "connected",
-      "options": {
-        "dataLinks": []
-      },
       "percentage": false,
+      "pluginVersion": "7.1.4",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -3153,7 +3420,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 112
+        "y": 118
       },
       "id": 71,
       "panels": [],
@@ -3172,7 +3439,8 @@
       "error": false,
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "custom": {},
+          "links": []
         },
         "overrides": []
       },
@@ -3183,7 +3451,7 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 113
+        "y": 119
       },
       "hiddenSeries": false,
       "id": 29,
@@ -3205,10 +3473,8 @@
       "linewidth": 2,
       "links": [],
       "nullPointMode": "connected",
-      "options": {
-        "dataLinks": []
-      },
       "percentage": false,
+      "pluginVersion": "7.1.4",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -3282,7 +3548,7 @@
     }
   ],
   "refresh": "5s",
-  "schemaVersion": 25,
+  "schemaVersion": 26,
   "style": "dark",
   "tags": [
     "kubernetes"
@@ -3292,9 +3558,9 @@
       {
         "allValue": null,
         "current": {
-          "selected": true,
-          "text": "vt12-ts-prometheus",
-          "value": "vt12-ts-prometheus"
+          "selected": false,
+          "text": "doug-ts-200-management-prometheus",
+          "value": "doug-ts-200-management-prometheus"
         },
         "datasource": "DS_Prometheus",
         "definition": "",
@@ -3319,8 +3585,8 @@
         "allValue": ".*",
         "current": {
           "selected": false,
-          "text": "gke-vt12-ts-default-pool-5d437ee7-fl46",
-          "value": "gke-vt12-ts-default-pool-5d437ee7-fl46"
+          "text": "gke-doug-ts-200-manageme-default-pool-20befdf4-1xhx",
+          "value": "gke-doug-ts-200-manageme-default-pool-20befdf4-1xhx"
         },
         "datasource": "DS_Prometheus",
         "definition": "label_values(machine_memory_bytes{cluster=~\"$Cluster\"},kubernetes_io_hostname)",
@@ -3345,8 +3611,8 @@
         "allValue": null,
         "current": {
           "selected": false,
-          "text": "calico-system",
-          "value": "calico-system"
+          "text": "tigera-elasticsearch",
+          "value": "tigera-elasticsearch"
         },
         "datasource": "DS_Prometheus",
         "definition": "label_values(container_memory_usage_bytes{cluster=~\"$Cluster\",namespace=~\".+\",container!=\"POD\"},namespace)",
@@ -3371,8 +3637,8 @@
         "allValue": ".*",
         "current": {
           "selected": false,
-          "text": "calico-kube-controllers-5596445979-w4cjp",
-          "value": "calico-kube-controllers-5596445979-w4cjp"
+          "text": "tigera-secure-es-9bd8b7baa502d70d-0",
+          "value": "tigera-secure-es-9bd8b7baa502d70d-0"
         },
         "datasource": "DS_Prometheus",
         "definition": "label_values(container_memory_usage_bytes{cluster=~\"$Cluster\",namespace=~\"$namespace\",container!=\"POD\"},pod)",
@@ -3397,8 +3663,8 @@
         "allValue": null,
         "current": {
           "selected": false,
-          "text": "calico-kube-controllers",
-          "value": "calico-kube-controllers"
+          "text": "elasticsearch",
+          "value": "elasticsearch"
         },
         "datasource": "DS_Prometheus",
         "definition": "label_values(container_memory_usage_bytes{cluster=~\"$Cluster\",namespace=~\"$namespace\",container!=\"POD\",pod=\"$Pod\"},container)",
