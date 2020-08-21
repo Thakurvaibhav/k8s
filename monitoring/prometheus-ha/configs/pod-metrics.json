@@ -1571,7 +1571,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "kubelet_volume_stats_used_bytes{cluster=\"$Cluster\",namespace=\"$namespace\"} / kubelet_volume_stats_capacity_bytes{cluster=\"$Cluster\",namespace=\"$namespace\"}",
+          "expr": "kubelet_volume_stats_used_bytes{cluster=\"$Cluster\",namespace=\"$namespace\"} / kubelet_volume_stats_capacity_bytes{cluster=\"$Cluster\",namespace=\"$namespace\"} * 100",
           "interval": "",
           "legendFormat": "{{ persistentvolumeclaim }}",
           "refId": "A"
