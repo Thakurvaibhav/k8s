@@ -64,14 +64,14 @@ groups:
        team: dev
 
    - alert: High Persistent Volume Usage
-      annotations:
-        summary: Persistent Volume named {{$labels.persistentvolumeclaim}} in {{$labels.namespace}} is using more than 75% used.
-        description: "\nCluster Name: {{$externalLabels.cluster}}\nNamespace: {{$labels.namespace}}\nPVC name: {{$labels.persistentvolumeclaim}}\n"
-      expr: |
-        ((((sum(kubelet_volume_stats_used_bytes{})  by (namespace,persistentvolumeclaim))  / (sum(kubelet_volume_stats_capacity_bytes{}) by (namespace,persistentvolumeclaim)))*100) < +Inf ) > 75
-      for: 5m
-      labels:
-        team: devops
+     annotations:
+       summary: Persistent Volume named {{$labels.persistentvolumeclaim}} in {{$labels.namespace}} is using more than 75% used.
+       description: "\nCluster Name: {{$externalLabels.cluster}}\nNamespace: {{$labels.namespace}}\nPVC name: {{$labels.persistentvolumeclaim}}\n"
+     expr: |
+       ((((sum(kubelet_volume_stats_used_bytes{})  by (namespace,persistentvolumeclaim))  / (sum(kubelet_volume_stats_capacity_bytes{}) by (namespace,persistentvolumeclaim)))*100) < +Inf ) > 75
+     for: 5m
+     labels:
+       team: devops
 
  - name: Nodes
    rules:
