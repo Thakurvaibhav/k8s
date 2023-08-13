@@ -1,0 +1,84 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: filebeat-config
+  namespace: logging
+  labels:
+    k8s-app: filebeat
+    kubernetes.io/cluster-service: "true"
+data:
+  filebeat.yml: |-
+    filebeat.config:
+    #  inputs:
+    #    path: ${path.config}/inputs.d/*.yml
+    #    reload.enabled: true
+      modules:
+        path: ${path.config}/modules.d/*.yml
+        reload.enabled: true
+
+    filebeat.autodiscover:
+      providers:
+        - type: kubernetes
+          hints.enabled: true
+          include_annotations: ["artifact.spinnaker.io/name","ad.datadoghq.com/tags"] #Add custom include_annotations
+          annotations.dedot: true
+          include_labels: ["app.kubernetes.io/name"] #Add custom labels
+          labels.dedot: true
+          templates:
+            - condition:
+                equals:
+                  kubernetes.namespace: myapp   #Set the namespace in which your app is running, can add multiple conditions in case of more than 1 namespace.
+              config:
+                - type: docker
+                  containers.ids:
+                    - "${data.kubernetes.container.id}"
+                  multiline:
+                    pattern: '^[A-Za-z ]+[0-9]{2} (?:[01]\d|2[0123]):(?:[012345]\d):(?:[012345]\d)'.   #Timestamp regex for the app logs. Change it as per format. 
+                    negate: true
+                    match: after
+            - condition:
+                equals:
+                  kubernetes.namespace: elasticsearch
+              config:
+                - type: docker
+                  containers.ids:
+                    - "${data.kubernetes.container.id}"
+                  multiline:
+                    pattern: '^\[[0-9]{4}-[0-9]{2}-[0-9]{2}|^[0-9]{4}-[0-9]{2}-[0-9]{2}T'
+                    negate: true
+                    match: after
+                    
+    processors:
+      - add_cloud_metadata: ~
+      - drop_fields:
+          when:
+            has_fields: ['kubernetes.labels.app']
+          fields:
+            - 'kubernetes.labels.app'
+
+    output.elasticsearch:
+      hosts: ['${ELASTICSEARCH_HOST:elasticsearch}:${ELASTICSEARCH_PORT:9200}']
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: filebeat-inputs
+  namespace: logging
+  labels:
+    k8s-app: filebeat
+    kubernetes.io/cluster-service: "true"
+data:
+  kubernetes.yml: |-
+    - type: docker
+      containers.ids:
+      - "*"
+      processors:
+        - add_kubernetes_metadata:
+            in_cluster: true
+      multiline:
+        pattern: '^[A-Za-z ]+[0-9]{2} (?:[01]\d|2[0123]):(?:[012345]\d):(?:[012345]\d)'
+        negate: true
+        match: after
+---

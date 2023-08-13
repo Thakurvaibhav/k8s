@@ -1,0 +1,110 @@
+{{- if .Values.grafana.enabled -}}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: grafana
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: 1
+  serviceName: grafana
+  selector:
+    matchLabels:
+      k8s-app: grafana
+  template:
+    metadata:
+      labels:
+        task: monitoring
+        k8s-app: grafana
+    spec:
+      serviceAccountName: monitoring
+      securityContext:
+        fsGroup: 472
+        runAsUser: 472
+        runAsGroup: 472
+
+      initContainers:
+      - args:
+        - mkdir -p /var/lib/grafana/ && chown -R 472:472 /var/lib/grafana
+        command:
+        - /bin/sh
+        - -c
+        image: busybox:1.31.1
+        imagePullPolicy: IfNotPresent
+        name: init-chown-data
+        securityContext:
+          runAsUser: 0
+        volumeMounts:
+        - mountPath: /var
+          name: grafana-storage
+      containers:
+      - name: grafana
+        image: {{ .Values.grafana.image }}
+        ports:
+        - containerPort: 3000
+          name: http
+        livenessProbe:
+          httpGet:
+            port: http
+            path: /login
+        readinessProbe:
+          httpGet:
+            port: http
+            path: /login
+        volumeMounts:
+        - mountPath: /etc/ssl/certs
+          name: ca-certificates
+          readOnly: true
+        - mountPath: /var
+          name: grafana-storage
+        - mountPath: /etc/grafana/provisioning/datasources/
+          name: grafana-datasource
+        - mountPath: /etc/grafana/provisioning/dashboards/
+          name: grafana-dashboards
+        env:
+        - name: GF_SERVER_HTTP_PORT
+          value: "3000"
+        - name: GF_AUTH_BASIC_ENABLED
+          value: "false"
+        - name: GF_AUTH_ANONYMOUS_ENABLED
+          value: "true"
+        - name: GF_AUTH_ANONYMOUS_ORG_ROLE
+          value: Admin
+        - name: GF_SERVER_ROOT_URL
+          value: /
+      volumes:
+      - name: ca-certificates
+        hostPath:
+          path: /etc/ssl/certs
+      - name: grafana-datasource
+        configMap:
+          name: grafana-datasource-conf
+      - name: grafana-dashboards
+        configMap:
+          name: grafana-dashboards
+  volumeClaimTemplates:
+  - metadata:
+      name: grafana-storage
+      namespace: {{ .Values.namespace }}
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: {{ .Values.storageClass.name }}
+      resources:
+        requests:
+          storage: {{ .Values.grafana.storage }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    kubernetes.io/cluster-service: 'true'
+    kubernetes.io/name: grafana
+  name: grafana
+  namespace: {{ .Values.namespace }}
+spec:
+  type: {{ .Values.grafana.service.type }}
+  ports:
+  - port: 3000
+    targetPort: 3000
+  selector:
+    k8s-app: grafana
+{{- end }}

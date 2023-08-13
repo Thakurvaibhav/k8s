@@ -1,0 +1,69 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fluentd-config
+  namespace: logging
+data:
+  fluent.conf: |
+
+    # here we read the logs from Docker's containers and parse them
+
+    <source>
+      type tail
+      path /var/log/containers/**<APP-PREFIX>**.log        #If you want to tail a specific app log replace the <APP-PREFIX> by the app's namespace/pod/container name 
+      pos_file /var/log/es-containers.log.pos
+      tag kubernetes.<APP-PREFIX>.*
+      read_from_head true
+      time_format %Y-%m-%dT%H:%M:%S.%NZ
+      <parse>
+        @type json
+        time_format %Y-%m-%dT%H:%M:%S.%NZ
+      </parse>
+    </source>
+
+    <filter kubernetes.<APP-PREFIX>.**>
+      @type concat
+      key log
+      stream_identity_key container_id
+      multiline_start_regexp /^(?<time>[A-Za-z ]+[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2},[0-9]{1,} [0-9]{4})/     #Modify regex according to time in your app logs
+      timeout_label @NORMAL
+    </filter>
+
+    <match kubernetes.**>       #Ref: https://github.com/fluent-plugins-nursery/fluent-plugin-concat/issues/8              
+      @type relabel
+      @label @NORMAL                    
+    </match>
+
+    <label @NORMAL>
+      <filter kubernetes.<APP-PREFIX>.**>
+        @type parser
+        key_name log
+        <parse>
+          @type multiline
+          format_firstline /^(?<time>[A-Za-z ]+[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2},[0-9]{1,} [0-9]{4})/       #Modify this according to time in your app logs
+          format1 /^(?<time>[A-Za-z ]+[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2},[0-9]{1,} [0-9]{4}) (?<message>[\s\S]+)/    #Modify this according to messages in your app logs
+        </parse>
+      </filter>
+      
+      <filter kubernetes.**>             #kubernetes metadata plugin[\s\S]+ to add metadatas to the log
+        @type kubernetes_metadata
+      </filter>
+
+      <match kubernetes.**>                     
+        @type elasticsearch
+        include_tag_key true
+        host "#{ENV['FLUENT_ELASTICSEARCH_HOST']}"
+        port "#{ENV['FLUENT_ELASTICSEARCH_PORT']}"
+        reload_connections true
+        logstash_prefix logstash
+        logstash_format true
+        <buffer>
+          flush_thread_count 8
+          flush_interval 5s
+          chunk_limit_size 2M
+          queue_limit_length 32
+          retry_max_interval 30
+          retry_forever true
+        </buffer>
+      </match>
+    </label>

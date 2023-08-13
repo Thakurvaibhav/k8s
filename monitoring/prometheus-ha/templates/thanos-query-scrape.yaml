@@ -1,0 +1,22 @@
+{{- if .Values.thanos.query.scrape.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  {{- with .Values.thanos.query.scrape.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  labels:
+    app: thanos-querier
+  name: thanos-querier-scrape
+  namespace: {{ .Values.namespace }}
+spec:
+  type: {{ .Values.thanos.query.scrape.type }}
+  ports:
+  - port: 10901
+    protocol: TCP
+    targetPort: grpc
+    name: grpc
+  selector:
+    app: thanos-querier
+{{- end }}

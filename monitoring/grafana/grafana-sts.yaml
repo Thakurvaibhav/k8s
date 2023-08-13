@@ -1,0 +1,101 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monitoring
+---
+apiVersion: storage.k8s.io/v1beta1
+kind: StorageClass
+metadata:
+  name: fast
+  namespace: monitoring
+provisioner: kubernetes.io/gce-pd
+allowVolumeExpansion: true
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: grafana
+  namespace: monitoring
+spec:
+  replicas: 1
+  serviceName: grafana
+  selector:
+    matchLabels:
+      k8s-app: grafana
+  template:
+    metadata:
+      labels:
+        task: monitoring
+        k8s-app: grafana
+    spec:
+      securityContext:
+        fsGroup: 472
+        runAsUser: 472
+      initContainers:
+      - args:
+        - mkdir -p /var/lib/grafana && chown -R 472:472 /var/lib/grafana
+        command:
+        - /bin/sh
+        - -c
+        image: busybox:1.31.1
+        imagePullPolicy: IfNotPresent
+        name: init-chown-data
+        securityContext:
+          runAsUser: 0
+        volumeMounts:
+        - mountPath: /var
+          name: grafana-storage
+      containers:
+      - name: grafana
+        image: grafana/grafana:6.6.1
+        ports:
+        - containerPort: 3000
+          name: http
+        livenessProbe:
+          httpGet:
+            port: http
+            path: /login
+        readinessProbe:
+          httpGet:
+            port: http
+            path: /login
+        securityContext:
+          runAsUser: 472
+        volumeMounts:
+        - mountPath: /etc/ssl/certs
+          name: ca-certificates
+          readOnly: true
+        - mountPath: /var
+          name: grafana-storage
+        env:
+        - name: GF_SERVER_HTTP_PORT
+          value: "3000"
+          # The following env variables are required to make Grafana accessible via
+          # the kubernetes api-server proxy. On production clusters, we recommend
+          # removing these env variables, setup auth for grafana, and expose the grafana
+          # service using a LoadBalancer or a public IP.
+        - name: GF_AUTH_BASIC_ENABLED
+          value: "false"
+        - name: GF_AUTH_ANONYMOUS_ENABLED
+          value: "true"
+        - name: GF_AUTH_ANONYMOUS_ORG_ROLE
+          value: Admin
+        - name: GF_SERVER_ROOT_URL
+          # If you're only using the API Server proxy, set this value instead:
+          # value: /api/v1/namespaces/kube-system/services/monitoring-grafana/proxy
+          value: /
+      volumes:
+      - name: ca-certificates
+        hostPath:
+          path: /etc/ssl/certs
+  volumeClaimTemplates:
+  - metadata:
+      name: grafana-storage
+      namespace: monitoring
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: fast
+      resources:
+        requests:
+          storage: 10Gi
+---
