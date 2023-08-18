@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-ingress-controller
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.controller.replicas }}
+  selector:
+    matchLabels:
+      app: ingress-nginx
+  template:
+    metadata:
+      labels:
+        app: ingress-nginx
+      annotations:
+         prometheus.io/scrape: "true"
+         prometheus.io/port: "10254"
+    spec:
+      serviceAccountName: nginx-ingress-serviceaccount  
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: "app"
+                    operator: In
+                    values: 
+                    - ingress-nginx
+              topologyKey: "kubernetes.io/hostname"
+      containers:
+        - name: nginx-ingress-controller
+          image: {{ .Values.controller.image }}:{{ .Values.controller.tag }}
+          args:
+            - /nginx-ingress-controller
+            - --default-backend-service=$(POD_NAMESPACE)/default-http-backend
+            - --configmap=$(POD_NAMESPACE)/nginx-configuration
+            - --tcp-services-configmap=$(POD_NAMESPACE)/tcp-services
+            - --udp-services-configmap=$(POD_NAMESPACE)/udp-services
+            - --publish-service=$(POD_NAMESPACE)/ingress-nginx
+          {{- range .Values.controller.extraArgs }}
+            - {{ . }}
+          {{- end }}
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          ports:
+          - name: http
+            containerPort: 80
+          - name: https
+            containerPort: 443
+          resources:
+            {{- toYaml .Values.controller.resources | nindent 12 }}
+---
+

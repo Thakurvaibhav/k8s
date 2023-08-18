@@ -1,0 +1,6 @@
+cluster:
+  name: dev-01
+  server: dev-k8s.endpoint.kubernetes
+
+sealedSecrets:
+  enable: true

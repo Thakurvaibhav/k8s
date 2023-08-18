@@ -1,0 +1,6 @@
+sealedSecrets:
+  enable: false
+  namespace: sealed-secrets
+  source:
+    repoURL: https://bitnami-labs.github.io/sealed-secrets
+    targetRevision: 2.1.6
