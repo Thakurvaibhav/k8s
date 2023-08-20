@@ -20,9 +20,9 @@ spec:
     targetRevision: {{ .Values.ingressController.source.targetRevision }}
     path: {{ .Values.ingressController.source.path }}
     helm:
-      releaseName: {{ .Values.ingressController.source.helm.releaseName }}
+      releaseName: {{ .Values.ingressController.source.helm.releaseName | default .Values.source.targetRevision }}
       valueFiles:
-      - {{ .Values.ingressController.source.helm.valueFiles }}
+      - {{ .Values.ingressController.source.helm.valueFiles | default .Values.source.helm.valueFiles }}
     {{- if .Values.ingressController.source.helm.values }}
       values: {{- toYaml .Values.ingressController.source.helm.values | indent 6 }}
     {{- end }}  

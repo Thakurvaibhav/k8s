@@ -3,12 +3,13 @@ cluster:
   server: dev-k8s.endpoint.kubernetes
 
 source:
-  targetRevision: HEAD
+  targetRevision: staging
   helm:
-    valueFiles: values.dev.yaml
+    valueFiles: values.stag.yaml
 
 sealedSecrets:
   enable: true
 
 ingressController:
   enable: true
+
