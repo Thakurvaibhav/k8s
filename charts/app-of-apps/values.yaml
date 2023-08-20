@@ -1,6 +1,19 @@
 sealedSecrets:
   enable: false
+  project: operations
   namespace: sealed-secrets
   source:
     repoURL: https://bitnami-labs.github.io/sealed-secrets
     targetRevision: 2.1.6
+
+ingressController:
+  enable: false
+  project: operations
+  namespace: ingress-nginx
+  source:
+    repoURL: git@github.com:Thakurvaibhav/k8s.git
+    path: charts/nginx-ingress-controller
+    targetRevision: HEAD
+    helm:
+      valueFiles: values.yaml
+      releaseName: nginx-ingress

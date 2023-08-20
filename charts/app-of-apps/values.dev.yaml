@@ -4,3 +4,6 @@ cluster:
 
 sealedSecrets:
   enable: true
+
+ingressController:
+  enable: true
