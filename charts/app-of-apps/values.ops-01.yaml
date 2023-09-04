@@ -1,6 +1,6 @@
 cluster:
   name: ops-01
-  server: ops-01-k8s.endpoint.kubernetes
+  server: https://kubernetes.default.svc
 
 source:
   targetRevision: HEAD
