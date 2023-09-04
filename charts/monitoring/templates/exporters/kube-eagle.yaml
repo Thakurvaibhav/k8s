@@ -1,0 +1,54 @@
+{{- if .Values.kubeEagle.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kube-eagle
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: kube-eagle
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kube-eagle
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+      labels:
+        app: kube-eagle
+    spec:
+      securityContext:
+        fsGroup: 99
+        runAsUser: 99
+      serviceAccountName: monitoring
+      containers:
+        - name: kube-eagle
+          image: {{ .Values.kubeEagle.image }}
+          imagePullPolicy: Always
+          env:
+            - name: TELEMETRY_HOST
+              value: "0.0.0.0"
+            - name: TELEMETRY_PORT
+              value: "9090"
+            - name: METRICS_NAMESPACE
+              value: "eagle"
+            - name: LOG_LEVEL
+              value: "info"
+          resources:
+            {{- toYaml .Values.kubeEagle.resources | nindent 12 }}
+          ports:
+            - name: http
+              containerPort: 9090
+              protocol: TCP
+          livenessProbe:
+            timeoutSeconds: 5
+            httpGet:
+              path: /health
+              port: http
+          readinessProbe:
+            timeoutSeconds: 5
+            httpGet:
+              path: /health
+              port: http
+{{- end }}

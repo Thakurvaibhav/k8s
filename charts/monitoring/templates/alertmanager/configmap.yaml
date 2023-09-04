@@ -1,0 +1,11 @@
+{{- if .Values.alertmanager.enabled -}}
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: alertmanager
+  namespace: {{ .Values.namespace }}
+data:
+  config.yml: |-
+{{ .Files.Get "configs/alertmanager-config.yaml" | indent 4 }}
+
+{{ end }}

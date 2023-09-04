@@ -1,0 +1,136 @@
+groups:
+ - name: Deployment
+   rules:
+   - alert: Deployment at 0 Replicas
+     annotations:
+       summary: Deployment {{$labels.deployment}} is currently having no pods running
+       description: "\nCluster Name: {{$externalLabels.cluster}}\nNamespace: {{$labels.namespace}}\nDeployment name: {{$labels.deployment}}\nOrchestrator: {{$externalLabels.orchestrator}}" 
+     expr: |
+       sum(kube_deployment_status_replicas{pod_template_hash=""}) by (deployment,namespace)  < 1
+     for: 1m
+     labels:
+       team: devops
+
+   - alert: HPA Scaling Limited  
+     annotations: 
+       summary: HPA named {{$labels.hpa}} in {{$labels.namespace}} namespace has reached scaling limited state
+       description: "\nCluster Name: {{$externalLabels.cluster}}\nNamespace: {{$labels.namespace}}\nHPA name: {{$labels.hpa}}\nOrchestrator: {{$externalLabels.orchestrator}}"
+     expr: |
+       (sum(kube_hpa_status_condition{condition="ScalingLimited",status="true"}) by (hpa,namespace)) == 1
+     for: 1m
+     labels: 
+       team: devops
+
+   - alert: HPA at MaxCapacity 
+     annotations: 
+       summary: HPA named {{$labels.hpa}} in {{$labels.namespace}} namespace is running at Max Capacity
+       description: "\nCluster Name: {{$externalLabels.cluster}}\nNamespace: {{$labels.namespace}}\nHPA name: {{$labels.hpa}}\nOrchestrator: {{$externalLabels.orchestrator}}"
+     expr: |
+       ((sum(kube_hpa_spec_max_replicas) by (hpa,namespace)) - (sum(kube_hpa_status_current_replicas) by (hpa,namespace))) == 0
+     for: 1m
+     labels: 
+       team: devops
+
+ - name: Pods
+   rules:
+   - alert: Container restarted
+     annotations:
+       summary: Container named {{$labels.container}} in {{$labels.pod}} in {{$labels.namespace}} was restarted
+       description: "\nCluster Name: {{$externalLabels.cluster}}\nNamespace: {{$labels.namespace}}\nPod name: {{$labels.pod}}\nContainer name: {{$labels.container}}\nOrchestrator: {{$externalLabels.orchestrator}}"
+     expr: |
+       sum(increase(kube_pod_container_status_restarts_total{pod!~"elastic-curator.*",namespace!="kube-system",pod_template_hash=""}[5m])) by (pod,namespace,container) > 0
+     for: 0m
+     labels:
+       team: slack
+
+   - alert: Too many Container restarts
+     annotations:
+       summary: Container named {{$labels.container}} in {{$labels.pod}} in {{$labels.namespace}} was restarted
+       description: "\nCluster Name: {{$externalLabels.cluster}}\nNamespace: {{$labels.namespace}}\nPod name: {{$labels.pod}}\nContainer name: {{$labels.container}}\nOrchestrator: {{$externalLabels.orchestrator}}" 
+     expr: |
+       sum(increase(kube_pod_container_status_restarts_total{namespace!="kube-system",pod_template_hash=""}[15m])) by (pod,namespace,container) > 5
+     for: 0m
+     labels:
+       team: dev
+
+   - alert: Container Not Ready
+     annotations:
+       summary: Container named {{$labels.container}} in {{$labels.pod}} in {{$labels.namespace}} is reporting Not Ready status
+       description: "\nCluster Name: {{$externalLabels.cluster}}\nNamespace: {{$labels.namespace}}\nPod name: {{$labels.pod}}\nContainer name: {{$labels.container}}\nOrchestrator: {{$externalLabels.orchestrator}}"
+     expr: |
+       kube_pod_container_status_ready{pod!~"elastic-curator.*",namespace!="backend",namespace!="monitoring"} == 0
+     for: 4m
+     labels:
+       team: dev
+
+   - alert: High Memory Usage of Container 
+     annotations: 
+       summary: Container named {{$labels.container}} in {{$labels.pod}} in {{$labels.namespace}} is using more than 80% of Memory Limit
+       description: "\nCluster Name: {{$externalLabels.cluster}}\nNamespace: {{$labels.namespace}}\nPod name: {{$labels.pod}}\nContainer name: {{$labels.container}}\nOrchestrator: {{$externalLabels.orchestrator}}"
+     expr: |
+       ((( sum(container_memory_working_set_bytes{image!="",container!="POD", namespace!="kube-system"}) by (namespace,container,pod)  / sum(container_spec_memory_limit_bytes{image!="",container!="POD",namespace!="kube-system"}) by (namespace,container,pod) ) * 100 ) < +Inf ) > 80
+     for: 5m
+     labels: 
+       team: dev
+
+   - alert: High CPU Usage of Container 
+     annotations: 
+       summary: Container named {{$labels.container}} in {{$labels.pod}} in {{$labels.namespace}} is using more than 80% of CPU Limit
+       description: "\nCluster Name: {{$externalLabels.cluster}}\nNamespace: {{$labels.namespace}}\nPod name: {{$labels.pod}}\nContainer name: {{$labels.container}}\nOrchestrator: {{$externalLabels.orchestrator}}" 
+     expr: |
+       ((sum(irate(container_cpu_usage_seconds_total{image!="",container!="POD", namespace!="kube-system"}[30s])) by (namespace,container,pod) / sum(container_spec_cpu_quota{image!="",container!="POD", namespace!="kube-system"} / container_spec_cpu_period{image!="",container!="POD", namespace!="kube-system"}) by (namespace,container,pod) ) * 100)  > 80
+     for: 5m
+     labels: 
+       team: dev
+
+   - alert: CPU Throttling of Container
+     annotations:
+       summary: Container named {{$labels.container}} in {{$labels.pod}} in {{$labels.namespace}} is being throttled more than 75% of time
+       description: "\nCluster Name: {{$externalLabels.cluster}}\nNamespace: {{$labels.namespace}}\nPod name: {{$labels.pod}}\nContainer name: {{$labels.container}}\nOrchestrator: {{$externalLabels.orchestrator}}"
+     expr: |
+       ((sum(rate(container_cpu_cfs_throttled_periods_total{image!="",container!="POD",container!="",namespace!="monitoring",namespace!="logging",namespace!="kube-system"}[5m])) by (container,pod)) / (sum(rate(container_cpu_cfs_periods_total{image!="",container!="POD",container!="",namespace!="monitoring",namespace!="logging",namespace!="kube-system"}[5m])) by (container,pod)) * 100 ) > 75
+     for: 5m
+     labels:
+       team: slack
+
+   - alert: High Persistent Volume Usage
+     annotations:
+       summary: Persistent Volume named {{$labels.persistentvolumeclaim}} in {{$labels.namespace}} is using more than 60% used.
+       description: "\nCluster Name: {{$externalLabels.cluster}}\nNamespace: {{$labels.namespace}}\nPVC name: {{$labels.persistentvolumeclaim}}\nOrchestrator: {{$externalLabels.orchestrator}}"
+     expr: |
+       ((((sum(kubelet_volume_stats_used_bytes{})  by (namespace,persistentvolumeclaim))  / (sum(kubelet_volume_stats_capacity_bytes{}) by (namespace,persistentvolumeclaim)))*100) < +Inf ) > 60
+     for: 5m
+     labels:
+       team: devops
+
+ - name: Nodes
+   rules:
+   - alert: High Node Memory Usage
+     annotations:
+       summary: Node {{$labels.kubernetes_io_hostname}} has more than 80% memory used. Plan Capacity
+       description: "\nCluster Name: {{$externalLabels.cluster}}\nNode: {{$labels.kubernetes_io_hostname}}\nOrchestrator: {{$externalLabels.orchestrator}}" 
+     expr: |
+       (sum (container_memory_working_set_bytes{id="/",container!="POD"}) by (kubernetes_io_hostname) / sum (machine_memory_bytes{}) by (kubernetes_io_hostname) * 100) > 80
+     for: 5m
+     labels:
+       team: devops
+
+   - alert: High Node CPU Usage
+     annotations:
+       summary: Node {{$labels.kubernetes_io_hostname}} has more than 80% allocatable cpu used. Plan Capacity.
+       description: "\nCluster Name: {{$externalLabels.cluster}}\nNode: {{$labels.kubernetes_io_hostname}}\nOrchestrator: {{$externalLabels.orchestrator}}" 
+     expr: |
+       (sum(rate(container_cpu_usage_seconds_total{id="/", container!="POD"}[1m])) by (kubernetes_io_hostname) / sum(machine_cpu_cores) by (kubernetes_io_hostname)  * 100) > 80
+     for: 10m
+     labels:
+       team: devops
+
+   - alert: High Node Disk Usage
+     annotations:
+       summary: Node {{$labels.kubernetes_io_hostname}} has more than 85% disk used. Plan Capacity.
+       description: "\nCluster Name: {{$externalLabels.cluster}}\nNode: {{$labels.kubernetes_io_hostname}}\nOrchestrator: {{$externalLabels.orchestrator}}" 
+     expr: |
+       (sum(container_fs_usage_bytes{device=~"^/dev/[sv]d[a-z][1-9]$",id="/",container!="POD"}) by (kubernetes_io_hostname) / sum(container_fs_limit_bytes{container!="POD",device=~"^/dev/[sv]d[a-z][1-9]$",id="/"}) by (kubernetes_io_hostname)) * 100 > 85
+     for: 5m
+     labels:
+       team: devops

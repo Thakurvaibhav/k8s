@@ -1,0 +1,144 @@
+namespace: monitoring
+
+cluster:
+  type: cluster-type
+
+storageClass:
+  name: monitoring
+
+alertmanager:
+  enabled: false
+  image: prom/alertmanager:v0.23.0
+  service:
+    type: ClusterIP
+
+grafana:
+  enabled: true
+  dashboards:
+    enabled: true
+  image: grafana/grafana
+  extraEnv:
+    GF_AUTH_BASIC_ENABLED: true
+    GF_AUTH_ANONYMOUS_ENABLED: false
+    GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
+  service:
+    type: ClusterIP
+  storage: 10Gi
+  resources:
+    limits:
+      cpu: "1"
+      memory: 200Mi
+    requests:
+      cpu: 500m
+      memory: 150Mi
+  ingress:
+    enabled: false
+    host: grafana.mydomain.com
+    annotations:
+      kubernetes.io/ingress.class: nginx
+
+kube_state_metrics:
+  enabled: true
+  image: quay.io/coreos/kube-state-metrics:v1.9.5
+
+kubeEagle:
+  enabled: true
+  image: quay.io/google-cloud-tools/kube-eagle:1.1.4
+
+nodeExporter:
+  enabled: true
+  image: prom/node-exporter:v1.3.1
+
+prometheus:
+  enabled: true
+  image: prom/prometheus:v2.33.0
+  clusterName: cluster-name
+  replicas: 1
+  storage: 20Gi
+  resources:
+    limits:
+      cpu: "1"
+      memory: 500Mi
+    requests:
+      cpu: 100m
+      memory: 100Mi
+
+pushgateway:
+  enabled: false
+  image: prom/pushgateway:v1.4.2
+  replicas: 1
+  service:
+    type: ClusterIP
+
+thanos:
+  image: quay.io/thanos/thanos:v0.12.1
+  archive_bucket: prometheus-metrics-archive
+  gcsSecret: ""
+  globalQuery:
+    enabled: false
+    clientTls:
+      ca_crt: ""
+      tls_crt: ""
+      tls_key: ""
+    extraArgs: {}
+    stores:
+      - dnssrvnoa+_clusters._tcp.clusters.mydomain.com:443
+    resources:
+      limits:
+        cpu: "1"
+        memory: 1Gi
+      requests:
+        cpu: 500m
+        memory: 200Mi
+  query:
+    enabled: true
+    replicas: 1
+    extraArgs: {}
+    stores: []
+    resources:
+      limits:
+        cpu: "1"
+        memory: 1Gi
+      requests:
+        cpu: 500m
+        memory: 500Mi
+    service:
+      type: ClusterIP
+    scrape:
+      enabled: false
+
+  compactor:
+    enabled: true
+    replicas: 1
+    resources:
+      limits:
+        cpu: "1"
+        memory: 500Mi
+      requests:
+        cpu: 10m
+        memory: 100Mi
+
+  store:
+    enabled: true
+    replicas: 1
+    resources:
+      limits:
+        cpu: "1"
+        memory: 500Mi
+      requests:
+        cpu: 10m
+        memory: 100Mi
+
+  ruler:
+    enabled: false
+    replicas: 1
+    rules_bucket: prometheus-rules-archive
+    service:
+      type: ClusterIP
+    resources:
+      limits:
+        cpu: "1"
+        memory: 500Mi
+      requests:
+        cpu: 10m
+        memory: 100Mi

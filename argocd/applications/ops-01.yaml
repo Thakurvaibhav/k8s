@@ -14,12 +14,12 @@ spec:
   project: operations
   source:
     helm:
-      releaseName: dev-01-origin
+      releaseName: ops-01-origin
       parameters:
       - name: source.targetRevision
         value: $ARGOCD_APP_SOURCE_TARGET_REVISION
       valueFiles:
-      - values.dev-01.yaml
+      - values.ops-01.yaml
     path: charts/app-of-apps
     repoURL: git@github.com:Thakurvaibhav/k8s.git
     targetRevision: HEAD

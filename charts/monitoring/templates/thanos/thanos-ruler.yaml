@@ -1,0 +1,98 @@
+{{- if .Values.thanos.ruler.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: thanos-ruler-rules
+  namespace: {{ .Values.namespace }}
+data:
+  rules.yaml: |
+{{ .Files.Get "configs/ruler-config.yaml" | indent 4 }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: thanos-ruler
+  name: thanos-ruler
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.thanos.ruler.replicas }}
+  selector:
+    matchLabels:
+      app: thanos-ruler
+      thanos-store-api: "true"
+  serviceName: thanos-ruler
+  template:
+    metadata:
+      labels:
+        app: thanos-ruler
+        thanos-store-api: "true"
+    spec:
+      containers:
+        - name: thanos
+          image: {{ .Values.thanos.image }}
+          args:
+            - rule
+            - --grpc-address=0.0.0.0:10901
+            - --http-address=0.0.0.0:10902
+            - --log.level=debug
+            - --data-dir=/data
+            - --eval-interval=10s
+            - --rule-file=/etc/thanos-ruler/*.rules.yaml
+            - --alertmanagers.url=http://alertmanager:9093
+            - --query=thanos-querier:9090
+            - --objstore.config=$(OBJSTORE_CONFIG)
+            - --label=ruler_cluster="{{ .Values.prometheus.clusterName }}"
+            - --label=replica="$(POD_NAME)"
+            - --alert.label-drop="prometheus_replica"
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          ports:
+            - name: http
+              containerPort: 10902
+            - name: grpc
+              containerPort: 10901
+          livenessProbe:
+            failureThreshold: 4
+            httpGet:
+              path: /-/healthy
+              port: 10902
+              scheme: HTTP
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /-/ready
+              port: 10902
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          resources:
+            {{- toYaml .Values.thanos.ruler.resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: /etc/thanos-ruler
+              name: config
+      volumes:
+        - configMap:
+            name: thanos-ruler-rules
+          name: config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: thanos-ruler
+  name: thanos-ruler
+  namespace: {{ .Values.namespace }}
+spec:
+  type: {{ .Values.thanos.ruler.service.type }}
+  ports:
+    - port: 9090
+      protocol: TCP
+      targetPort: http
+      name: http
+  selector:
+    app: thanos-ruler
+{{- end }}

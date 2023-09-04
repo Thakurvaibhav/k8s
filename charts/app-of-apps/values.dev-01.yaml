@@ -1,0 +1,14 @@
+cluster:
+  name: dev-01
+  server: dev-01-k8s.endpoint.kubernetes
+
+source:
+  targetRevision: HEAD
+  helm:
+    valueFiles: values.dev-01.yaml
+
+sealedSecrets:
+  enable: true
+
+ingressController:
+  enable: true
