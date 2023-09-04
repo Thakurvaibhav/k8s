@@ -3,15 +3,15 @@ cluster:
   server: https://kubernetes.default.svc
 
 source:
-  targetRevision: HEAD
+  targetRevision: HEAD # this can be a git branch, commit or a tag
   helm:
     valueFiles: values.ops-01.yaml
 
 sealedSecrets:
   enable: true
 
-ingressController:
+ingressController: # targetRevision and valueFiles can be overridden here if the above defaults are not suitable
   enable: true
 
-monitoring:
+monitoring: # targetRevision and valueFiles can be overridden here if the above defaults are not suitable
   enable: true
