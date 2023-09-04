@@ -17,10 +17,10 @@ spec:
   project: {{ .Values.ingressController.project }}
   source:
     repoURL: {{ .Values.ingressController.source.repoURL }}
-    targetRevision: {{ .Values.ingressController.source.targetRevision }}
+    targetRevision: {{ .Values.ingressController.source.targetRevision | default .Values.source.targetRevision }}
     path: {{ .Values.ingressController.source.path }}
     helm:
-      releaseName: {{ .Values.ingressController.source.helm.releaseName | default .Values.source.targetRevision }}
+      releaseName: {{ .Values.ingressController.source.helm.releaseName }}
       valueFiles:
       - {{ .Values.ingressController.source.helm.valueFiles | default .Values.source.helm.valueFiles }}
     {{- if .Values.ingressController.source.helm.values }}

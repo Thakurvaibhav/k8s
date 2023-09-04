@@ -1,0 +1,45 @@
+{{- if .Values.monitoring.enable -}}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Values.cluster.name }}-monitoring
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  {{- with .Values.monitoring.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  labels:
+    team: ops
+    cluster: {{ .Values.cluster.name }}
+spec:
+  project: {{ .Values.monitoring.project }}
+  source:
+    repoURL: {{ .Values.monitoring.source.repoURL }}
+    targetRevision: {{ .Values.monitoring.source.targetRevision | default .Values.source.targetRevision }}
+    path: {{ .Values.monitoring.source.path }}
+    helm:
+      releaseName: {{ .Values.monitoring.source.helm.releaseName }}
+      valueFiles:
+      - {{ .Values.monitoring.source.helm.valueFiles | default .Values.source.helm.valueFiles }}
+    {{- if .Values.monitoring.source.helm.values }}
+      values: {{- toYaml .Values.monitoring.source.helm.values | indent 6 }}
+    {{- end }}  
+      
+  destination:
+    {{ if .Values.cluster.server -}}
+    server: {{ .Values.cluster.server }}
+    {{ else }}
+    name: {{ .Values.cluster.name }}
+    {{ end -}}
+    namespace: {{ .Values.monitoring.namespace  }}
+
+  syncPolicy:
+    automated:
+      selfHeal: true
+    syncOptions:
+      - Validate=true
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+{{- end }}

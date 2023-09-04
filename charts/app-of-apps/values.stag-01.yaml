@@ -13,3 +13,5 @@ sealedSecrets:
 ingressController:
   enable: true
 
+monitoring:
+  enable: true
