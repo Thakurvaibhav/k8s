@@ -4,7 +4,7 @@ sealedSecrets:
   namespace: sealed-secrets
   source:
     repoURL: https://bitnami-labs.github.io/sealed-secrets
-    targetRevision: 2.1.6
+    targetRevision: 2.12.0
 
 ingressController:
   enable: false
