@@ -10,7 +10,7 @@ source:
 sealedSecrets:
   enable: true
 
-ingressController: # targetRevision and valueFiles can be overridden here if the above defaults are not suitable
+envoyGateway: # targetRevision and valueFiles can be overridden here if the above defaults are not suitable
   enable: true
 
 monitoring: # targetRevision and valueFiles can be overridden here if the above defaults are not suitable

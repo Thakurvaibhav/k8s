@@ -10,7 +10,7 @@ source:
 sealedSecrets:
   enable: true
 
-ingressController:
+envoyGateway:
   enable: true
 
 monitoring:

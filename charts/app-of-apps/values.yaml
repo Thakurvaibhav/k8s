@@ -18,6 +18,18 @@ ingressController:
       valueFiles: ""
       releaseName: nginx-ingress
 
+envoyGateway:
+  enable: false
+  project: operations
+  namespace: envoy-gateway-system
+  source:
+    repoURL: git@github.com:Thakurvaibhav/k8s.git
+    path: charts/envoy-gateway
+    targetRevision: ""
+    helm:
+      valueFiles: ""
+      releaseName: envoy-gateway
+
 monitoring:
   enable: false
   project: operations

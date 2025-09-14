@@ -1,0 +1,52 @@
+{{- if .Values.envoyGateway.enable -}}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Values.cluster.name }}-envoy-gateway
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  {{- with .Values.envoyGateway.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  labels:
+    team: ops
+    cluster: {{ .Values.cluster.name }}
+spec:
+  project: {{ .Values.envoyGateway.project }}
+  source:
+    repoURL: {{ .Values.envoyGateway.source.repoURL }}
+    targetRevision: {{ .Values.envoyGateway.source.targetRevision | default .Values.source.targetRevision }}
+    path: {{ .Values.envoyGateway.source.path }}
+    helm:
+      releaseName: {{ tpl .Values.envoyGateway.source.helm.releaseName . }}
+      valueFiles:
+      - {{ .Values.envoyGateway.source.helm.valueFiles | default .Values.source.helm.valueFiles }}
+    {{- if .Values.envoyGateway.source.helm.values }}
+      values: {{- toYaml .Values.envoyGateway.source.helm.values | indent 6 }}
+    {{- end }}
+      
+  destination:
+    {{ if .Values.cluster.server -}}
+    server: {{ .Values.cluster.server }}
+    {{ else }}
+    name: {{ .Values.cluster.name }}
+    {{ end -}}
+    namespace: {{ .Values.envoyGateway.namespace  }}
+
+  syncPolicy:
+    automated:
+      selfHeal: true
+    retry:
+      limit: 55
+      backoff:
+        duration: 45s
+        factor: 1
+        maxDuration: 6m
+    syncOptions:
+      - Validate=true
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+      - ServerSideApply=true
+{{- end }}
