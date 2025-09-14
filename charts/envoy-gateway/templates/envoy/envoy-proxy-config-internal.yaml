@@ -1,0 +1,40 @@
+{{- if .Values.internalGateway.enable -}}
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: EnvoyProxy
+metadata:
+  name: internal-custom-proxy-config
+  namespace: {{ .Values.namespace }}
+spec:
+  telemetry:
+    metrics:
+      prometheus: {}
+  provider:
+    type: Kubernetes
+    kubernetes:
+    {{- if .Values.internalProxyConfig.service.annotations }}
+      envoyService:
+        annotations:
+        {{- with .Values.internalProxyConfig.service.annotations }}
+        {{- toYaml . | nindent 10 }}
+        {{- end }}
+    {{- end }}
+      envoyDeployment:
+        patch:
+          type: StrategicMerge
+          value:
+            spec:
+              replicas: {{ .Values.internalProxyConfig.replicas }}
+              template:
+                spec:
+                  tolerations:
+                    - effect: "NoSchedule"
+                      operator: Exists
+                  containers:
+                  - name: envoy
+                    resources:
+                    {{- toYaml .Values.internalProxyConfig.envoy.resources | nindent 22 }}
+                  - name: shutdown-manager
+                    resources:
+                    {{- toYaml .Values.internalProxyConfig.shutdownManager.resources | nindent 22 }}
+---
+{{- end }}

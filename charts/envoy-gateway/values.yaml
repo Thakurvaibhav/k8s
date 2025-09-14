@@ -1,0 +1,88 @@
+namespace: envoy-gateway-system
+gatewayprovider:
+  deployment:
+    envoyGateway:
+      resources:
+        limits:
+          cpu: 500m
+          memory: 1Gi
+        requests:
+          cpu: 100m
+          memory: 128Mi
+    pod:
+      tolerations:
+        - effect: "NoSchedule"
+          operator: Exists
+
+  config:
+    envoyGateway:
+      logging:
+        level:
+          default: info
+
+  certgen:
+    job:
+      resources:
+        limits:
+          cpu: 100m
+          memory: 128Mi
+        requests:
+          cpu: 10m
+          memory: 64Mi
+
+gateway:
+  clientTrafficPolicy:
+    tls:
+      alpnProtocols:
+        - http/1.1
+        - http/1.0
+    path:
+      escapedSlashesAction: KeepUnchanged
+  secretManifest:
+    tls:
+      crt: ""
+      key: ""
+
+proxyConfig:
+  replicas: 3
+  envoy:
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 512Mi
+      requests:
+        cpu: 500m
+        memory: 128Mi
+  shutdownManager:
+    resources:
+      limits:
+        cpu: 150m
+        memory: 256Mi
+      requests:
+        cpu: 50m
+        memory: 128Mi
+
+  service:
+    annotations: {}
+
+internalGateway:
+  enable: false
+
+internalProxyConfig:
+  replicas: 3
+  envoy:
+    resources:
+      limits:
+        cpu: 10000m
+        memory: 512i
+      requests:
+        cpu: 500m
+        memory: 128Mi
+  shutdownManager:
+    resources:
+      limits:
+        cpu: 150m
+        memory: 256Mi
+      requests:
+        cpu: 50m
+        memory: 128Mi

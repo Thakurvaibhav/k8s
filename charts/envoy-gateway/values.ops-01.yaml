@@ -1,0 +1,61 @@
+cluster:
+  type: ops-01
+gatewayprovider:
+  config:
+    envoyGateway:
+      rateLimit:
+        backend:
+          type: Redis
+          redis:
+            url: my-redis.service:6379
+
+      provider:
+        kubernetes:
+          rateLimitDeployment:
+            container:
+              resources:
+                limits:
+                  cpu: 500m
+                  memory: 512Mi
+                requests:
+                  cpu: 100m
+                  memory: 256Mi
+
+gateway:
+  defaultHttps:
+    hostname: '*.ops.mydomain.com'
+    certSecretName: ingress-tls
+  extraListeners:
+    - name: some-custom-service-https
+      port: 443
+      protocol: HTTPS
+      hostname: 'some-custom-service.mydomain.com'
+      allowedRoutes:
+        namespaces:
+          from: All
+      tls:
+        mode: Terminate
+        certificateRefs:
+        - group: ""
+          kind: Secret
+          name: some-custom-service-ingress-tls 
+          namespace: envoy-gateway-system
+
+proxyConfig:
+  replicas: 3
+  envoy:
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 512Mi
+      requests:
+        cpu: 500m
+        memory: 128Mi
+  shutdownManager:
+    resources:
+      limits:
+        cpu: 150m
+        memory: 256Mi
+      requests:
+        cpu: 50m
+        memory: 128Mi

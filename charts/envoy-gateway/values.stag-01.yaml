@@ -1,0 +1,18 @@
+cluster:
+  type: stag-01
+gateway:
+  defaultHttps:
+    hostname: '*.stag.mydomain.com'
+    certSecretName: ingress-tls
+
+internalGateway:
+  enable: true
+  defaultHttps:
+    hostname: '*.stag.internal-mydomain.com'
+    certSecretName: internal-ingress-tls
+
+internalProxyConfig:
+  service:
+    annotations:
+      networking.gke.io/load-balancer-type: "Internal"
+
