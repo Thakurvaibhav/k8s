@@ -1,0 +1,4 @@
+upsertOnly: false
+dnsConfig:
+  gcpProject: dev-01
+  txtOwner: dev-01

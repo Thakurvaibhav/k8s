@@ -1,0 +1,4 @@
+upsertOnly: false
+dnsConfig:
+  gcpProject: prod-01
+  txtOwner: prod-01
