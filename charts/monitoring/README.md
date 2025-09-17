@@ -57,7 +57,7 @@ graph LR
     SGO[Store GW Ops] --> BO
     QO[Local Query Ops] --> SGO
     QO --> SO
-    GF[Grafana_Ops] --> QG[Global Thanos Query]
+    GF[Grafana] --> QG[Global Thanos Query]
   end
 
   %% mTLS federation ONLY to local queries
