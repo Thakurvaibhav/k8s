@@ -1,0 +1,20 @@
+cluster:
+  type: ops
+
+prometheus:
+  clusterName: ops-01
+
+thanos:
+  gcsSecret: ""
+  archive_bucket: ops-01-metrics-archive
+  globalQuery:
+    enabled: true
+    clientTls:
+      ca_crt: ""
+      tls_crt: ""
+      tls_key: ""
+  query:
+    enabled: true
+    scrape:
+      grpcRoute:
+        enabled: false

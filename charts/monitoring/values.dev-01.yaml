@@ -1,0 +1,13 @@
+cluster:
+  type: dev
+
+grafana:
+  enabled: false
+
+prometheus:
+  clusterName: dev-01
+
+thanos:
+  gcsSecret: ""
+  archive_bucket: dev-01-metrics-archive
+

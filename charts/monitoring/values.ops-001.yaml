@@ -1,9 +1,0 @@
-cluster:
-  type: prod
-
-prometheus:
-  clusterName: ops-01
-
-thanos:
-  gcsSecret: ""
-  archive_bucket: ops-01-metrics-archive
