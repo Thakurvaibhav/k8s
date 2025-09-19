@@ -1,0 +1,4 @@
+globalExampleSecret:
+  enabled: true
+  name: my-global-secret
+  namespace: my-namespace
