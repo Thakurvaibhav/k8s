@@ -1,0 +1,31 @@
+opsPolicies:
+  disallowDefaultNs:
+    enabled: true
+  disallowLatestTag: 
+    enabled: true
+  specifyResources:
+    enabled: true
+    exclude:
+      any:
+      - resources:
+          kinds:
+          - Pod
+          selector:
+            matchLabels:
+              kyverno-ignore: "true"
+  disallowNodePortService:
+    enabled: true
+
+secPolicies:
+  restrictImageRegistries:
+    enabled: true
+  restrictIngressDefaultBackend:
+    enabled: true
+  restrictBindToSystemGroups: 
+    enabled: true
+  restrictBindToClusterAdmin:
+    enabled: true
+  denySecretServiceAccountToken:
+    enabled: true
+  checkLongLivedSecrets:
+    enabled: true

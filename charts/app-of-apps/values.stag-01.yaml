@@ -7,11 +7,14 @@ source:
   helm:
     valueFiles: values.stag-01.yaml
 
-sealedSecrets:
+sealedSecrets:  # targetRevision and valueFiles can be overridden here if the above defaults are not suitable
   enable: true
 
 envoyGateway:
   enable: true
 
 monitoring:
+  enable: true
+
+kyverno:
   enable: true

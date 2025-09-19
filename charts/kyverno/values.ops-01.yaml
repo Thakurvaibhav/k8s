@@ -1,0 +1,33 @@
+opsPolicies:
+  disallowDefaultNs:
+    enabled: true
+    mode: Enforce
+  disallowLatestTag: 
+    enabled: true
+    mode: Enforce
+  specifyResources:
+    enabled: true
+    mode: Enforce
+  disallowNodePortService:
+    enabled: true
+    mode: Enforce
+
+secPolicies:
+  restrictImageRegistriesOps:
+    enabled: true
+    mode: Enforce
+  restrictIngressDefaultBackend:
+    enabled: true
+    mode: Enforce
+  restrictBindToSystemGroups: 
+    enabled: true
+    mode: Enforce
+  restrictBindToClusterAdmin:
+    enabled: true
+    mode: Enforce
+  denySecretServiceAccountToken:
+    enabled: true
+    mode: Enforce
+  checkLongLivedSecrets:
+    enabled: true
+    mode: Enforce

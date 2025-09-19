@@ -1,0 +1,49 @@
+{{- if .Values.kyverno.enable -}}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Values.cluster.name }}-kyverno
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  {{- with .Values.kyverno.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  labels:
+    team: ops
+    cluster: {{ .Values.cluster.name }}
+spec:
+  project: {{ .Values.kyverno.project }}
+  source:
+    repoURL: {{ .Values.kyverno.source.repoURL }}
+    targetRevision: {{ .Values.kyverno.source.targetRevision | default .Values.source.targetRevision }}
+    path: {{ .Values.kyverno.source.path }}
+    helm:
+      releaseName: {{ .Values.kyverno.source.helm.releaseName }}
+      valueFiles:
+      - {{ .Values.kyverno.source.helm.valueFiles }}
+    {{- if .Values.kyverno.source.helm.values }}
+      values: {{- tpl (toYaml .Values.kyverno.source.helm.values) . | indent 6 }}
+    {{- end }} 
+      
+  destination:
+    {{ if .Values.cluster.server -}}
+    server: {{ .Values.cluster.server }}
+    {{ else }}
+    name: {{ .Values.cluster.name }}
+    {{ end -}}
+    namespace: {{ .Values.kyverno.namespace  }}
+
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true
+      allowEmpty: true
+    syncOptions:
+      - Validate=true
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+      - ServerSideApply=true
+      - PrunePropagationPolicy=background
+{{- end }}

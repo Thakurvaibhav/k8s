@@ -7,7 +7,7 @@ source:
   helm:
     valueFiles: values.prod-01.yaml
 
-sealedSecrets:
+sealedSecrets:  # targetRevision and valueFiles can be overridden here if the above defaults are not suitable
   enable: true
 
 envoyGateway:
@@ -16,3 +16,5 @@ envoyGateway:
 monitoring:
   enable: true
 
+kyverno:
+  enable: true

@@ -45,3 +45,15 @@ monitoring:
     helm:
       valueFiles: ""
       releaseName: monitoring
+
+kyverno:
+  enable: false
+  project: operations
+  namespace: kyverno
+  source:
+    repoURL: git@github.com:Thakurvaibhav/k8s.git
+    path: charts/kyverno
+    targetRevision: ""
+    helm:
+      valueFiles: ""
+      releaseName: kyverno
