@@ -49,7 +49,7 @@ Use the matching file (or merge multiple with `-f`) when installing or syncing v
 
 ## app-of-apps Chart Switches (from `values.yaml` excerpt)
 ```
-sealedSecrets.enable        # Installs Sealed Secrets controller (Bitnami chart) if true
+sealedSecrets.enable        # Creates Argo CD Application for sealed-secrets (controller + global secrets)
 ingressController.enable    # Creates Argo CD Application for nginx-ingress-controller
 envoyGateway.enable         # Creates Argo CD Application for envoy-gateway
 monitoring.enable           # Creates Argo CD Application for monitoring stack
@@ -63,7 +63,7 @@ Each block also supplies:
 
 ## Cross‑Chart Relationships
 - Monitoring gRPC exposure relies on Envoy Gateway (Gateway + Listener + Route) when `thanos.query.scrape.grpcRoute.enabled` in `monitoring` values.
-- ExternalDNS publishes hostnames defined by Gateway HTTP/GRPC Routes (`envoy-gateway`) or standard Ingress objects (`nginx-ingress-controller`).
+- ExternalDNS publishes hostnames defined by Gateway HTTP/GRPCRoutes (`envoy-gateway`) or standard Ingress objects (`nginx-ingress-controller`).
 - Sealed Secrets (if enabled through `app-of-apps` or pre‑installed) is consumed by `monitoring`, `external-dns`, `kyverno` (for sealed exceptions), and future charts needing encrypted credentials.
 - Kyverno policies can enforce standards on workloads deployed by other charts once validated in Audit mode.
 - Both `envoy-gateway` and `nginx-ingress-controller` can coexist; prefer Gateway API for new traffic patterns.
