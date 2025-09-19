@@ -46,6 +46,18 @@ monitoring:
       valueFiles: ""
       releaseName: monitoring
 
+logging:
+  enable: false
+  project: operations
+  namespace: logging
+  source:
+    repoURL: git@github.com:Thakurvaibhav/k8s.git
+    path: charts/elastic-stack
+    targetRevision: ""
+    helm:
+      valueFiles: ""
+      releaseName: elastic-stack
+
 kyverno:
   enable: false
   project: operations

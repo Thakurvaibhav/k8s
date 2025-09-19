@@ -1,0 +1,23 @@
+{{- if .Values.dash.httpRoute.enable -}}
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: cerebro
+  namespace: {{ .Values.namespace }}
+spec:
+  parentRefs:
+    - name: {{ .Values.dash.httpRoute.gatewayName }}
+      namespace: envoy-gateway-system
+      sectionName: {{ .Values.dash.httpRoute.listenerName }}
+  hostnames:
+  - {{ .Values.dash.httpRoute.host }}
+  rules:
+    - backendRefs:
+        - name: {{ .Values.dash.name }}
+          port: 9000
+      matches:
+        - path:
+            type: PathPrefix
+            value: /
+---
+{{- end }}

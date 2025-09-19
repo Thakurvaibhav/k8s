@@ -1,0 +1,30 @@
+{{- if .Values.kibana.enable -}}
+apiVersion: kibana.k8s.elastic.co/v1
+kind: Kibana
+metadata:
+  name: {{ .Values.kibana.name }}
+spec:
+  version: {{ .Values.elasticsearch.version }}
+  count: 2
+  elasticsearchRef:
+    name: {{ .Values.elasticsearch.name }}
+  http:
+    tls:
+      selfSignedCertificate:
+        disabled: true
+  podTemplate:
+    metadata:
+      labels:
+        app: kibana
+    spec:
+      containers:
+        - name: kibana
+          resources:
+            requests:
+              memory: 10Gi
+              cpu: 1000m
+            limits:
+              memory: 15Gi
+              cpu: 2000m
+---
+{{- end }}

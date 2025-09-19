@@ -1,7 +1,7 @@
 # Helm Charts
 
 ## Platform in a Box
-These charts implement a "Platform in a Box"—a batteries‑included, GitOps driven foundation for operating a Kubernetes platform using the Argo CD App‑of‑Apps pattern. They compose the core traffic, security, observability, and enablement layers so teams can onboard applications quickly with consistent guardrails.
+These charts implement a "Platform in a Box"—a batteries‑included, GitOps driven foundation for operating a Kubernetes platform using the Argo CD App‑of‑Apps pattern. They compose the core traffic, security, observability, data, and enablement layers so teams can onboard applications quickly with consistent guardrails.
 
 ## Core Principles
 - Git as the single source of truth (no snowflake clusters)
@@ -17,14 +17,15 @@ This top‑level document inventories charts, their relationships, and recommend
 ## Inventory
 | Chart | Purpose | Depends On / Cooperates With | Key Notes |
 |-------|---------|------------------------------|-----------|
-| `app-of-apps` | Argo CD App‑of‑Apps root that defines Argo CD `Application` objects for platform components (monitoring, ingress, gateway, secrets, policies, data services). | Argo CD CRDs present in cluster. Optionally Sealed Secrets controller if you enable secret management here. | Toggle components via values: `sealedSecrets`, `ingressController`, `envoyGateway`, `monitoring`, `kyverno`, `redis`. |
-| `sealed-secrets` | Vendors upstream Bitnami Sealed Secrets controller and (optionally) renders shared/global sealed secrets. | Installed via `app-of-apps` (if `sealedSecrets.enable=true`). Consumed by charts needing encrypted creds (monitoring, external-dns, others). | Supports user‑defined controller key; global secrets only (app‑specific secrets stay with the app chart). |
-| `envoy-gateway` | Deploys Envoy Gateway (Gateway API) plus custom GatewayClasses, Gateways, Routes, security & proxy policies. | Kubernetes >=1.27, optionally ExternalDNS & monitoring. | Vendors upstream OCI chart (`gateway-helm` as alias `gatewayprovider`) allowing pinned upstream with local overlays. |
-| `external-dns` | Manages DNS records in Google Cloud DNS for Services & Gateway API (HTTPRoute/GRPCRoute). | GCP service account (sealed credentials), Gateway / Services to watch. | Supports multi‑domain filters, TXT registry, environment isolation via `txtOwner`. |
-| `monitoring` | Prometheus + Thanos components for HA metrics and optional global aggregation/gRPC exposure via Envoy Gateway. | (Optional) `envoy-gateway` if exposing Thanos Query externally; object storage creds (sealed); Sealed Secrets controller. | Environment overrides drive Thanos enablement, replica counts, gRPC route exposure & TLS material. |
-| `nginx-ingress-controller` | Traditional NGINX ingress controller for legacy/HTTP ingress use cases not on Gateway API. | None (cluster only). May coexist with Envoy Gateway. | Pick either Gateway or Ingress per app path where possible to reduce overlap. |
-| `kyverno` | Installs upstream Kyverno + Policy Reporter and ships starter ops & security policies (Audit → Enforce). | Sealed Secrets (optional for sensitive policy exceptions), monitoring for metrics scraping. | Policy groups toggled via `opsPolicies.*` / `secPolicies.*` with per‑policy mode (`Audit` or `Enforce`). |
-| `redis` | Vendors upstream Bitnami Redis for caching/session or lightweight data use cases. | Sealed Secrets (if enabling auth via existingSecret), monitoring (optional metrics exporter). | Thin wrapper; enable auth & persistence in env overrides before production. |
+| `app-of-apps` | Argo CD App‑of‑Apps root that defines Argo CD `Application` objects for platform components (monitoring, ingress, gateway, secrets, policies, data services, logging). | Argo CD CRDs present in cluster. Optionally Sealed Secrets controller if you enable secret management here. | Toggle components via values: `sealedSecrets`, `ingressController`, `envoyGateway`, `monitoring`, `kyverno`, `redis`, `logging`. |
+| `sealed-secrets` | Vendors upstream Bitnami Sealed Secrets controller and (optionally) renders shared/global sealed secrets. | Installed via `app-of-apps` (if `sealedSecrets.enable=true`). Consumed by charts needing encrypted creds (monitoring, external-dns, others). | Supports user‑defined controller key; global secrets only. |
+| `envoy-gateway` | Deploys Envoy Gateway (Gateway API) plus custom GatewayClasses, Gateways, Routes, security & proxy policies. | Kubernetes >=1.27, optionally ExternalDNS & monitoring. | Vendors upstream OCI chart (`gateway-helm` alias `gatewayprovider`). |
+| `external-dns` | Manages DNS records in Google Cloud DNS for Services & Gateway API (HTTPRoute/GRPCRoute). | GCP service account (sealed credentials), Gateway / Services to watch. | Multi‑domain filters, TXT registry, environment isolation. |
+| `monitoring` | Prometheus + Thanos components for HA metrics and global aggregation. | `envoy-gateway` (if gRPC exposure), Sealed Secrets, object storage. | Values control Thanos, replicas, routes, TLS. |
+| `nginx-ingress-controller` | Traditional NGINX ingress controller for legacy ingress use cases. | None (cluster only). | Prefer Gateway API for new services. |
+| `kyverno` | Upstream Kyverno + Policy Reporter + starter ops & security policies (Audit → Enforce). | Sealed Secrets (optional), monitoring (metrics). | Policy groups toggled via `opsPolicies.*` / `secPolicies.*`. |
+| `redis` | Vendors upstream Bitnami Redis for cache/session workloads. | Sealed Secrets (auth), monitoring (metrics). | Enable auth & persistence in env overrides before production. |
+| `logging` | Centralized multi‑cluster logging (Elasticsearch + Kibana + Filebeat) using ECK operator & mTLS via Gateway. | `envoy-gateway` (ingest endpoint), Sealed Secrets (certs), eck-operator. | Deployed with Helm release name `logging`; ops cluster hosts ES/Kibana; other clusters ship via Filebeat. |
 
 ## Environment Overrides
 Each chart provides environment value files:
@@ -34,29 +35,31 @@ values.stag-01.yaml
 values.ops-01.yaml
 values.prod-01.yaml
 ```
-Use the matching file (or merge multiple with `-f`) when installing or syncing via Argo CD.
+Use the matching file (or merge multiple with `-f`).
 
 ## Suggested Install / Bootstrap Order
-1. Install Argo CD (outside these charts) – provides `argocd` namespace & CRDs.
-2. `app-of-apps` – creates Argo CD `Application` objects (if components enabled).
-3. `sealed-secrets` – controller + global secrets (if using sealed secrets) so subsequent charts can decrypt credentials.
-4. `kyverno` – policy engine & reporting (start policies in Audit).
-5. `external-dns` – so DNS names begin reconciling early (if using Gateway/Ingress hostnames).
-6. `envoy-gateway` – provisions Gateway API infra consumed by monitoring (gRPC) or future apps.
-7. `nginx-ingress-controller` – only if you need classic Ingress alongside Gateway API.
-8. `monitoring` – after routing layer (Envoy or NGINX) is available when external exposure is desired.
-9. `redis` – when an application needs it (can be earlier; order here is non‑blocking).
+1. Argo CD (out-of-band)
+2. `app-of-apps`
+3. `sealed-secrets`
+4. `kyverno` (Audit first)
+5. `external-dns`
+6. `envoy-gateway`
+7. `nginx-ingress-controller` (if needed)
+8. `monitoring`
+9. `logging` (after gateway + secrets ready)
+10. `redis` (as needed by apps)
 
-(You may reorder some components (e.g., redis) based on application dependency timing.)
+(Order of redis / elastic-stack can swap based on dependency timing.)
 
 ## app-of-apps Chart Switches (from `values.yaml` excerpt)
 ```
-sealedSecrets.enable        # Creates Argo CD Application for sealed-secrets (controller + global secrets)
-ingressController.enable    # Creates Argo CD Application for nginx-ingress-controller
-envoyGateway.enable         # Creates Argo CD Application for envoy-gateway
-monitoring.enable           # Creates Argo CD Application for monitoring stack
-kyverno.enable              # Creates Argo CD Application for kyverno policies
-redis.enable                # Creates Argo CD Application for redis data service
+sealedSecrets.enable        # sealed-secrets controller + global secrets
+ingressController.enable    # nginx ingress controller
+envoyGateway.enable         # envoy gateway platform ingress
+monitoring.enable           # monitoring stack (Prometheus/Thanos)
+kyverno.enable              # kyverno policies + reporter
+redis.enable                # redis data service
+logging.enable              # elastic logging stack (Helm release name: logging)
 ```
 Each block also supplies:
 - `project`: Argo CD Project name
@@ -65,11 +68,12 @@ Each block also supplies:
 - Optional Helm release metadata under `helm`
 
 ## Cross‑Chart Relationships
-- Monitoring gRPC exposure relies on Envoy Gateway (Gateway + Listener + Route) when `thanos.query.scrape.grpcRoute.enabled` in `monitoring` values.
-- ExternalDNS publishes hostnames defined by Gateway HTTP/GRPCRoutes (`envoy-gateway`) or standard Ingress objects (`nginx-ingress-controller`).
-- Sealed Secrets (if enabled) is consumed by `monitoring`, `external-dns`, `kyverno`, `redis` (for auth secret), and future charts.
-- Kyverno policies can enforce standards on workloads deployed by other charts once validated in Audit mode.
-- Redis may have NetworkPolicies added later; ensure clients are in allowed namespaces.
+- Monitoring gRPC exposure uses Envoy Gateway for external Thanos Query.
+- ExternalDNS publishes hosts from Envoy Gateway (Gateway API) & any ingress objects.
+- Logging relies on Envoy Gateway for mTLS log ingestion endpoints and Sealed Secrets for TLS cert material.
+- Kyverno enforces standards on workloads deployed by other charts (progress Audit→Enforce).
+- Redis and Logging Stack may expose metrics scraped by monitoring.
+- Sealed Secrets underpins secret distribution for monitoring, external-dns, kyverno (exceptions), redis (auth), elastic-stack (certs/credentials).
 
 ## Typical Helm Install (direct)
 (Argo CD users normally let Argo reconcile instead of manual installs.)
@@ -80,36 +84,31 @@ helm upgrade --install redis ./redis -f redis/values.dev-01.yaml -n data --creat
 ```
 
 ## Argo CD (GitOps) Flow
-1. Push changes to values / templates.
-2. Argo CD root application (from `app-of-apps`) detects drift.
-3. Child Applications sync respective charts with correct environment overrides.
+1. Commit value/template changes.
+2. Argo CD root app detects drift.
+3. Child Applications reconcile to desired state.
 
 ## DNS & Certificates
-- Ensure GCP Cloud DNS zones exist for all `domainFilters` in `external-dns`.
-- Provide sealed service account JSON via `external-dns.values.yaml` (`sealedCredentials`).
-- For monitoring gRPC/TLS exposure, seal TLS cert/key + CA before enabling route.
+- Ensure Cloud DNS zones exist for all `external-dns` domains.
+- Seal or externally manage TLS and client certs for Envoy Gateway routes (monitoring & logging gRPC/HTTPS).
 
 ## Security Considerations
-- Scope GCP service account to required DNS zones only.
-- Rotate sealed secrets when credentials change; commit new encrypted payloads.
-- Use network policies to restrict access to Prometheus / Thanos internals; expose only through approved gateways.
-- Roll out Kyverno policies in Audit first; switch to Enforce after violations trend low.
-- Enable Redis auth & persistence before production usage.
+- Principle of least privilege for service accounts & secrets.
+- Rotate sealed secrets periodically.
+- Enforce policies with Kyverno only after Audit stabilization.
+- Enable Redis auth & persistence before production use.
+- Protect Elasticsearch & Kibana with auth + mTLS where applicable.
 
 ## Development & Testing
-Render a chart locally:
 ```bash
 helm template monitoring ./monitoring -f monitoring/values.dev-01.yaml | less
-```
-Lint (if configured):
-```bash
 helm lint monitoring
 ```
 
 ## Contribution Guidelines
-- Update the per‑chart README if adding/removing values or templates.
-- Keep this inventory table in sync when adding new charts.
-- Prefer additive changes; version bump the chart (`Chart.yaml`) on any template or default value change.
+- Update per‑chart README on changes.
+- Keep inventory table aligned with actual charts.
+- Bump chart versions on template/value default changes.
 
 ## License
 Internal use only unless stated otherwise.

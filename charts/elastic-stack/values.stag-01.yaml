@@ -1,0 +1,2 @@
+filebeat:
+  clusterName: stag-01

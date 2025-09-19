@@ -16,6 +16,9 @@ envoyGateway:
 monitoring:
   enable: true
 
+logging:
+  enable: true
+
 kyverno:
   enable: true
 

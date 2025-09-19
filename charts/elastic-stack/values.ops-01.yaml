@@ -1,0 +1,134 @@
+eckOperator:
+  enable: true
+
+namespace: logging
+
+storageClass:
+  name: es-csi
+  provisioner: pd.csi.storage.gke.io
+
+elasticsearch:
+  enable: true
+  name: logging
+  serverTls:
+    ca_crt: "" # SealedSecret value
+    tls_crt: "" # SealedSecret value
+    tls_key: "" # SealedSecret value
+  httpRoute:
+    enable: true
+    host: elastic.mydomain.com
+
+# Master nodes configuration
+  masterNode:
+    name: master-01
+    count: 3
+    capacity: 150Gi
+    env:
+      ES_JAVA_OPTS: -Xms10g -Xmx10g
+    resources:
+      limits:
+        cpu: "4"
+        memory: 20Gi
+      requests:
+        cpu: "4"
+        memory: 20Gi
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+              - key: role
+                operator: In
+                values:
+                - elastic
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - podAffinityTerm:
+            labelSelector:
+              matchLabels:
+                elasticsearch.k8s.elastic.co/node-master: "true"
+            topologyKey: kubernetes.io/hostname
+          weight: 100
+
+# Data nodes configuration
+  dataNode:
+    name: data-01
+    count: 4
+    capacity: 500Gi
+    env:
+      ES_JAVA_OPTS: -Xms20g -Xmx20g
+    resources:
+      limits:
+        cpu: "6"
+        memory: 40Gi
+      requests:
+        cpu: "6"
+        memory: 40Gi
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+              - key: role
+                operator: In
+                values:
+                - elastic
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - podAffinityTerm:
+            labelSelector:
+              matchLabels:
+                elasticsearch.k8s.elastic.co/node-data: "true"
+            topologyKey: kubernetes.io/hostname
+          weight: 100
+
+# Ingest nodes configuration
+  ingestNode:
+    name: ingest-01
+    count: 3
+    capacity: 50Gi
+    env:
+      ES_JAVA_OPTS: -Xms10g -Xmx10g
+    resources:
+      limits:
+        cpu: "4"
+        memory: 20Gi
+      requests:
+        cpu: "4"
+        memory: 20Gi
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+              - key: role
+                operator: In
+                values:
+                - elastic
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - podAffinityTerm:
+            labelSelector:
+              matchLabels:
+                elasticsearch.k8s.elastic.co/node-ingest: "true"
+            topologyKey: kubernetes.io/hostname
+          weight: 100
+
+kibana:
+  enable: true
+  name: logging-kibana
+  httpRoute:
+    enable: true
+    host: kibana.mydomain.com
+    googleAuth:
+      clientID: ""
+      clientSecret: "" # SealedSecret value
+
+dash:
+  name: logging-dash
+  httpRoute:
+    enable: true
+    host: cerebro.mydomain.com
+    
+filebeat:
+  clusterName: ops-01

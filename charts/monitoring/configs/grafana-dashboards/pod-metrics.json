@@ -182,7 +182,7 @@
           "calcs": [
             "mean"
           ],
-          "fields": "/^kube_pod_container_status_restarts_total{app_kubernetes_io_instance=\"tesla-ops-monitoring\", cluster=\"ops-prometheus\", container=\"elasticsearch\", instance=\"10.8.11.12:8080\", job=\"kubernetes-service-endpoints\", k8s_app=\"kube-state-metrics\", kubernetes_name=\"kube-state-metrics\", kubernetes_namespace=\"monitoring\", namespace=\"logging\", pod=\"logging-es-data-01-0\"}$/",
+          "fields": "/^kube_pod_container_status_restarts_total{app_kubernetes_io_instance=\"monitoring\", cluster=\"ops-prometheus\", container=\"elasticsearch\", instance=\"10.8.11.12:8080\", job=\"kubernetes-service-endpoints\", k8s_app=\"kube-state-metrics\", kubernetes_name=\"kube-state-metrics\", kubernetes_namespace=\"monitoring\", namespace=\"logging\", pod=\"logging-es-data-01-0\"}$/",
           "values": false
         },
         "textMode": "auto"
@@ -258,7 +258,7 @@
           "calcs": [
             "lastNotNull"
           ],
-          "fields": "/^kube_pod_container_status_running{app_kubernetes_io_instance=\"tesla-ops-monitoring\", cluster=\"ops-prometheus\", container=\"elasticsearch\", instance=\"10.8.11.12:8080\", job=\"kubernetes-service-endpoints\", k8s_app=\"kube-state-metrics\", kubernetes_name=\"kube-state-metrics\", kubernetes_namespace=\"monitoring\", namespace=\"logging\", pod=\"logging-es-data-01-0\"}$/",
+          "fields": "/^kube_pod_container_status_running{app_kubernetes_io_instance=\"ops-monitoring\", cluster=\"ops-prometheus\", container=\"elasticsearch\", instance=\"10.8.11.12:8080\", job=\"kubernetes-service-endpoints\", k8s_app=\"kube-state-metrics\", kubernetes_name=\"kube-state-metrics\", kubernetes_namespace=\"monitoring\", namespace=\"logging\", pod=\"logging-es-data-01-0\"}$/",
           "values": false
         },
         "textMode": "auto"
