@@ -18,7 +18,8 @@ This top‑level document inventories charts, their relationships, and recommend
 | Chart | Purpose | Depends On / Cooperates With | Key Notes |
 |-------|---------|------------------------------|-----------|
 | `app-of-apps` | Argo CD App‑of‑Apps root that defines Argo CD `Application` objects for platform components (monitoring, ingress, gateway, secrets). | Argo CD CRDs present in cluster. Optionally Sealed Secrets controller if you enable secret management here. | Toggle components via values: `sealedSecrets`, `ingressController`, `envoyGateway`, `monitoring`. Each has `enable` and source repo/path settings. |
-| `envoy-gateway` | Deploys Envoy Gateway (Gateway API implementation) plus baseline Gateway / Routes and proxy security policies. | Kubernetes >=1.27 (Gateway API), optionally ExternalDNS (for publishing GW hostnames), monitoring (for exposing gRPC endpoints). | Upstream dependency declared as OCI (`gateway-helm` aliased `gatewayprovider`). Templates include GatewayClasses, Gateways, Routes, envoy proxy configs & security policies. |
+| `sealed-secrets` | Vendors upstream Bitnami Sealed Secrets controller and (optionally) renders shared/global sealed secrets. | Installed via `app-of-apps` (if `sealedSecrets.enable=true`). Consumed by charts needing encrypted creds (monitoring, external-dns, others). | Supports user‑defined controller key; global secrets only (app‑specific secrets stay with the app chart). |
+| `envoy-gateway` | Deploys Envoy Gateway (Gateway API) plus custom GatewayClasses, Gateways, Routes, security & proxy policies. | Kubernetes >=1.27, optionally ExternalDNS & monitoring. | Vendors upstream OCI chart (`gateway-helm` as alias `gatewayprovider`) allowing pinned upstream with local overlays. |
 | `external-dns` | Manages DNS records in Google Cloud DNS for Services & Gateway API (HTTPRoute/GRPCRoute). | GCP service account (sealed credentials), Gateway / Services to watch. | Supports multi‑domain filters, TXT registry, environment isolation via `txtOwner`. |
 | `monitoring` | Prometheus + Thanos components for HA metrics and optional global aggregation/gRPC exposure via Envoy Gateway. | (Optional) `envoy-gateway` if exposing Thanos Query externally; object storage creds (sealed); Sealed Secrets controller. | Environment overrides drive Thanos enablement, replica counts, gRPC route exposure & TLS material. |
 | `nginx-ingress-controller` | Traditional NGINX ingress controller for legacy/HTTP ingress use cases not on Gateway API. | None (cluster only). May coexist with Envoy Gateway. | Pick either Gateway or Ingress per app path where possible to reduce overlap. |
@@ -36,10 +37,11 @@ Use the matching file (or merge multiple with `-f`) when installing or syncing v
 ## Suggested Install / Bootstrap Order
 1. Install Argo CD (outside these charts) – provides `argocd` namespace & CRDs.
 2. `app-of-apps` – creates Argo CD `Application` objects (if components enabled).
-3. `external-dns` – so DNS names begin reconciling early (if using Gateway/Ingress hostnames).
-4. `envoy-gateway` – provisions Gateway API infra consumed by monitoring (gRPC) or future apps.
-5. `nginx-ingress-controller` – only if you need classic Ingress alongside Gateway API.
-6. `monitoring` – after routing layer (Envoy or NGINX) is available when external exposure is desired.
+3. `sealed-secrets` – controller + global secrets (if using sealed secrets) so subsequent charts can decrypt credentials.
+4. `external-dns` – so DNS names begin reconciling early (if using Gateway/Ingress hostnames).
+5. `envoy-gateway` – provisions Gateway API infra consumed by monitoring (gRPC) or future apps.
+6. `nginx-ingress-controller` – only if you need classic Ingress alongside Gateway API.
+7. `monitoring` – after routing layer (Envoy or NGINX) is available when external exposure is desired.
 
 (You may reorder `external-dns` and routing controllers depending on credential readiness.)
 
@@ -59,7 +61,7 @@ Each block also supplies:
 ## Cross‑Chart Relationships
 - Monitoring gRPC exposure relies on Envoy Gateway (Gateway + Listener + Route) when `thanos.query.scrape.grpcRoute.enabled` in `monitoring` values.
 - ExternalDNS publishes hostnames defined by Gateway HTTP/GRPC Routes (`envoy-gateway`) or standard Ingress objects (`nginx-ingress-controller`).
-- Sealed Secrets (if enabled through `app-of-apps` or pre‑installed) is consumed by `monitoring` and `external-dns` for credentials (object storage, GCP service account, TLS).
+- Sealed Secrets (if enabled through `app-of-apps` or pre‑installed) is consumed by `monitoring`, `external-dns`, and any future charts needing encrypted credentials.
 - Both `envoy-gateway` and `nginx-ingress-controller` can coexist; prefer Gateway API for new traffic patterns.
 
 ## Typical Helm Install (direct)
