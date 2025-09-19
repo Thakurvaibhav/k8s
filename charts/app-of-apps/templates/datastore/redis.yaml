@@ -1,0 +1,45 @@
+{{- if .Values.redis.enable -}}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Values.cluster.name }}-redis
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  {{- with .Values.redis.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  labels:
+    team: ops
+    cluster: {{ .Values.cluster.name }}
+spec:
+  project: {{ .Values.redis.project }}
+  source:
+    repoURL: {{ .Values.redis.source.repoURL }}
+    targetRevision: {{ .Values.redis.source.targetRevision | default .Values.source.targetRevision}}
+    path: {{ .Values.redis.source.path }}
+    helm:
+      releaseName: {{ .Values.redis.source.helm.releaseName }}
+      valueFiles:
+      - {{ .Values.redis.source.helm.valueFiles }}
+    {{- if .Values.redis.source.helm.values }}
+      values: {{- toYaml .Values.redis.source.helm.values | indent 6 }}
+    {{- end }}  
+      
+  destination:
+    {{ if .Values.cluster.server -}}
+    server: {{ .Values.cluster.server }}
+    {{ else }}
+    name: {{ .Values.cluster.name }}
+    {{ end -}}
+    namespace: {{ .Values.redis.namespace  }}
+
+  syncPolicy:
+    automated:
+      selfHeal: true
+    syncOptions:
+      - Validate=true
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+{{- end }}

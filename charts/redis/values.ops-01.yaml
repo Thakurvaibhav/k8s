@@ -1,0 +1,23 @@
+redis:
+
+  master:
+    persistence:
+      enabled: false
+    resources:
+      limits:
+        cpu: 2000m
+        memory: 2500Mi
+      requests:
+        cpu: 100m
+        memory: 100Mi
+
+  replica:
+    persistence:
+      enabled: false
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 2500Mi
+      requests:
+        cpu: 50m
+        memory: 50Mi

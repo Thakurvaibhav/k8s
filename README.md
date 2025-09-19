@@ -17,13 +17,14 @@ This top‑level document inventories charts, their relationships, and recommend
 ## Inventory
 | Chart | Purpose | Depends On / Cooperates With | Key Notes |
 |-------|---------|------------------------------|-----------|
-| `app-of-apps` | Argo CD App‑of‑Apps root that defines Argo CD `Application` objects for platform components (monitoring, ingress, gateway, secrets, policies). | Argo CD CRDs present in cluster. Optionally Sealed Secrets controller if you enable secret management here. | Toggle components via values: `sealedSecrets`, `ingressController`, `envoyGateway`, `monitoring`, `kyverno`. Each has `enable` and source repo/path settings. |
+| `app-of-apps` | Argo CD App‑of‑Apps root that defines Argo CD `Application` objects for platform components (monitoring, ingress, gateway, secrets, policies, data services). | Argo CD CRDs present in cluster. Optionally Sealed Secrets controller if you enable secret management here. | Toggle components via values: `sealedSecrets`, `ingressController`, `envoyGateway`, `monitoring`, `kyverno`, `redis`. |
 | `sealed-secrets` | Vendors upstream Bitnami Sealed Secrets controller and (optionally) renders shared/global sealed secrets. | Installed via `app-of-apps` (if `sealedSecrets.enable=true`). Consumed by charts needing encrypted creds (monitoring, external-dns, others). | Supports user‑defined controller key; global secrets only (app‑specific secrets stay with the app chart). |
 | `envoy-gateway` | Deploys Envoy Gateway (Gateway API) plus custom GatewayClasses, Gateways, Routes, security & proxy policies. | Kubernetes >=1.27, optionally ExternalDNS & monitoring. | Vendors upstream OCI chart (`gateway-helm` as alias `gatewayprovider`) allowing pinned upstream with local overlays. |
 | `external-dns` | Manages DNS records in Google Cloud DNS for Services & Gateway API (HTTPRoute/GRPCRoute). | GCP service account (sealed credentials), Gateway / Services to watch. | Supports multi‑domain filters, TXT registry, environment isolation via `txtOwner`. |
 | `monitoring` | Prometheus + Thanos components for HA metrics and optional global aggregation/gRPC exposure via Envoy Gateway. | (Optional) `envoy-gateway` if exposing Thanos Query externally; object storage creds (sealed); Sealed Secrets controller. | Environment overrides drive Thanos enablement, replica counts, gRPC route exposure & TLS material. |
 | `nginx-ingress-controller` | Traditional NGINX ingress controller for legacy/HTTP ingress use cases not on Gateway API. | None (cluster only). May coexist with Envoy Gateway. | Pick either Gateway or Ingress per app path where possible to reduce overlap. |
 | `kyverno` | Installs upstream Kyverno + Policy Reporter and ships starter ops & security policies (Audit → Enforce). | Sealed Secrets (optional for sensitive policy exceptions), monitoring for metrics scraping. | Policy groups toggled via `opsPolicies.*` / `secPolicies.*` with per‑policy mode (`Audit` or `Enforce`). |
+| `redis` | Vendors upstream Bitnami Redis for caching/session or lightweight data use cases. | Sealed Secrets (if enabling auth via existingSecret), monitoring (optional metrics exporter). | Thin wrapper; enable auth & persistence in env overrides before production. |
 
 ## Environment Overrides
 Each chart provides environment value files:
@@ -44,8 +45,9 @@ Use the matching file (or merge multiple with `-f`) when installing or syncing v
 6. `envoy-gateway` – provisions Gateway API infra consumed by monitoring (gRPC) or future apps.
 7. `nginx-ingress-controller` – only if you need classic Ingress alongside Gateway API.
 8. `monitoring` – after routing layer (Envoy or NGINX) is available when external exposure is desired.
+9. `redis` – when an application needs it (can be earlier; order here is non‑blocking).
 
-(You may reorder `external-dns` and routing controllers depending on credential readiness.)
+(You may reorder some components (e.g., redis) based on application dependency timing.)
 
 ## app-of-apps Chart Switches (from `values.yaml` excerpt)
 ```
@@ -54,6 +56,7 @@ ingressController.enable    # Creates Argo CD Application for nginx-ingress-cont
 envoyGateway.enable         # Creates Argo CD Application for envoy-gateway
 monitoring.enable           # Creates Argo CD Application for monitoring stack
 kyverno.enable              # Creates Argo CD Application for kyverno policies
+redis.enable                # Creates Argo CD Application for redis data service
 ```
 Each block also supplies:
 - `project`: Argo CD Project name
@@ -64,16 +67,16 @@ Each block also supplies:
 ## Cross‑Chart Relationships
 - Monitoring gRPC exposure relies on Envoy Gateway (Gateway + Listener + Route) when `thanos.query.scrape.grpcRoute.enabled` in `monitoring` values.
 - ExternalDNS publishes hostnames defined by Gateway HTTP/GRPCRoutes (`envoy-gateway`) or standard Ingress objects (`nginx-ingress-controller`).
-- Sealed Secrets (if enabled through `app-of-apps` or pre‑installed) is consumed by `monitoring`, `external-dns`, `kyverno` (for sealed exceptions), and future charts needing encrypted credentials.
+- Sealed Secrets (if enabled) is consumed by `monitoring`, `external-dns`, `kyverno`, `redis` (for auth secret), and future charts.
 - Kyverno policies can enforce standards on workloads deployed by other charts once validated in Audit mode.
-- Both `envoy-gateway` and `nginx-ingress-controller` can coexist; prefer Gateway API for new traffic patterns.
+- Redis may have NetworkPolicies added later; ensure clients are in allowed namespaces.
 
 ## Typical Helm Install (direct)
 (Argo CD users normally let Argo reconcile instead of manual installs.)
 ```bash
-# Example: deploy kyverno into dev
-helm dependency update ./kyverno
-helm upgrade --install kyverno ./kyverno -f kyverno/values.dev-01.yaml -n kyverno --create-namespace
+# Example: deploy redis into dev
+helm dependency update ./redis
+helm upgrade --install redis ./redis -f redis/values.dev-01.yaml -n data --create-namespace
 ```
 
 ## Argo CD (GitOps) Flow
@@ -91,6 +94,7 @@ helm upgrade --install kyverno ./kyverno -f kyverno/values.dev-01.yaml -n kyvern
 - Rotate sealed secrets when credentials change; commit new encrypted payloads.
 - Use network policies to restrict access to Prometheus / Thanos internals; expose only through approved gateways.
 - Roll out Kyverno policies in Audit first; switch to Enforce after violations trend low.
+- Enable Redis auth & persistence before production usage.
 
 ## Development & Testing
 Render a chart locally:
