@@ -200,8 +200,8 @@ run_trivy_images() {
   mapfile -t images < <($YQ_CMD -N e '..|.image? | select(tag == "!!str")' "$manifest" 2>/dev/null | sort -u || true)
   (( ${#images[@]} == 0 )) && return 0
   for image in "${images[@]}"; do
-    if in_array "$image" "${trivy_skip_images[@]:-}"; then ((images_skipped++)); continue; fi
-    if [[ -n "${IMAGE_DONE[$image]:-}" ]]; then ((images_skipped++)); continue; fi
+    if in_array "$image" "${trivy_skip_images[@]:-}"; then (( ++images_skipped )); continue; fi
+    if [[ -n "${IMAGE_DONE[$image]:-}" ]]; then (( ++images_skipped )); continue; fi
     log "Trivy image scan: $image"
     local results_file="$TEST_RESULTS_DIR/${image//[^A-Za-z0-9._-]/_}_${chart_name}_${values_name}_trivy.xml"
     local trivy_opts=(image --exit-code 1 --severity "$TRIVY_SEVERITY" --format template --template "@.argoci/scripts/junit.tpl")
@@ -210,7 +210,7 @@ run_trivy_images() {
     if ! trivy "${trivy_opts[@]}" -o "$results_file" "$image" 2>/dev/null; then
       failed_charts+=("Trivy:$image:$chart_name:$values_name")
       EXIT_CODE=1
-      ((images_failed++)) || true
+      (( ++images_failed )) || true
     fi
     if [[ -s $results_file && -x $(command -v xmlstarlet || echo /bin/false) ]]; then
       xmlstarlet edit --inplace --delete /testsuites/testsuite[@tests=0] "$results_file" || true
@@ -219,7 +219,7 @@ run_trivy_images() {
       [[ ! -s $results_file ]] && rm -f "$results_file"
     fi
     IMAGE_DONE[$image]=1
-    ((images_scanned++)) || true
+    (( ++images_scanned )) || true
   done
 }
 
@@ -230,7 +230,7 @@ for chart in "${charts_changed[@]}"; do
   [[ ! -d "$chart" ]] && continue
   chart_name=$(basename "$chart")
   debug "Begin chart=$chart_name path=$chart"
-  ((charts_processed++))
+  (( ++charts_processed ))
   if [[ ! -f "$chart/Chart.yaml" ]]; then
     echo "[WARN] Missing Chart.yaml in $chart (skipping)" >&2
     failed_charts+=("NoChart:$chart_name")
@@ -255,7 +255,7 @@ for chart in "${charts_changed[@]}"; do
   for values in "${value_files[@]}"; do
     values_name=$(basename "$values")
     debug "Processing values file $values_name for $chart_name"
-    ((values_processed++))
+    (( ++values_processed ))
     render_dir=$(mktemp -d)
     manifest="$render_dir/${chart_name}.yaml"
     if [[ "$STEP" == "lint" || "$STEP" == "trivy" ]]; then
