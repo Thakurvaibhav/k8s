@@ -80,7 +80,7 @@ jobs:
         run: |
           mkdir -p scan-output/${{ matrix.step }}
           chmod +x scripts/scan.sh
-          DEBUG=${DEBUG} CONFIG_FILE=${CONFIG_FILE} OUTPUT_DIR=scan-output/${{ matrix.step }} bash scripts/scan.sh ${{ matrix.step }}
+          DEBUG=${DEBUG} CONFIG_FILE=${CONFIG_FILE} OUTPUT_DIR=scan-output/${{ matrix.step }} bash scripts/scan.sh ${{ matrix.step }} --all
 
       - name: Show summary
         run: |
