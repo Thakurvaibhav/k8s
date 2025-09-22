@@ -1,0 +1,160 @@
+{{- if .Values.elasticsearch.enable -}}
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: {{ .Values.elasticsearch.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  version: {{ .Values.elasticsearch.version }}
+  updateStrategy:
+    changeBudget:
+      maxSurge: -1
+      maxUnavailable: 1
+  http:
+    tls:
+     certificate:
+       secretName: es-server-tls
+  nodeSets:
+  - name: {{ .Values.elasticsearch.masterNode.name }}
+    count: {{ .Values.elasticsearch.masterNode.count }}
+    config:
+      node.roles:
+      - master
+      - remote_cluster_client
+    podTemplate:
+      spec:
+        initContainers:
+        - name: sysctl
+          securityContext:
+            privileged: true
+          command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+        containers:
+        - name: elasticsearch
+          env:
+        {{- range $key, $value := .Values.elasticsearch.masterNode.env }}
+          - name: {{ $key }}
+            value: "{{ $value }}"
+        {{- end }}
+          readinessProbe:
+            exec:
+              command:
+              - 'bash'
+              - '-c'
+              - /mnt/elastic-internal/scripts/readiness-probe-script.sh
+            failureThreshold: 20
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            successThreshold: 1
+            timeoutSeconds: 60
+          resources:
+            {{- toYaml .Values.elasticsearch.masterNode.resources | nindent 12 }}
+        {{- with .Values.elasticsearch.masterNode.affinity }}
+        affinity:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{ .Values.elasticsearch.masterNode.capacity }}
+        storageClassName: {{ .Values.storageClass.name }}
+  - name: {{ .Values.elasticsearch.dataNode.name }}
+    count: {{ .Values.elasticsearch.dataNode.count }}
+    config:
+      node.roles:
+      - data
+      - remote_cluster_client
+    podTemplate:
+      spec:
+        initContainers:
+        - name: sysctl
+          securityContext:
+            privileged: true
+          command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+        containers:
+        - name: elasticsearch
+          env:
+        {{- range $key, $value := .Values.elasticsearch.dataNode.env }}
+          - name: {{ $key }}
+            value: "{{ $value }}"
+        {{- end }}
+          readinessProbe:
+            exec:
+              command:
+              - 'bash'
+              - '-c'
+              - /mnt/elastic-internal/scripts/readiness-probe-script.sh
+            failureThreshold: 15
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 15
+          resources:
+            {{- toYaml .Values.elasticsearch.dataNode.resources | nindent 12 }}
+        {{- with .Values.elasticsearch.dataNode.affinity }}
+        affinity:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{ .Values.elasticsearch.dataNode.capacity }}
+        storageClassName: {{ .Values.storageClass.name }}
+  - name: {{ .Values.elasticsearch.ingestNode.name }}
+    count: {{ .Values.elasticsearch.ingestNode.count }}
+    config:
+      node.roles:
+      - ingest
+      - remote_cluster_client
+    podTemplate:
+      spec:
+        initContainers:
+        - name: sysctl
+          securityContext:
+            privileged: true
+          command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+        containers:
+        - name: elasticsearch
+          env:
+        {{- range $key, $value := .Values.elasticsearch.ingestNode.env }}
+          - name: {{ $key }}
+            value: "{{ $value }}"
+        {{- end }}
+          readinessProbe:
+            exec:
+              command:
+              - 'bash'
+              - '-c'
+              - /mnt/elastic-internal/scripts/readiness-probe-script.sh
+            failureThreshold: 15
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 15
+          resources:
+            {{- toYaml .Values.elasticsearch.ingestNode.resources | nindent 12 }}
+        {{- with .Values.elasticsearch.ingestNode.affinity }}
+        affinity:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{ .Values.elasticsearch.ingestNode.capacity }}
+        storageClassName: {{ .Values.storageClass.name }}
+---
+{{- end }}

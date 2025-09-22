@@ -1,0 +1,47 @@
+{{- if eq .Values.issuers.devDomain "enable" }}
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-devdomain
+spec:
+  acme:
+    # The ACME server URL
+    server: https://acme-v02.api.letsencrypt.org/directory
+    # Email address used for ACME registration
+    email: hostmaster@mydomain.com
+    # Name of a secret used to store the ACME account private key
+    privateKeySecretRef:
+      name: letsencrypt-devdomain
+    # Enable the dns01 challenge provider
+    solvers:
+      - dns01:
+          cloudDNS:
+            # The ID of the GCP project
+            project: my-gcp-dns-project
+            # This is the secret used to access the service account
+            serviceAccountSecretRef:
+              name: gcp-dns-credentials
+              key: gcp-dns-credentials.json
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: dev-mydomain-com
+  namespace: cert-manager
+spec:
+  dnsNames:
+    - '*.dev.mydomain.com'
+    - 'dev.mydomain.com'
+  renewBefore: 168h # 7d
+  secretName: ingress-tls
+  issuerRef:
+    name: letsencrypt-devdomain
+    kind: ClusterIssuer
+    group: cert-manager.io
+  secretTemplate:
+    annotations:
+      # Allows replicating secret to all namespaces.
+      reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
+      reflector.v1.k8s.emberstack.com/reflection-auto-enabled: "true"
+---
+{{ end }}

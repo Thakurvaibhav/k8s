@@ -1,0 +1,35 @@
+cluster:
+  name: prod-01
+  server: https://prod-01-k8s.endpoint.kubernetes
+
+source:
+  targetRevision: stable
+  helm:
+    valueFiles: values.prod-01.yaml
+
+sealedSecrets:  # targetRevision and valueFiles can be overridden here if the above defaults are not suitable
+  enable: true
+
+envoyGateway:
+  enable: true
+
+externalDNS:
+  enable: true
+
+certManager:
+  enable: true
+
+monitoring:
+  enable: true
+
+logging:
+  enable: true
+
+jaeger:
+  enable: true
+
+kyverno:
+  enable: true
+
+redis:
+  enable: true

@@ -1,0 +1,32 @@
+namespace: external-dns
+
+image:
+  repository: registry.k8s.io/external-dns/external-dns
+  tag: v0.15.1
+
+logLevel: info
+dryRun: false
+upsertOnly: true
+kubernetesProvider: GKE
+dnsConfig:
+  domainFilters: 
+    - mydomain.com
+    - dev.mydomain.com
+    - staging.mydomain.com
+    - ops.mydomain.com
+  sources:
+  - service
+  - gateway-httproute
+  - gateway-grpcroute
+  gcpProject: ops-01
+  txtOwner: ops-01
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 300Mi
+  requests:
+    cpu: 20m
+    memory: 75Mi
+
+sealedCredentials: "" # SealedSecret value for external-dns-credentials.json

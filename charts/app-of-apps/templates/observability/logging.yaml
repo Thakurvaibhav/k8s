@@ -1,0 +1,53 @@
+{{- if .Values.logging.enable -}}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Values.cluster.name }}-logging
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  labels:
+    team: ops
+    cluster: {{ .Values.cluster.name }}
+spec:
+  project: {{ .Values.logging.project }}
+  source:
+    repoURL: {{ .Values.logging.source.repoURL }}
+    targetRevision: {{ .Values.logging.source.targetRevision | default .Values.source.targetRevision }}
+    path: {{ .Values.logging.source.path }}
+    helm:
+      releaseName: {{ tpl .Values.logging.source.helm.releaseName . }}
+      valueFiles:
+      - {{ .Values.logging.source.helm.valueFiles | default .Values.source.helm.valueFiles }}
+    {{- if .Values.logging.source.helm.values }}
+      values: {{- tpl (toYaml .Values.logging.source.helm.values) . | indent 6 }}
+    {{- end }}  
+      
+  destination:
+    {{ if .Values.cluster.server -}}
+    server: {{ .Values.cluster.server }}
+    {{ else }}
+    name: {{ .Values.cluster.name }}
+    {{ end -}}
+    namespace: {{ .Values.logging.namespace }}
+
+  syncPolicy:
+    automated:
+      selfHeal: true
+    syncOptions:
+      - Validate=true
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+
+  ignoreDifferences:
+    - group: admissionregistration.k8s.io
+      kind: ValidatingWebhookConfiguration
+      name: elastic-webhook.k8s.elastic.co
+      jsonPointers:
+        - /webhooks
+    - group: apiextensions.k8s.io
+      kind: CustomResourceDefinition
+      name: beats.beat.k8s.elastic.co
+      jsonPointers:
+        - /spec
+{{- end }}

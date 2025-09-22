@@ -1,0 +1,12 @@
+cluster:
+  type: prod
+
+grafana:
+  enabled: false
+
+prometheus:
+  clusterName: prod-01
+
+thanos:
+  gcsSecret: ""
+  archive_bucket: prod-01-metrics-archive

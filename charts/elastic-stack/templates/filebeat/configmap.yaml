@@ -1,0 +1,65 @@
+{{- if .Values.filebeat.enable -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: filebeat-config
+  namespace: {{ .Values.namespace }}
+  labels:
+    k8s-app: filebeat
+    kubernetes.io/cluster-service: "true"
+data:
+  filebeat.yml: |-
+    filebeat.config:
+      modules:
+        path: ${path.config}/modules.d/*.yml
+        reload.enabled: true
+
+    filebeat.autodiscover:
+      providers:
+        - type: kubernetes
+          node: ${NODE_NAME}
+          hints.enabled: true
+          hints.default_config:
+            type: container
+            paths:
+              - /var/log/containers/*${data.kubernetes.container.id}.log
+
+    processors:
+      - drop_event.when:
+          or:
+          - equals:
+              kubernetes.namespace: "namespace-to-ignore"
+      - add_cloud_metadata:
+      - add_host_metadata:
+      - add_fields:
+          target: ''
+          fields:
+            cluster: ${K8_CLUSTER_NAME}
+
+    queue.mem:
+      events: {{ .Values.filebeat.queue_mem.events }}
+      flush.min_events: {{ .Values.filebeat.queue_mem.flush_min_events }}
+      flush.timeout: {{ .Values.filebeat.queue_mem.flush_timeout }}
+
+    output.elasticsearch:
+      hosts: ['${ELASTICSEARCH_HOST:elasticsearch}:${ELASTICSEARCH_PORT:9200}']
+      username: "${ELASTICSEARCH_USERNAME}"
+      password: "${ELASTICSEARCH_PASSWORD}"
+      ssl:
+        certificate_authorities: ["/etc/elastic/client/ca.crt"]
+        certificate: "/etc/elastic/client/client.crt"
+        key: "/etc/elastic/client/client.key"
+      index: ${K8_CLUSTER_NAME}-filebeat-%{[agent.version]}
+    setup:
+      template:
+        name: "${K8_CLUSTER_NAME}-filebeat"
+        pattern: "${K8_CLUSTER_NAME}-filebeat-*"
+        settings:
+          index.refresh_interval: "30s"
+      ilm:
+        enabled: true
+        rollover_alias: "${K8_CLUSTER_NAME}-filebeat-%{[agent.version]}"
+        pattern: "{now/d}-000001"
+        policy_name: {{ .Values.filebeat.ilm.policy_name }}
+---
+{{- end }}

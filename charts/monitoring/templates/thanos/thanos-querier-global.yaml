@@ -1,0 +1,81 @@
+{{- if .Values.thanos.globalQuery.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: thanos-querier-global
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: thanos-querier-global
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: thanos-querier-global
+      thanos-store-api: "true"
+  template:
+    metadata:
+      labels:
+        app: thanos-querier-global
+        thanos-store-api: "true"
+    spec:
+      containers:
+      - name: thanos
+        image: {{ .Values.thanos.image }}
+        args:
+        - query
+        - --log.level=debug
+        - --query.replica-label=prometheus_replica
+        - --grpc-address=0.0.0.0:10901
+        - --http-address=0.0.0.0:9090
+        - --grpc-client-tls-secure
+        - "--grpc-client-tls-cert=/thanos-tls-client/tls.crt"
+        - "--grpc-client-tls-key=/thanos-tls-client/tls.key"
+        - "--grpc-client-tls-ca=/thanos-tls-client/ca.crt"
+      {{- range .Values.thanos.globalQuery.stores }}
+        - --store={{ . }}
+      {{- end }}
+        volumeMounts:
+        - mountPath: /thanos-tls-client
+          name: thanos-cert-volume
+        ports:
+        - name: http
+          containerPort: 9090
+        - name: grpc
+          containerPort: 10901
+        livenessProbe:
+          httpGet:
+            port: http
+            path: /-/healthy
+        readinessProbe:
+          httpGet:
+            port: http
+            path: /-/ready
+        resources:
+          {{- toYaml .Values.thanos.globalQuery.resources | nindent 10 }}
+      volumes:
+      - name: thanos-cert-volume
+        secret:
+          items:
+          secretName: query-client-tls
+---
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  name: query-client-tls
+  namespace: {{ .Values.namespace }}
+  annotations:
+    sealedsecrets.bitnami.com/cluster-wide: "true"
+spec:
+  encryptedData:
+    ca.crt: {{ .Values.thanos.globalQuery.clientTls.ca_crt }}
+    tls.crt: {{ .Values.thanos.globalQuery.clientTls.tls_crt }}
+    tls.key: {{ .Values.thanos.globalQuery.clientTls.tls_key }}
+  template:
+    metadata:
+      annotations:
+        sealedsecrets.bitnami.com/cluster-wide: "true"
+      name: query-client-tls
+      namespace: {{ .Values.namespace }}
+    type: Opaque
+---
+{{- end }}

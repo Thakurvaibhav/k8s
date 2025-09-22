@@ -1,0 +1,119 @@
+sealedSecrets:
+  enable: false
+  project: operations
+  namespace: sealed-secrets
+  source:
+    repoURL: git@github.com:Thakurvaibhav/k8s.git
+    path: charts/sealed-secrets
+    targetRevision: ""
+    helm:
+      valueFiles: ""
+      releaseName: sealed-secrets
+
+ingressController:
+  enable: false
+  project: operations
+  namespace: ingress-nginx
+  source:
+    repoURL: git@github.com:Thakurvaibhav/k8s.git
+    path: charts/nginx-ingress-controller
+    targetRevision: ""
+    helm:
+      valueFiles: ""
+      releaseName: nginx-ingress
+
+envoyGateway:
+  enable: false
+  project: operations
+  namespace: envoy-gateway-system
+  source:
+    repoURL: git@github.com:Thakurvaibhav/k8s.git
+    path: charts/envoy-gateway
+    targetRevision: ""
+    helm:
+      valueFiles: ""
+      releaseName: envoy-gateway
+
+externalDNS:
+  enable: false
+  project: operations
+  namespace: external-dns
+  source:
+    repoURL: git@github.com:Thakurvaibhav/k8s.git
+    path: charts/external-dns
+    targetRevision: ""
+    helm:
+      valueFiles: ""
+      releaseName: external-dns
+
+certManager:
+  enable: false
+  project: operations
+  namespace: cert-manager
+  source:
+    repoURL: git@github.com:Thakurvaibhav/k8s.git
+    path: charts/cert-manager
+    targetRevision: ""
+    helm:
+      valueFiles: ""
+      releaseName: cert-manager
+
+monitoring:
+  enable: false
+  project: operations
+  namespace: monitoring
+  source:
+    repoURL: git@github.com:Thakurvaibhav/k8s.git
+    path: charts/nginx-ingress-controller
+    targetRevision: ""
+    helm:
+      valueFiles: ""
+      releaseName: monitoring
+
+logging:
+  enable: false
+  project: operations
+  namespace: logging
+  source:
+    repoURL: git@github.com:Thakurvaibhav/k8s.git
+    path: charts/elastic-stack
+    targetRevision: ""
+    helm:
+      valueFiles: ""
+      releaseName: logging
+
+jaeger:
+  enable: false
+  project: operations
+  namespace: jaeger
+  source:
+    repoURL: git@github.com:Thakurvaibhav/k8s.git
+    path: charts/jaeger
+    targetRevision: ""
+    helm:
+      valueFiles: ""
+      releaseName: jaeger
+
+kyverno:
+  enable: false
+  project: operations
+  namespace: kyverno
+  source:
+    repoURL: git@github.com:Thakurvaibhav/k8s.git
+    path: charts/kyverno
+    targetRevision: ""
+    helm:
+      valueFiles: ""
+      releaseName: kyverno
+
+redis:
+  enable: false
+  project: operations
+  namespace: redis
+  source:
+    repoURL: git@github.com:Thakurvaibhav/k8s.git
+    path: charts/redis
+    targetRevision: ""
+    helm:
+      valueFiles: ""
+      releaseName: redis

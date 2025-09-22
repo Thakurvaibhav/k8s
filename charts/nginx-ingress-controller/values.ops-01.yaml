@@ -1,0 +1,10 @@
+controller:
+  replicas: 3
+
+  resources:
+    limits:
+      cpu: 300m
+      memory: 300Mi
+    requests:
+      cpu: 200m
+      memory: 200Mi

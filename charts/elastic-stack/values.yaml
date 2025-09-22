@@ -1,0 +1,140 @@
+eckOperator:
+  enable: false
+
+namespace: logging
+
+storageClass:
+  name: es
+  provisioner: kubernetes.io/gce-pd
+
+elasticsearch:
+  enable: false
+  serverTls:
+    ca_crt: ""
+    tls_crt: ""
+    tls_key: ""
+  httpRoute:
+    enable: false
+    host: elastic.mydomain.com
+    gatewayName: eg-infra-01
+    listenerName: https
+  name: logging
+  version: 8.17.0
+  masterNode:
+    name: master
+    count: 3
+    capacity: 1Gi
+    env:
+      ES_JAVA_OPTS: -Xms5g -Xmx5g
+    resources:
+      limits:
+        cpu: "3"
+        memory: 6Gi
+      requests:
+        cpu: "1"
+        memory: 1Gi
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+              - key: role
+                operator: In
+                values:
+                - elastic
+  dataNode:
+    name: data
+    count: 2
+    capacity: 10Gi
+    env:
+      ES_JAVA_OPTS: -Xms12g -Xmx12g
+    resources:
+      limits:
+        cpu: "6"
+        memory: 15Gi
+      requests:
+        cpu: "1"
+        memory: 2Gi
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+              - key: role
+                operator: In
+                values:
+                - elastic
+  ingestNode:
+    name: ingest
+    count: 3
+    capacity: 10Gi
+    env:
+      ES_JAVA_OPTS: -Xms5g -Xmx5g
+    resources:
+      limits:
+        cpu: "3"
+        memory: 8Gi
+      requests:
+        cpu: "1"
+        memory: 1Gi
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+              - key: role
+                operator: In
+                values:
+                - elastic
+
+kibana:
+  enable: false
+  name: logging
+  httpRoute:
+    enable: false
+    gatewayName: eg-infra-01
+    listenerName: https
+
+dash:
+  image: lmenezes/cerebro:0.9.4
+  name: logging
+  resources:
+    limits:
+      cpu: 500m
+      memory: 6Gi
+    requests:
+      cpu: 100m
+      memory: 300Mi
+  httpRoute:
+    enable: false
+    gatewayName: eg-infra-01
+    listenerName: https
+
+    
+filebeat:
+  enable: true
+  image: docker.elastic.co/beats/filebeat-oss:8.17.0
+  clusterName: k8s-01
+  resources:
+    limits:
+      cpu: 500m
+      memory: 500Mi
+    requests:
+      cpu: 30m
+      memory: 30Mi
+  es:
+    host: "elastic.mydomain.com"
+    port: "443"
+    username: "" # SealedSecret value
+    password: "" # SealedSecret value
+    ca_crt: "" # SealedSecret value
+    client_crt: "" # SealedSecret value
+    client_key: "" # SealedSecret value
+  ilm:
+    policy_name: filebeat
+  queue_mem:
+    #maximum events which can be stored in the queue
+    events: 512
+    #forwards events if minimum 512 are accumulated or if oldest is in the queue for 5s
+    flush_min_events: 0
+    flush_timeout: 5s

@@ -1,0 +1,37 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: eg-infra-shared-01
+  namespace: {{ .Values.namespace }}
+spec:
+  gatewayClassName: infra-shared-01
+  infrastructure:
+    parametersRef:
+      group: gateway.envoyproxy.io
+      kind: EnvoyProxy
+      name: custom-proxy-config
+  listeners:
+    - allowedRoutes:
+        namespaces:
+          from: Same
+      name: http
+      port: 80
+      protocol: HTTP
+    - allowedRoutes:
+        namespaces:
+          from: All
+      hostname: '{{ .Values.gateway.defaultHttps.hostname }}'
+      name: https
+      port: 443
+      protocol: HTTPS
+      tls:
+        mode: Terminate
+        certificateRefs:
+        - group: ""
+          kind: Secret
+          name: {{ .Values.gateway.defaultHttps.certSecretName }}
+          namespace: {{ .Values.namespace }}
+    {{- if .Values.gateway.extraListeners }}
+    {{- toYaml .Values.gateway.extraListeners | nindent 4 }}
+    {{- end }}
+---

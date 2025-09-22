@@ -1,0 +1,123 @@
+{{- if .Values.elasticsearch.httpRoute.enable -}}
+# This is the TLS Cert added on the Gateway listener  
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  annotations:
+    sealedsecrets.bitnami.com/cluster-wide: "true"
+  name: logging-es-server-tls
+  namespace: envoy-gateway-system
+spec:
+  encryptedData:
+    tls.crt: {{ .Values.elasticsearch.serverTls.tls_crt }}
+    tls.key: {{ .Values.elasticsearch.serverTls.tls_key }}
+  template:
+    metadata:
+      annotations:
+        sealedsecrets.bitnami.com/cluster-wide: "true"
+      name: logging-es-server-tls
+      namespace: envoy-gateway-system
+    type: kubernetes.io/tls
+---
+# This is the CA Cert used for Client verification on Gateway and Gateway to Elasticsearch verification.
+# This is needed in both logging namespace to be consumed by BackendTLSPolicy and in envoy-gateway-system
+# namespace to be consumed by ClientTrafficPolicy
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  annotations:
+    sealedsecrets.bitnami.com/cluster-wide: "true"
+  name: {{ .Values.elasticsearch.name }}-es-ca-cert
+  namespace: {{ .Values.elasticsearch.namespace }}
+spec:
+  encryptedData:
+    ca.crt: {{ .Values.elasticsearch.serverTls.ca_crt }}
+  template:
+    metadata:
+      annotations:
+        sealedsecrets.bitnami.com/cluster-wide: "true"
+      name: {{ .Values.elasticsearch.name }}-es-ca-cert
+      namespace: {{ .Values.elasticsearch.namespace }}
+    type: Opaque
+---
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  annotations:
+    sealedsecrets.bitnami.com/cluster-wide: "true"
+  name: {{ .Values.elasticsearch.name }}-es-ca-cert
+  namespace: envoy-gateway-system
+spec:
+  encryptedData:
+    ca.crt: {{ .Values.elasticsearch.serverTls.ca_crt }}
+  template:
+    metadata:
+      annotations:
+        sealedsecrets.bitnami.com/cluster-wide: "true"
+      name: {{ .Values.elasticsearch.name }}-es-ca-cert
+      namespace: envoy-gateway-system
+    type: Opaque
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: ClientTrafficPolicy
+metadata:
+  name: logging-es-mtls
+  namespace: envoy-gateway-system
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: {{ .Values.elasticsearch.httpRoute.gatewayName }}
+      sectionName: {{ .Values.elasticsearch.httpRoute.listenerName }}
+  path:
+    escapedSlashesAction: KeepUnchanged
+  tls:
+    clientValidation:
+      caCertificateRefs:
+      - kind: "Secret"
+        group: ""
+        name: "{{ .Values.elasticsearch.name }}-es-ca-cert"
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: elasticsearch
+  namespace: {{ .Values.namespace }}
+spec:
+  parentRefs:
+    - name: {{ .Values.elasticsearch.httpRoute.gatewayName }}
+      namespace: envoy-gateway-system
+      sectionName: {{ .Values.elasticsearch.httpRoute.listenerName }}
+  hostnames:
+  - {{ .Values.elasticsearch.httpRoute.host }}
+  rules:
+    - backendRefs:
+        - name: {{ .Values.elasticsearch.name }}-es-{{ .Values.elasticsearch.ingestNode.name }}
+          port: 9200
+      matches:
+        - path:
+            type: PathPrefix
+            value: /
+      timeouts:
+        backendRequest: 0s
+        request: 300s
+---
+apiVersion: gateway.networking.k8s.io/v1alpha3
+kind: BackendTLSPolicy
+metadata:
+  name: logging-backend-tls
+  namespace: {{ .Values.namespace }}
+spec:
+  targetRefs:
+  - group: ''
+    kind: Service
+    name: {{ .Values.elasticsearch.name }}-es-{{ .Values.elasticsearch.ingestNode.name }}
+    sectionName: https
+  validation:
+    caCertificateRefs:
+    - name: {{ .Values.elasticsearch.name }}-es-ca-cert
+      group: ''
+      kind: Secret
+    hostname: {{ .Values.elasticsearch.httpRoute.host }}
+---
+{{- end }}

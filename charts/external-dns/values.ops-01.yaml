@@ -1,0 +1,3 @@
+dnsConfig:
+  gcpProject: ops-01
+  txtOwner: ops-01

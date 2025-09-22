@@ -1,0 +1,18 @@
+cluster:
+  type: prod-01
+gateway:
+  defaultHttps:
+    hostname: '*.prod.mydomain.com'
+    certSecretName: ingress-tls
+
+internalGateway:
+  enable: true
+  defaultHttps:
+    hostname: '*.prod.internal-mydomain.com'
+    certSecretName: internal-ingress-tls
+
+internalProxyConfig:
+  service:
+    annotations:
+      networking.gke.io/load-balancer-type: "Internal"
+

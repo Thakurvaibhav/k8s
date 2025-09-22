@@ -1,0 +1,45 @@
+{{- if .Values.certManager.enable -}}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Values.cluster.name }}-cert-manager
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  {{- with .Values.certManager.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  labels:
+    team: ops
+    cluster: {{ .Values.cluster.name }}
+spec:
+  project: {{ .Values.certManager.project }}
+  source:
+    repoURL: {{ .Values.certManager.source.repoURL }}
+    targetRevision: {{ .Values.certManager.source.targetRevision | default .Values.source.targetRevision }}
+    path: {{ .Values.certManager.source.path }}
+    helm:
+      releaseName: {{ tpl .Values.certManager.source.helm.releaseName . }}
+      valueFiles:
+      - {{ .Values.certManager.source.helm.valueFiles | default .Values.source.helm.valueFiles }}
+    {{- if .Values.certManager.source.helm.values }}
+      values: {{- tpl (toYaml .Values.certManager.source.helm.values) . | indent 6 }}
+    {{- end }}
+      
+  destination:
+    {{ if .Values.cluster.server -}}
+    server: {{ .Values.cluster.server }}
+    {{ else }}
+    name: {{ .Values.cluster.name }}
+    {{ end -}}
+    namespace: {{ .Values.certManager.namespace  }}
+
+  syncPolicy:
+    automated:
+      selfHeal: true
+    syncOptions:
+      - Validate=true
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+{{- end }}

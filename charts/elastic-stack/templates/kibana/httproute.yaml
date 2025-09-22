@@ -1,0 +1,61 @@
+{{- if .Values.kibana.httpRoute.enable -}}
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: kibana
+  namespace: {{ .Values.namespace }}
+spec:
+  parentRefs:
+    - name: {{ .Values.kibana.httpRoute.gatewayName }}
+      namespace: envoy-gateway-system
+      sectionName: {{ .Values.kibana.httpRoute.listenerName }}
+  hostnames:
+  - {{ .Values.kibana.httpRoute.host }}
+  rules:
+    - backendRefs:
+        - name: {{ .Values.kibana.name }}-kb-http
+          port: 5601
+      matches:
+        - path:
+            type: PathPrefix
+            value: /
+---
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  annotations:
+    sealedsecrets.bitnami.com/cluster-wide: "true"
+  name: oauth-secret
+  namespace: {{ .Values.namespace }}
+spec:
+  encryptedData:
+    client-secret: {{ .Values.kibana.httpRoute.googleAuth.clientSecret }}
+  template:
+    metadata:
+      annotations:
+        sealedsecrets.bitnami.com/cluster-wide: "true"
+      name: oauth-secret
+      namespace: {{ .Values.namespace }}
+    type: Opaque
+
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: oidc-policy
+  namespace: {{ .Values.namespace }}
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: kibana
+  oidc:
+    provider:
+      issuer: "https://accounts.google.com"
+    clientID: "{{ .Values.kibana.httpRoute.googleAuth.clientID }}"
+    clientSecret:
+      name: "oauth-secret"
+    redirectURL: "https://{{ .Values.kibana.httpRoute.host }}/oauth2/callback"
+    logoutPath: "/logout"
+---
+{{- end }}

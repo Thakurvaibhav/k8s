@@ -1,0 +1,8 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: {{ .Values.storageClass.name }}
+  namespace: {{ .Values.namespace }}
+allowVolumeExpansion: true
+provisioner: ebs.csi.aws.com
+---

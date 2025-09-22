@@ -1,0 +1,164 @@
+namespace: monitoring
+
+cluster:
+  type: cluster-type
+
+storageClass:
+  name: monitoring
+
+alertmanager:
+  enabled: true
+  image: prom/alertmanager:v0.27.0
+  service:
+    type: ClusterIP
+  resources:
+    limits:
+      cpu: "500m"
+      memory: 200Mi
+    requests:
+      cpu: 200m
+      memory: 100Mi
+
+grafana:
+  enabled: true
+  dashboards:
+    enabled: true
+  image: grafana/grafana:12.0.0-security-01
+  extraEnv:
+    GF_AUTH_BASIC_ENABLED: true
+    GF_AUTH_ANONYMOUS_ENABLED: false
+    GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
+  service:
+    type: ClusterIP
+  storage: 10Gi
+  resources:
+    limits:
+      cpu: "1"
+      memory: 200Mi
+    requests:
+      cpu: 500m
+      memory: 150Mi
+  httpRoute:
+    gatewayName: eg-infra-01
+    host: grafana.mydomain.com
+
+kube_state_metrics:
+  enabled: true
+  image: registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.14.0
+
+kubeEagle:
+  enabled: true
+  image: quay.io/google-cloud-tools/kube-eagle:1.1.4
+  resources:
+    limits:
+      cpu: 100m
+      memory: 300Mi
+    requests:
+      cpu: 50m
+      memory: 50Mi
+
+nodeExporter:
+  enabled: true
+  image: prom/node-exporter:v1.8.2
+
+prometheus:
+  enabled: true
+  image: prom/prometheus:v3.1.0
+  clusterName: cluster-name
+  replicas: 1
+  storage: 20Gi
+  resources:
+    limits:
+      cpu: "1"
+      memory: 500Mi
+    requests:
+      cpu: 100m
+      memory: 100Mi
+
+pushgateway:
+  enabled: false
+  image: prom/pushgateway:v1.11.0
+  replicas: 1
+  service:
+    type: ClusterIP
+
+thanos:
+  image: quay.io/thanos/thanos:v0.37.2
+  archive_bucket: prometheus-metrics-archive
+  gcsSecret: ""
+  globalQuery:
+    enabled: false
+    clientTls:
+      ca_crt: ""
+      tls_crt: ""
+      tls_key: ""
+    extraArgs: {}
+    stores:
+      - dnssrvnoa+_clusters._tcp.clusters.mydomain.com:443
+    resources:
+      limits:
+        cpu: "1"
+        memory: 1Gi
+      requests:
+        cpu: 500m
+        memory: 200Mi
+  query:
+    enabled: true
+    replicas: 1
+    extraArgs: {}
+    stores: []
+    resources:
+      limits:
+        cpu: "1"
+        memory: 1Gi
+      requests:
+        cpu: 500m
+        memory: 500Mi
+    service:
+      type: ClusterIP
+    scrape:
+      grpcRoute:
+        enabled: true
+        gatewayName: eg-infra-01
+        listenerName: thanos-query-https
+        host: thanos-query.mydomain.com
+        tlsCrt: ""
+        tlsKey: ""
+        caCrt: ""
+
+
+  compactor:
+    enabled: true
+    replicas: 1
+    resources:
+      limits:
+        cpu: "1"
+        memory: 500Mi
+      requests:
+        cpu: 10m
+        memory: 100Mi
+
+  store:
+    enabled: true
+    replicas: 1
+    resources:
+      limits:
+        cpu: "1"
+        memory: 500Mi
+      requests:
+        cpu: 10m
+        memory: 100Mi
+
+  ruler:
+    enabled: false
+    replicas: 1
+    rules_bucket: prometheus-rules-archive
+    service:
+      type: ClusterIP
+    resources:
+      limits:
+        cpu: "1"
+        memory: 500Mi
+      requests:
+        cpu: 10m
+        memory: 100Mi

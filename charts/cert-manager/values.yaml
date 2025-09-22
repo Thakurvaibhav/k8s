@@ -1,0 +1,53 @@
+issuers:
+  opsDomain: disable
+  devDomain: disable
+  stgDomain: disable
+  prodDomain: disable
+
+reflector:
+  resources:
+    requests:
+      cpu: 150m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+cert-manager:
+  namespace: "cert-manager"
+  installCRDs: true
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 256Mi
+  webhook:
+    validatingWebhookConfigurationAnnotations:
+      admissions.enforcer/disabled: "true"
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 100m
+        memory: 256Mi
+  cainjector:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 100m
+        memory: 256Mi
+  startupapicheck:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 100m
+        memory: 256Mi
+
+sealedgcpdnscredentials: "" # Sealed secret for GCP Service Account with DNS Access

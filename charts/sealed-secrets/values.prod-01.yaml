@@ -1,0 +1,4 @@
+globalExampleSecret:
+  data:
+    username: "" # Sealed secret value here
+    password: "" # Sealed secret value here

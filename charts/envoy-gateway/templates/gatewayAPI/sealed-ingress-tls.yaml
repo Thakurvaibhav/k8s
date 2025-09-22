@@ -1,0 +1,42 @@
+{{- if .Values.gateway.secretManifest.tls.crt }}
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  annotations:
+    sealedsecrets.bitnami.com/cluster-wide: "true"
+  name: ingress-tls
+  namespace: {{ .Values.namespace }}
+spec:
+  encryptedData:
+    tls.crt: {{ .Values.gateway.secretManifest.tls.crt  }}
+    tls.key: {{ .Values.gateway.secretManifest.tls.key  }}
+  template:
+    metadata:
+      annotations:
+        sealedsecrets.bitnami.com/cluster-wide: "true"
+      name: ingress-tls
+      namespace: {{ .Values.namespace }}
+    type: kubernetes.io/tls
+---
+{{- end }}
+{{- if and .Values.internalGateway.enable .Values.internalGateway.secretManifest.tls.crt }}
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  annotations:
+    sealedsecrets.bitnami.com/cluster-wide: "true"
+  name: internal-ingress-tls
+  namespace: {{ .Values.namespace }}
+spec:
+  encryptedData:
+    tls.crt: {{ .Values.internalGateway.secretManifest.tls.crt  }}
+    tls.key: {{ .Values.internalGateway.secretManifest.tls.key  }}
+  template:
+    metadata:
+      annotations:
+        sealedsecrets.bitnami.com/cluster-wide: "true"
+      name: internal-ingress-tls
+      namespace: {{ .Values.namespace }}
+    type: kubernetes.io/tls
+---
+{{- end }}

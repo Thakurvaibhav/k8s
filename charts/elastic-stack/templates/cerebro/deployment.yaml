@@ -1,0 +1,33 @@
+{{- if .Values.elasticsearch.enable -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.dash.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    component: elasticsearch
+    role: dash
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: elasticsearch
+      role: dash
+  template:
+    metadata:
+      labels:
+        component: elasticsearch
+        role: dash
+    spec:
+      containers:
+      - name: dash
+        image: {{ .Values.dash.image }}
+        args:
+          - "-Dplay.ws.ssl.loose.acceptAnyCertificate=true"
+        resources:
+          {{- toYaml .Values.dash.resources | nindent 10 }}
+        ports:
+        - containerPort: 9000
+          name: http
+---
+{{- end }}

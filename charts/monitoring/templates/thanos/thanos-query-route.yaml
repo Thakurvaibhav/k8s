@@ -1,0 +1,93 @@
+{{- if .Values.thanos.query.scrape.grpcRoute.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: thanos-querier
+  name: thanos-query-scrape
+  namespace: {{ .Values.namespace }}
+spec:
+  type: ClusterIP
+  ports:
+  - port: 10901
+    protocol: TCP
+    targetPort: grpc
+    name: grpc
+  selector:
+    app: thanos-querier
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: GRPCRoute
+metadata:
+  name: thanos-query
+  namespace: {{ .Values.namespace }}
+spec:
+  parentRefs:
+    - name: {{ .Values.thanos.query.scrape.grpcRoute.gatewayName }}
+      namespace: envoy-gateway-system
+      sectionName: {{ .Values.thanos.query.scrape.grpcRoute.listenerName }}
+  hostnames:
+    - "{{ .Values.thanos.query.scrape.grpcRoute.host }}"
+  rules:
+    - backendRefs:
+        - group: ""
+          kind: Service
+          name: thanos-query-scrape
+          port: 10901
+---
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  annotations:
+    sealedsecrets.bitnami.com/cluster-wide: "true"
+  name: thanos-query-ingress-tls
+  namespace: envoy-gateway-system
+spec:
+  encryptedData:
+    tls.crt: {{ .Values.thanos.query.scrape.grpcRoute.tlsCrt }}
+    tls.key: {{ .Values.thanos.query.scrape.grpcRoute.tlsKey }}
+  template:
+    metadata:
+      annotations:
+        sealedsecrets.bitnami.com/cluster-wide: "true"
+      name: thanos-query-ingress-tls
+      namespace: envoy-gateway-system
+    type: kubernetes.io/tls
+---
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  annotations:
+    sealedsecrets.bitnami.com/cluster-wide: "true"
+  name: thanos-query-ca-cert
+  namespace: envoy-gateway-system
+spec:
+  encryptedData:
+    ca.crt: {{ .Values.thanos.query.scrape.grpcRoute.caCrt }}
+  template:
+    metadata:
+      annotations:
+        sealedsecrets.bitnami.com/cluster-wide: "true"
+      name: thanos-query-ca-cert
+      namespace: envoy-gateway-system
+    type: Opaque
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: ClientTrafficPolicy
+metadata:
+  name: thanos-query-mtls
+  namespace: envoy-gateway-system
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: {{ .Values.thanos.query.scrape.grpcRoute.gatewayName }}
+      sectionName: {{ .Values.thanos.query.scrape.grpcRoute.listenerName }}
+  tls:
+    clientValidation:
+      caCertificateRefs:
+      - kind: "Secret"
+        group: ""
+        name: "thanos-query-ca-cert"
+---
+{{- end }}

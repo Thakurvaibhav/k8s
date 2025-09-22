@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: collector
+  namespace: {{ .Values.namespace }}
+spec:
+  ports:
+  - name: grpc
+    port: 14250
+    protocol: TCP
+    targetPort: grpc
+  - name: http
+    port: 14268
+    protocol: TCP
+    targetPort: http
+  - name: otlp-http
+    port: 4318
+    protocol: TCP
+    targetPort: otlp-http
+  - name: admin
+    port: 14269
+    protocol: TCP
+    targetPort: admin
+  selector:
+    app.kubernetes.io/component: collector
+  type: ClusterIP

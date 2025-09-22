@@ -1,0 +1,19 @@
+{{- if .Values.elasticsearch.enable -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.dash.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    component: elasticsearch
+    role: dash
+spec:
+  selector:
+    component: elasticsearch
+    role: dash
+  ports:
+  - name: http
+    port: 9000
+  type: ClusterIP
+---
+{{- end }}

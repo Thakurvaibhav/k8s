@@ -1,0 +1,14 @@
+{{- if .Values.elasticsearch.enable -}}
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: {{ .Values.storageClass.name }}
+  namespace: {{ .Values.namespace }}
+provisioner: {{ .Values.storageClass.provisioner }}
+parameters:
+  type: pd-ssd
+  csi.storage.k8s.io/fstype: ext4
+allowVolumeExpansion: true
+reclaimPolicy: Retain
+---
+{{- end }}

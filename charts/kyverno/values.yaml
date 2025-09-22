@@ -1,0 +1,145 @@
+opsPolicies:
+  disallowDefaultNs:
+    enabled: true
+    mode: Audit
+  disallowLatestTag:
+    enabled: true
+    mode: Audit
+  specifyResources:
+    enabled: true
+    mode: Audit
+  disallowNodePortService:
+    enabled: true
+    mode: Audit
+
+secPolicies:
+  restrictImageRegistries:
+    enabled: true
+    mode: Audit
+  restrictIngressDefaultBackend:
+    enabled: true
+    mode: Audit
+  restrictBindToSystemGroups: 
+    enabled: true
+    mode: Audit
+  restrictBindToClusterAdmin:
+    enabled: true
+    mode: Audit
+  denySecretServiceAccountToken:
+    enabled: true
+    mode: Audit
+  checkLongLivedSecrets:
+    enabled: true
+    mode: Audit
+
+kyverno:
+  namespaceOverride: kyverno
+  crds:
+    annotations:
+      argocd.argoproj.io/sync-wave: "-10"
+      argocd.argoproj.io/sync-options: Replace=true
+    migration:
+      tolerations:
+        - operator: "Exists"
+          effect: "NoSchedule"
+  features:
+    forceFailurePolicyIgnore:
+      enabled: true
+    policyExceptions:
+      enabled: true
+  config:
+    preserve: false
+    webhooks:
+      namespaceSelector:
+        matchExpressions:
+        - key: kubernetes.io/metadata.name
+          operator: NotIn
+          values:
+            - kube-system
+            - gke-managed-system
+            - kube-public
+            - kube-node-lease
+            - kyverno
+  admissionController:
+    rbac:
+      clusterRole:
+        extraResources:
+          - apiGroups:
+              - '*'
+            resources:
+              - '*'
+            verbs:
+              - get
+              - list
+              - watch
+    container:
+      resources:
+        limits:
+          cpu: 500m
+          memory: 2Gi
+        requests:
+          cpu: 200m
+          memory: 512Mi
+      extraArgs:
+        webhookTimeout: 30
+    metricsService:
+       annotations:
+          prometheus.io/port: '8000'
+          prometheus.io/scrape: 'true'
+  backgroundController:
+    rbac:
+      clusterRole:
+        extraResources:
+          - apiGroups:
+              - '*'
+            resources:
+              - '*'
+            verbs:
+              - get
+              - list
+              - watch
+          - apiGroups:
+              - ''
+            resources:
+              - pods
+            verbs:
+              - create
+              - delete
+              - update
+    metricsService:
+       annotations:
+          prometheus.io/port: '8000'
+          prometheus.io/scrape: 'true'
+    resources:
+      limits:
+        memory: 1Gi
+
+  reportsController:
+    rbac:
+      clusterRole:
+        extraResources:
+          - apiGroups:
+              - '*'
+            resources:
+              - '*'
+            verbs:
+              - get
+              - list
+              - watch
+    resources:
+      limits:
+        memory: 1Gi
+
+
+policyReporter:
+  enabled: true
+  namespaceOverride: "kyverno"
+  service:
+    annotations:
+      prometheus.io/scrape: "true"
+  ui:
+    enabled: true
+  kyverno-plugin:
+    enabled: true
+  metrics:
+    enabled: true

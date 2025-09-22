@@ -1,0 +1,4 @@
+upsertOnly: false
+dnsConfig:
+  gcpProject: stag-01
+  txtOwner: stag-01

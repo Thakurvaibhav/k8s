@@ -1,0 +1,12 @@
+cluster:
+  type: stag
+
+grafana:
+  enabled: false
+
+prometheus:
+  clusterName: stag-01
+
+thanos:
+  gcsSecret: ""
+  archive_bucket: stag-01-metrics-archive

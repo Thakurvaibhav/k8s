@@ -1,0 +1,45 @@
+{{- if .Values.ingressController.enable -}}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Values.cluster.name }}-ingresscontroller
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  {{- with .Values.ingressController.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  labels:
+    team: ops
+    cluster: {{ .Values.cluster.name }}
+spec:
+  project: {{ .Values.ingressController.project }}
+  source:
+    repoURL: {{ .Values.ingressController.source.repoURL }}
+    targetRevision: {{ .Values.ingressController.source.targetRevision | default .Values.source.targetRevision }}
+    path: {{ .Values.ingressController.source.path }}
+    helm:
+      releaseName: {{ .Values.ingressController.source.helm.releaseName }}
+      valueFiles:
+      - {{ .Values.ingressController.source.helm.valueFiles | default .Values.source.helm.valueFiles }}
+    {{- if .Values.ingressController.source.helm.values }}
+      values: {{- toYaml .Values.ingressController.source.helm.values | indent 6 }}
+    {{- end }}  
+      
+  destination:
+    {{ if .Values.cluster.server -}}
+    server: {{ .Values.cluster.server }}
+    {{ else }}
+    name: {{ .Values.cluster.name }}
+    {{ end -}}
+    namespace: {{ .Values.ingressController.namespace  }}
+
+  syncPolicy:
+    automated:
+      selfHeal: true
+    syncOptions:
+      - Validate=true
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+{{- end }}
