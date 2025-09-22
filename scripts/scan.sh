@@ -4,29 +4,6 @@ set -euo pipefail
 IFS=$'\n\t'
 
 # ---------------------------------------------
-# Bash 3.x compatibility (macOS) – provide mapfile fallback
-# ---------------------------------------------
-if ! help mapfile >/dev/null 2>&1; then
-  mapfile() {
-    local opt_t=0
-    if [[ ${1:-} == "-t" ]]; then opt_t=1; shift; fi
-    local var=${1:-}; shift || true
-    # Read stdin into array
-    local line
-    local _arr=()
-    while IFS= read -r line; do
-      if (( opt_t )); then _arr+=("$line"); else _arr+=("$line"$'\n'); fi
-    done
-    # Assign to requested variable name
-    eval "${var}=()"  # reset
-    local i
-    for i in "${!_arr[@]}"; do
-      eval "${var}[${i}]=\"${_arr[$i]}\""
-    done
-  }
-fi
-
-# ---------------------------------------------
 # Config / Defaults
 # ---------------------------------------------
 STEP=${1:-}
@@ -133,13 +110,9 @@ fi
 in_array() { local needle="$1"; shift; for e in "$@"; do [[ "$e" == "$needle" ]] && return 0; done; return 1; }
 
 # ---------------------------------------------
-# Image scanning cache (Bash 3 compatible)
+# Image scanning cache (now using associative array; Bash >=4)
 # ---------------------------------------------
-# Use a delimiter-wrapped flat string instead of associative array (not in Bash 3)
-IMAGE_CACHE_DELIM=$'\x1f'
-IMAGE_DONE_LIST=""
-image_seen() { [[ "$IMAGE_DONE_LIST" == *"${IMAGE_CACHE_DELIM}$1${IMAGE_CACHE_DELIM}"* ]]; }
-image_mark() { IMAGE_DONE_LIST+="${IMAGE_CACHE_DELIM}$1${IMAGE_CACHE_DELIM}"; }
+declare -A IMAGE_DONE
 
 # Single Trivy DB update (if needed)
 if [[ "$STEP" == "trivy" ]]; then
@@ -203,7 +176,7 @@ run_trivy_images() {
   (( ${#images[@]} == 0 )) && return 0
   for image in "${images[@]}"; do
     if in_array "$image" "${trivy_skip_images[@]:-}"; then ((images_skipped++)); continue; fi
-    if image_seen "$image"; then ((images_skipped++)); continue; fi
+    if [[ -n "${IMAGE_DONE[$image]:-}" ]]; then ((images_skipped++)); continue; fi
     log "Trivy image scan: $image"
     local results_file="$TEST_RESULTS_DIR/${image//[^A-Za-z0-9._-]/_}_${chart_name}_${values_name}_trivy.xml"
     local trivy_opts=(image --exit-code 1 --severity "$TRIVY_SEVERITY" --format template --template "@.argoci/scripts/junit.tpl")
@@ -220,7 +193,7 @@ run_trivy_images() {
     else
       [[ ! -s $results_file ]] && rm -f "$results_file"
     fi
-    image_mark "$image"
+    IMAGE_DONE[$image]=1
     ((images_scanned++)) || true
   done
 }
@@ -232,9 +205,8 @@ for chart in "${charts_changed[@]}"; do
   [[ ! -d "$chart" ]] && continue
   chart_name=$(basename "$chart")
   ((charts_processed++))
-  # Collect values override files (Bash 3 safe) and fall back to base values.yaml if none
-  value_files=()
-  while IFS= read -r f; do value_files+=("$f"); done < <(find "$chart" -maxdepth 1 -type f -name 'values.*.yaml' -print | sort)
+  # Collect values override files using mapfile (Bash >=4). Fallback to base values.yaml if none.
+  mapfile -t value_files < <(find "$chart" -maxdepth 1 -type f -name 'values.*.yaml' -print | sort)
   if [[ ${#value_files[@]} -eq 0 && -f "$chart/values.yaml" ]]; then
     value_files+=("$chart/values.yaml")
   fi
