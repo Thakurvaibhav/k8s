@@ -3,6 +3,12 @@
 set -euo pipefail
 IFS=$'\n\t'
 
+# Add error trap in debug mode
+DEBUG=${DEBUG:-0}
+if (( DEBUG )); then
+  trap 'rc=$?; echo "[DEBUG][ERR] Command failed: $BASH_COMMAND (rc=$rc)" >&2' ERR
+fi
+
 # ---------------------------------------------
 # Config / Defaults
 # ---------------------------------------------
@@ -223,20 +229,32 @@ run_trivy_images() {
 for chart in "${charts_changed[@]}"; do
   [[ ! -d "$chart" ]] && continue
   chart_name=$(basename "$chart")
+  debug "Begin chart=$chart_name path=$chart"
   ((charts_processed++))
-  # Collect values override files using mapfile (Bash >=4). Fallback to base values.yaml if none.
-  mapfile -t value_files < <(find "$chart" -maxdepth 1 -type f -name 'values.*.yaml' -print | sort)
+  if [[ ! -f "$chart/Chart.yaml" ]]; then
+    echo "[WARN] Missing Chart.yaml in $chart (skipping)" >&2
+    failed_charts+=("NoChart:$chart_name")
+    EXIT_CODE=1
+    continue
+  fi
+  mapfile -t value_files < <(find "$chart" -maxdepth 1 -type f -name 'values.*.yaml' -print | sort || true)
   if [[ ${#value_files[@]} -eq 0 && -f "$chart/values.yaml" ]]; then
     value_files+=("$chart/values.yaml")
   fi
-  deps=$($YQ_CMD e '.dependencies' "$chart/Chart.yaml" 2>/dev/null || echo '')
+  debug "Value files count=${#value_files[@]}"
+  deps=$($YQ_CMD e '.dependencies' "$chart/Chart.yaml" 2>/dev/null || echo '') || true
   if [[ -n "$deps" && "$deps" != "null" ]]; then
     log "Building dependencies for $chart_name"
-    debug "Dependencies field present for $chart_name"
-    helm dependency build "$chart" >/dev/null
+    debug "Dependencies raw: $deps"
+    if ! helm dependency build "$chart" >/dev/null 2>&1; then
+      echo "[WARN] helm dependency build failed for $chart_name (continuing)" >&2
+      failed_charts+=("Deps:$chart_name")
+      EXIT_CODE=1
+    fi
   fi
   for values in "${value_files[@]}"; do
     values_name=$(basename "$values")
+    debug "Processing values file $values_name for $chart_name"
     ((values_processed++))
     render_dir=$(mktemp -d)
     manifest="$render_dir/${chart_name}.yaml"
