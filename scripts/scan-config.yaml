@@ -3,6 +3,9 @@ trivy:
     - argo-apps
     - nginx-ingress-controller # not enabled anywhere
     - sealed-secrets # upstream chart has some vulnerabilities for which fix is not available
+    - jaeger # upstream chart has some vulnerabilities for which fix is not available
+    - cert-manager # Trivy unable to scan
+    - external-dns # Trivy unable to scan
 
   skipimages:
     - lmenezes/cerebro:0.9.4
@@ -10,7 +13,9 @@ trivy:
     -  emberstack/kubernetes-reflector:7.1.262 # Fix not available
     -  bitnami/kubectl:1.30.2 # Fix not available
     -  docker.elastic.co/beats/filebeat-oss:8.17.0 # Fix not available
-    -  docker.io/bitnami/redis:8.0.3-debian-12-r1
+    -  docker.io/bitnami/redis:8.0.3-debian-12-r1 # Fix not available
+    -  prom/alertmanager:v0.27.0 # Fix not available
+    -  busybox:1.31.1 # Fix not available
 
 checkov:
   skipcharts:

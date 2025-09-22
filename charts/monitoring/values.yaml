@@ -44,7 +44,7 @@ grafana:
 
 kube_state_metrics:
   enabled: true
-  image: quay.io/coreos/kube-state-metrics:v1.9.5
+  image: registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.14.0
 
 kubeEagle:
   enabled: true
@@ -59,11 +59,11 @@ kubeEagle:
 
 nodeExporter:
   enabled: true
-  image: prom/node-exporter:v1.3.1
+  image: prom/node-exporter:v1.8.2
 
 prometheus:
   enabled: true
-  image: prom/prometheus:v2.33.0
+  image: prom/prometheus:v3.1.0
   clusterName: cluster-name
   replicas: 1
   storage: 20Gi
@@ -77,13 +77,13 @@ prometheus:
 
 pushgateway:
   enabled: false
-  image: prom/pushgateway:v1.4.2
+  image: prom/pushgateway:v1.11.0
   replicas: 1
   service:
     type: ClusterIP
 
 thanos:
-  image: quay.io/thanos/thanos:v0.12.1
+  image: quay.io/thanos/thanos:v0.37.2
   archive_bucket: prometheus-metrics-archive
   gcsSecret: ""
   globalQuery:
