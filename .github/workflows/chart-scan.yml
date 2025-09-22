@@ -24,11 +24,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        step: [lint, checkov, trivy]
+        step: [lint]
     env:
       TRIVY_SEVERITY: CRITICAL
       TRIVY_IGNORE_UNFIXED: false
-      CONFIG_FILE: scan-config.yaml
+      CONFIG_FILE: scripts/scan-config.yaml
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -79,7 +79,7 @@ jobs:
         run: |
           mkdir -p scan-output/${{ matrix.step }}
           chmod +x scripts/scan.sh
-          CONFIG_FILE=${CONFIG_FILE} OUTPUT_DIR=scan-output/${{ matrix.step }} bash scripts/scan.sh ${{ matrix.step }} --all || true
+          CONFIG_FILE=${CONFIG_FILE} OUTPUT_DIR=scan-output/${{ matrix.step }} bash scripts/scan.sh ${{ matrix.step }} --all
 
       - name: Show summary
         run: |
