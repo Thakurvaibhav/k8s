@@ -8,5 +8,6 @@ trivy:
 checkov:
   skipcharts:
     - argo-apps
-#    - eck-operator # skipping since upstream chart does not pass
+    - kyverno # Upstream chart has hooks which does not support all configs
+    - eck-operator # skipping since upstream chart does not support all configs
 

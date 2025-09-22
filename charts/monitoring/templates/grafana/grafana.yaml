@@ -32,6 +32,13 @@ spec:
         image: busybox:1.31.1
         imagePullPolicy: IfNotPresent
         name: init-chown-data
+        resources:
+          limits:
+            cpu: 50m
+            memory: 100Mi
+          requests:
+            cpu: 10m
+            memory: 10Mi
         securityContext:
           runAsUser: 0
         volumeMounts:

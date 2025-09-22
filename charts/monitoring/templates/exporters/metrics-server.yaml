@@ -165,6 +165,9 @@ spec:
           initialDelaySeconds: 20
           periodSeconds: 10
         resources:
+          limits:
+            cpu: 200m
+            memory: 400Mi
           requests:
             cpu: 100m
             memory: 200Mi

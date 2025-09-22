@@ -2,3 +2,19 @@ globalExampleSecret:
   enabled: true
   name: my-global-secret
   namespace: my-namespace
+
+sealedSecrets:
+  resources:
+    limits:
+      cpu: 100m
+      memory: 50Mi
+    requests:
+      cpu: 10m
+      memory: 20Mi
+  extraDeploy:
+    - apiVersion: v1
+      kind: Namespace
+      metadata:
+        labels:
+          name: sealed-secrets
+        name: sealed-secrets
