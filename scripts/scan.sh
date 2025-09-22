@@ -78,7 +78,7 @@ fi
 # Prerequisite Checks
 # ---------------------------------------------
 need_bin() { command -v "$1" >/dev/null 2>&1 || { echo "[ERR] Missing required binary: $1" >&2; exit 127; }; }
-need_bin git; need_bin helm; need_bin "$YQ_CMD"; need_bin grep; need_bin sort; need_bin cut; need_bin find
+need_bin git; need_bin helm; need_bin "$YQ_CMD"; need_bin grep; need_bin sort; need_bin cut; need_bin find; need_bin awk
 [[ "$STEP" == "trivy" ]] && need_bin trivy
 [[ "$STEP" == "checkov" ]] && need_bin checkov
 command -v xmlstarlet >/dev/null 2>&1 || echo "[WARN] xmlstarlet not found; XML post-processing skipped"
@@ -97,7 +97,7 @@ images_failed=0
 log() { printf '[%s] %s\n' "$(date -u +'%Y-%m-%dT%H:%M:%SZ')" "$*"; }
 
 # ---------------------------------------------
-# Determine Changed Charts
+# Determine Changed Charts (enhanced base ref logic)
 # ---------------------------------------------
 collect_all_charts() { find charts -maxdepth 1 -mindepth 1 -type d -print | sort; }
 
@@ -108,7 +108,16 @@ else
     base_range="$CI_GIT_COMMIT_RANGE"
   else
     git fetch --quiet origin || true
-    MAIN_REF=${MAIN_REF:-origin/master}
+    # Allow override via BASE_REF or MAIN_REF; prefer origin/main when present
+    if [[ -z "${BASE_REF:-}" ]]; then
+      if git show-ref --verify --quiet refs/remotes/origin/main; then
+        DEFAULT_BASE=origin/main
+      else
+        DEFAULT_BASE=origin/master
+      fi
+      BASE_REF=$DEFAULT_BASE
+    fi
+    MAIN_REF=${MAIN_REF:-$BASE_REF}
     base=$(git merge-base HEAD "$MAIN_REF" || echo HEAD^) || true
     base_range="$base...HEAD"
   fi
@@ -135,8 +144,11 @@ fi
 in_array() { local needle="$1"; shift; for e in "$@"; do [[ "$e" == "$needle" ]] && return 0; done; return 1; }
 
 # ---------------------------------------------
-# Image scanning cache (now using associative array; Bash >=4)
+# Image aggregation structures (8)
 # ---------------------------------------------
+declare -A IMAGE_OCCURRENCES   # image -> comma separated chart:values entries
+
+# Image scanning cache (kept for potential future reuse)
 declare -A IMAGE_DONE
 
 # Single Trivy DB update (if needed)
@@ -166,25 +178,33 @@ render_chart() {
 
 detect_double_doc() {
   local file=$1
-  # Count doc separators; allow first; flag if two consecutive empties
-  if grep -Pzo '\n---\n---\n' "$file" >/dev/null 2>&1; then
+  # Portable detection of consecutive '---' document separators with no content between (2)
+  if awk 'BEGIN{last=0} /^---[[:space:]]*$/ { if (last){ exit 1 } last=1; next } { last=0 } END{ exit 0 }' "$file"; then
+    return 0
+  else
     return 1
   fi
-  return 0
 }
 
+# (7) Merge Checkov config only once per chart
+declare -A CHECKOV_MERGED
 run_checkov() {
   local chart=$1 values=$2 chart_name=$3 values_name=$4
   if in_array "$chart_name" "${checkov_skip_charts[@]:-}"; then return 0; fi
-  if [[ -f "$chart/.checkov.yaml" ]]; then
-    $YQ_CMD -i eval-all '... comments="" | . as $item ireduce ({}; . *+n $item)' "$chart/.checkov.yaml" .globalcheckov.yaml
-    $YQ_CMD -i '.skip-check[] as $skip | del(.check[] | select(. == $skip))' "$chart/.checkov.yaml" || true
-  else
-    [[ -f .globalcheckov.yaml ]] && cp .globalcheckov.yaml "$chart/.checkov.yaml"
+  if [[ -z "${CHECKOV_MERGED[$chart]:-}" ]]; then
+    if [[ -f "$chart/.checkov.yaml" ]]; then
+      $YQ_CMD -i eval-all '... comments="" | . as $item ireduce ({}; . *+n $item)' "$chart/.checkov.yaml" .globalcheckov.yaml 2>"$TEST_RESULTS_DIR/${chart_name}_checkov_merge.log" || true
+      $YQ_CMD -i '.skip-check[] as $skip | del(.check[] | select(. == $skip))' "$chart/.checkov.yaml" 2>>"$TEST_RESULTS_DIR/${chart_name}_checkov_merge.log" || true
+    else
+      [[ -f .globalcheckov.yaml ]] && cp .globalcheckov.yaml "$chart/.checkov.yaml"
+    fi
+    CHECKOV_MERGED[$chart]=1
   fi
   log "Checkov scanning: $chart ($values_name)"
-  local results_file="$TEST_RESULTS_DIR/${chart_name}_${values_name}_checkov.xml"
-  if ! checkov -d "$chart" --var-file "$values" --framework helm -o junitxml >"$results_file" 2>/dev/null; then
+  local base="$TEST_RESULTS_DIR/${chart_name}_${values_name}_checkov"
+  local results_file="${base}.xml"
+  local log_file="${base}.log"
+  if ! checkov -d "$chart" --var-file "$values" --framework helm -o junitxml >"$results_file" 2>"$log_file"; then
     failed_charts+=("Checkov:$chart_name:$values_name")
     EXIT_CODE=1
   fi
@@ -195,40 +215,8 @@ run_checkov() {
   fi
 }
 
-run_trivy_images() {
-  local chart=$1 chart_name=$2 values_name=$3 manifest=$4
-  if in_array "$chart_name" "${trivy_skip_charts[@]:-}"; then return 0; fi
-  mapfile -t images < <($YQ_CMD -N e '..|.image? | select(tag == "!!str")' "$manifest" 2>/dev/null | sort -u || true)
-  if [[ ${#images[@]} -eq 0 ]]; then return 0; fi
-  for image in "${images[@]}"; do
-    if in_array "$image" "${trivy_skip_images[@]:-}"; then (( ++images_skipped )); echo "$image SKIPPED" >> "$TRIVY_IMAGE_REPORT"; continue; fi
-    if [[ -n "${IMAGE_DONE[$image]:-}" ]]; then (( ++images_skipped )); echo "$image CACHED" >> "$TRIVY_IMAGE_REPORT"; continue; fi
-    log "Trivy image scan: $image"
-    local results_file="$TEST_RESULTS_DIR/${image//[^A-Za-z0-9._-]/_}_${chart_name}_${values_name}_trivy.xml"
-    local trivy_opts=(image --exit-code 1 --severity "$TRIVY_SEVERITY" --format template --template "@./scripts/junit.tpl")
-    [[ "$TRIVY_IGNORE_UNFIXED" == "true" ]] && trivy_opts+=(--ignore-unfixed)
-    [[ -f "$chart/.trivyignore" ]] && trivy_opts+=(--ignorefile "$chart/.trivyignore")
-    local status=OK
-    if ! trivy "${trivy_opts[@]}" -o "$results_file" "$image" 2>/dev/null; then
-      failed_charts+=("Trivy:$image:$chart_name:$values_name")
-      EXIT_CODE=1
-      (( ++images_failed )) || true
-      status=FAIL
-    fi
-    if [[ -s $results_file && -x $(command -v xmlstarlet || echo /bin/false) ]]; then
-      xmlstarlet edit --inplace --delete /testsuites/testsuite[@tests=0] "$results_file" || true
-      xmlstarlet edit --inplace --update /testsuites/testsuite/@name --value "Trivy scan $image ($chart_name $values_name)" "$results_file" || true
-    else
-      [[ ! -s $results_file ]] && rm -f "$results_file"
-    fi
-    echo "$image $status" >> "$TRIVY_IMAGE_REPORT"
-    IMAGE_DONE[$image]=1
-    (( ++images_scanned )) || true
-  done
-}
-
 # ---------------------------------------------
-# Main Loop
+# Main Loop (render + aggregate or per-step actions)
 # ---------------------------------------------
 for chart in "${charts_changed[@]}"; do
   [[ ! -d "$chart" ]] && continue
@@ -250,10 +238,29 @@ for chart in "${charts_changed[@]}"; do
   if [[ -n "$deps" && "$deps" != "null" ]]; then
     log "Building dependencies for $chart_name"
     debug "Dependencies raw: $deps"
-    if ! helm dependency build "$chart" >/dev/null 2>&1; then
-      echo "[WARN] helm dependency build failed for $chart_name (continuing)" >&2
-      failed_charts+=("Deps:$chart_name")
-      EXIT_CODE=1
+    # Skips build if lock exists & all tgz present (minor optimization)
+    if [[ -f "$chart/Chart.lock" ]]; then
+      missing_pkg=false
+      while IFS= read -r dep; do
+        pkg=$(echo "$dep" | awk '{print $1}')
+        ver=$(echo "$dep" | awk '{print $2}')
+        [[ -n "$pkg" && -n "$ver" && ! -f "$chart/charts/${pkg}-${ver}.tgz" ]] && missing_pkg=true
+      done < <($YQ_CMD e '.dependencies[] | .name + " " + .version' "$chart/Chart.yaml" 2>/dev/null || true)
+      if ! $missing_pkg; then
+        debug "Dependencies already present; skipping helm dependency build"
+      else
+        if ! helm dependency build "$chart" >/dev/null 2>"$TEST_RESULTS_DIR/${chart_name}_deps.log"; then
+          echo "[WARN] helm dependency build failed for $chart_name (continuing)" >&2
+          failed_charts+=("Deps:$chart_name")
+          EXIT_CODE=1
+        fi
+      fi
+    else
+      if ! helm dependency build "$chart" >/dev/null 2>"$TEST_RESULTS_DIR/${chart_name}_deps.log"; then
+        echo "[WARN] helm dependency build failed for $chart_name (continuing)" >&2
+        failed_charts+=("Deps:$chart_name")
+        EXIT_CODE=1
+      fi
     fi
   fi
   for values in "${value_files[@]}"; do
@@ -276,10 +283,18 @@ for chart in "${charts_changed[@]}"; do
         rm -rf "$render_dir"
         continue
       fi
+      # (8) Aggregate images instead of scanning per chart/values when STEP=trivy
+      if [[ "$STEP" == "trivy" ]] && ! in_array "$chart_name" "${trivy_skip_charts[@]:-}"; then
+        mapfile -t imgs < <($YQ_CMD -N e '..|.image? | select(tag == "!!str")' "$manifest" 2>/dev/null | sort -u || true)
+        for image in "${imgs[@]}"; do
+          # Skiplist filtering applied later; record occurrence now
+            IMAGE_OCCURRENCES[$image]+="${chart_name}:${values_name},"
+        done
+      fi
     fi
     case "$STEP" in
       checkov) run_checkov "$chart" "$values" "$chart_name" "$values_name" ;;
-      trivy)   run_trivy_images "$chart" "$chart_name" "$values_name" "$manifest" ;;
+      trivy)   ;; # scanning deferred
       lint)    ;; # nothing additional
     esac
     if [[ $KEEP_RENDERED -eq 1 ]]; then
@@ -289,6 +304,73 @@ for chart in "${charts_changed[@]}"; do
     rm -rf "$render_dir"
   done
 done
+
+# ---------------------------------------------
+# Trivy aggregated scanning (8,9,11)
+# ---------------------------------------------
+if [[ "$STEP" == "trivy" ]]; then
+  log "Preparing aggregated Trivy image scan list"
+  statuses_file=$(mktemp)
+  # Build unique list, apply skip charts already handled, apply skip images here
+  unique_images=()
+  for image in "${!IMAGE_OCCURRENCES[@]}"; do
+    if in_array "$image" "${trivy_skip_images[@]:-}"; then
+      echo "$image SKIPPED" >> "$TRIVY_IMAGE_REPORT"
+      (( ++images_skipped ))
+      continue
+    fi
+    unique_images+=("$image")
+  done
+  log "Total unique images to scan: ${#unique_images[@]} (skipped: $images_skipped)"
+
+  scan_one_image() {
+    local image="$1" occurrences="$2"
+    local sanitized="${image//[^A-Za-z0-9._-]/_}"
+    local results_file="$TEST_RESULTS_DIR/${sanitized}_trivy.xml"
+    local log_file="$TEST_RESULTS_DIR/${sanitized}_trivy.log"
+    local trivy_opts=(image --exit-code 1 --severity "$TRIVY_SEVERITY" --format template --template "@./scripts/junit.tpl")
+    [[ "$TRIVY_IGNORE_UNFIXED" == "true" ]] && trivy_opts+=(--ignore-unfixed)
+    local status=OK
+    if ! trivy "${trivy_opts[@]}" -o "$results_file" "$image" 2>"$log_file"; then
+      status=FAIL
+    fi
+    if [[ -s $results_file && -x $(command -v xmlstarlet || echo /bin/false) ]]; then
+      xmlstarlet edit --inplace --delete /testsuites/testsuite[@tests=0] "$results_file" 2>>"$log_file" || true
+      xmlstarlet edit --inplace --update /testsuites/testsuite/@name --value "Trivy scan $image" "$results_file" 2>>"$log_file" || true
+    else
+      [[ ! -s $results_file ]] && rm -f "$results_file"
+    fi
+    echo "$image $status OCCURS=${occurrences%,}" >> "$TRIVY_IMAGE_REPORT"
+    echo "$status $image" >> "$statuses_file"
+  }
+
+  active=0
+  for image in "${unique_images[@]}"; do
+    occurrences="${IMAGE_OCCURRENCES[$image]}"
+    if (( CONCURRENCY > 1 )); then
+      scan_one_image "$image" "$occurrences" &
+      (( ++active ))
+      if (( active >= CONCURRENCY )); then
+        wait -n || true
+        (( --active )) || true
+      fi
+    else
+      scan_one_image "$image" "$occurrences"
+    fi
+  done
+  wait || true
+
+  # Post-process statuses to update global counters & failures
+  while read -r status img; do
+    (( ++images_scanned ))
+    if [[ "$status" == "FAIL" ]]; then
+      (( ++images_failed ))
+      failed_charts+=("Trivy:$img")
+      EXIT_CODE=1
+    fi
+  done < "$statuses_file"
+  rm -f "$statuses_file"
+fi
 
 # ---------------------------------------------
 # Reporting
