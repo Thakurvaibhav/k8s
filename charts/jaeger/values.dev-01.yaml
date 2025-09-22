@@ -1,0 +1,17 @@
+jaeger:
+  agent:
+    enabled: false
+  collector:
+    cmdlineParams:
+      collector.tags: cluster=dev-01
+    tolerations:
+      - effect: "NoSchedule"
+        operator: Exists
+      - effect: "NoExecute"
+        operator: Exists
+  query:
+    enabled: false
+    oAuthSidecar:
+      enabled: false
+    ingress:
+      enabled: false

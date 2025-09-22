@@ -34,6 +34,30 @@ envoyGateway:
       valueFiles: ""
       releaseName: envoy-gateway
 
+externalDNS:
+  enable: false
+  project: operations
+  namespace: external-dns
+  source:
+    repoURL: git@github.com:Thakurvaibhav/k8s.git
+    path: charts/external-dns
+    targetRevision: ""
+    helm:
+      valueFiles: ""
+      releaseName: external-dns
+
+certManager:
+  enable: false
+  project: operations
+  namespace: cert-manager
+  source:
+    repoURL: git@github.com:Thakurvaibhav/k8s.git
+    path: charts/cert-manager
+    targetRevision: ""
+    helm:
+      valueFiles: ""
+      releaseName: cert-manager
+
 monitoring:
   enable: false
   project: operations
@@ -56,7 +80,19 @@ logging:
     targetRevision: ""
     helm:
       valueFiles: ""
-      releaseName: elastic-stack
+      releaseName: logging
+
+jaeger:
+  enable: false
+  project: operations
+  namespace: jaeger
+  source:
+    repoURL: git@github.com:Thakurvaibhav/k8s.git
+    path: charts/jaeger
+    targetRevision: ""
+    helm:
+      valueFiles: ""
+      releaseName: jaeger
 
 kyverno:
   enable: false

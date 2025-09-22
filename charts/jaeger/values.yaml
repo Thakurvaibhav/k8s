@@ -1,0 +1,144 @@
+namespace: jaeger
+demo:
+  enable: false
+
+esSecret:
+  username: "" # Sealed secret value
+  password: "" # Sealed secret value
+  caCert: "" # Sealed secret value
+  clientCert: "" # Sealed secret value
+  clientKey: "" # Sealed secret value
+
+oauthSecret:
+  clientId: "" # Sealed secret value
+  clientSecret: "" # Sealed secret value
+
+jaeger:
+  provisionDataStore:
+    cassandra: false
+  storage:
+    type: elasticsearch
+    elasticsearch:
+      scheme: https
+      host: elastic.mydomain.com
+      port: 443
+      user: jaeger
+      usePassword: true
+      password: changeme
+      indexPrefix: jaeger-ops-01
+      ## Use existing secret (ignores previous password)
+      existingSecret: es-user-secret
+      existingSecretKey: ES_PASSWORD
+      nodesWanOnly: false
+      extraEnv:
+        - name: ES_TLS_ENABLED
+          value: "true"
+        - name: ES_TLS_CA
+          value: /es-tls/ca-cert.pem
+        - name: ES_TLS_CERT
+          value: /es-tls/client-cert.pem
+        - name: ES_TLS_KEY
+          value: /es-tls/client-key.pem
+      ## ES related cmd line opts to be configured on the concerned components
+      cmdlineParams:
+        es.use-ilm: true
+        es.use-aliases: true
+        es.version: 7
+        es.create-index-templates: "false"
+
+  agent:
+    resources:
+      limits:
+        cpu: 100m
+        memory: 256Mi
+      requests:
+        cpu: 50m
+        memory: 128Mi
+
+  collector:
+    resources:
+      limits:
+        cpu: 1
+        memory: 1Gi
+      requests:
+        cpu: 500m
+        memory: 512Mi
+    extraSecretMounts:
+      - name: es-tls-secret
+        mountPath: /es-tls/
+        secretName: es-tls-secret
+    service:
+      otlp:
+        grpc:
+          name: otlp-grpc
+          port: 4317
+        http:
+          name: otlp-http
+          port: 4318
+
+  query:
+    enabled: false
+    oAuthSidecar:
+      enabled: false
+      image:
+        registry: quay.io
+        repository: oauth2-proxy/oauth2-proxy
+        tag: v7.6.0
+        pullPolicy: IfNotPresent
+      resources:
+        limits:
+          cpu: 20m
+          memory: 50Mi
+        requests:
+          cpu: 5m
+          memory: 5Mi
+      containerPort: 4180
+      args:
+        - --config
+        - /etc/oauth2-proxy/oauth2-proxy.cfg
+        - --client-secret
+        - "$(client-secret)"
+      extraEnv:
+        - name: client-secret
+          valueFrom:
+            secretKeyRef:
+              name: oauth-secret
+              key: clientSecret
+      extraConfigmapMounts: []
+      extraSecretMounts: []
+      config: |-
+        provider = "google"
+        http_address = "0.0.0.0:4180"
+        upstreams = ["http://localhost:16686"]
+        redirect_url = "https://jaeger.mydomain.com/oauth2/callback"
+        client_id = "" # Google OAuth Client ID
+        oidc_issuer_url = "https://accounts.google.com"
+        cookie_secure = "true"
+        cookie_secret = "" # Generate using `openssl rand -base64 16 | tr -d '\n'`
+        email_domains = "*"
+
+    agentSidecar:
+      resources:
+        limits:
+          cpu: 500m
+          memory: 512Mi
+        requests:
+          cpu: 256m
+          memory: 128Mi
+
+    httpRoute:
+      enabled: false
+
+
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 256m
+        memory: 128Mi
+
+    extraSecretMounts:
+      - name: es-tls-secret
+        mountPath: /es-tls/
+        secretName: es-tls-secret

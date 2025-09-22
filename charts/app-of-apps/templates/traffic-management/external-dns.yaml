@@ -1,0 +1,45 @@
+{{- if .Values.externalDNS.enable -}}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Values.cluster.name }}-external-dns
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  {{- with .Values.externalDNS.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  labels:
+    team: ops
+    cluster: {{ .Values.cluster.name }}
+spec:
+  project: {{ .Values.externalDNS.project }}
+  source:
+    repoURL: {{ .Values.externalDNS.source.repoURL }}
+    targetRevision: {{ .Values.externalDNS.source.targetRevision | default .Values.source.targetRevision }}
+    path: {{ .Values.externalDNS.source.path }}
+    helm:
+      releaseName: {{ tpl .Values.externalDNS.source.helm.releaseName . }}
+      valueFiles:
+      - {{ .Values.externalDNS.source.helm.valueFiles | default .Values.source.helm.valueFiles }}
+    {{- if .Values.externalDNS.source.helm.values }}
+      values: {{- tpl (toYaml .Values.externalDNS.source.helm.values) . | indent 6 }}
+    {{- end }}
+      
+  destination:
+    {{ if .Values.cluster.server -}}
+    server: {{ .Values.cluster.server }}
+    {{ else }}
+    name: {{ .Values.cluster.name }}
+    {{ end -}}
+    namespace: {{ .Values.externalDNS.namespace  }}
+
+  syncPolicy:
+    automated:
+      selfHeal: true
+    syncOptions:
+      - Validate=true
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+{{- end }}

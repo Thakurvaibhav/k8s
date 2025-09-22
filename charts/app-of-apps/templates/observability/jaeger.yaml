@@ -1,0 +1,45 @@
+{{- if .Values.jaeger.enable -}}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Values.cluster.name }}-jaeger
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  {{- with .Values.jaeger.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  labels:
+    team: ops
+    cluster: {{ .Values.cluster.name }}
+spec:
+  project: {{ .Values.jaeger.project }}
+  source:
+    repoURL: {{ .Values.jaeger.source.repoURL }}
+    targetRevision: {{ .Values.jaeger.source.targetRevision | default .Values.source.targetRevision }}
+    path: {{ .Values.jaeger.source.path }}
+    helm:
+      releaseName: {{ .Values.jaeger.source.helm.releaseName }}
+      valueFiles:
+      - {{ .Values.jaeger.source.helm.valueFiles | default .Values.source.helm.valueFiles }}
+    {{- if .Values.jaeger.source.helm.values }}
+      values: {{- tpl (toYaml .Values.jaeger.source.helm.values) . | indent 6 }}
+    {{- end }}  
+
+  destination:
+    {{ if .Values.cluster.server -}}
+    server: {{ .Values.cluster.server }}
+    {{ else }}
+    name: {{ .Values.cluster.name }}
+    {{ end -}}
+    namespace: {{ .Values.jaeger.namespace  }}
+
+  syncPolicy:
+    automated:
+      selfHeal: true
+    syncOptions:
+      - Validate=true
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+{{- end }}

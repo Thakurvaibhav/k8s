@@ -1,6 +1,6 @@
 cluster:
   name: ops-01
-  server: https://kubernetes.default.svc
+  server: https://ops-01-k8s.endpoint.kubernetes
 
 source:
   targetRevision: HEAD # this can be a git branch, commit or a tag
@@ -13,10 +13,19 @@ sealedSecrets:  # targetRevision and valueFiles can be overridden here if the ab
 envoyGateway:
   enable: true
 
+externalDNS:
+  enable: true
+
+certManager:
+  enable: true
+
 monitoring:
   enable: true
 
 logging:
+  enable: true
+
+jaeger:
   enable: true
 
 kyverno:

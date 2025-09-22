@@ -1,0 +1,23 @@
+{{- if .Values.jaeger.query.httpRoute.enabled -}}
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{ .Values.namespace }}
+  namespace: {{ .Values.namespace }}
+spec:
+  parentRefs:
+    - name: {{ .Values.jaeger.query.httpRoute.gatewayName }}
+      namespace: envoy-gateway-system
+      sectionName: {{ .Values.jaeger.query.httpRoute.listenerName }}
+  hostnames:
+{{ .Values.jaeger.query.httpRoute.hostnames | toYaml | indent 4 }}
+  rules:
+    - backendRefs:
+        - name: klaw-jaeger-query
+          port: 80
+      matches:
+        - path:
+            type: PathPrefix
+            value: /
+---
+{{- end }}

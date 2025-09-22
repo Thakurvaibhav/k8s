@@ -18,7 +18,7 @@ spec:
     helm:
       releaseName: {{ tpl .Values.logging.source.helm.releaseName . }}
       valueFiles:
-      - {{ .Values.logging.source.helm.valueFiles }}
+      - {{ .Values.logging.source.helm.valueFiles | default .Values.source.helm.valueFiles }}
     {{- if .Values.logging.source.helm.values }}
       values: {{- tpl (toYaml .Values.logging.source.helm.values) . | indent 6 }}
     {{- end }}  

@@ -1,0 +1,20 @@
+jaeger:
+  storage:
+    elasticsearch:
+      host: elastic.mydomain.com
+      indexPrefix: jaeger-ops-01
+
+  collector:
+    cmdlineParams:
+      collector.tags: cluster=ops-01
+
+  query:
+    enabled: true
+    oAuthSidecar:
+      enabled: true
+    httpRoute:
+      enabled: true
+      gatewayName: eg-infra-01
+      listenerName: https
+      hostnames:
+        - jaeger.mydomain.com
