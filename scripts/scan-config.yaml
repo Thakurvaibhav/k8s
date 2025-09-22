@@ -1,0 +1,11 @@
+trivy:
+  skipcharts:
+    - argo-apps
+
+  skipimages:
+    - lmenezes/cerebro:0.9.4
+
+checkov:
+  skipcharts:
+    - argo-apps
+

@@ -1,3 +1,9 @@
+issuers:
+  opsDomain: disable
+  devDomain: disable
+  stgDomain: disable
+  prodDomain: disable
+
 reflector:
   resources:
     requests:

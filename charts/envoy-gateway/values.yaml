@@ -67,6 +67,10 @@ proxyConfig:
 
 internalGateway:
   enable: false
+  secretManifest:
+    tls:
+      crt: ""
+      key: ""
 
 internalProxyConfig:
   replicas: 3
