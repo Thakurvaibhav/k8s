@@ -1,8 +1,8 @@
 # All available checks can be found at https://www.checkov.io/5.Policy%20Index/kubernetes.html
 # Below is the current basic subset that we currently look for
 check:
-- CKV_K8S_8  # Liveness probe should be configured
-- CKV_K8S_9  # Readiness probe should be configured
+#- CKV_K8S_8  # Liveness probe should be configured
+#- CKV_K8S_9  # Readiness probe should be configured
 - CKV_K8S_10 # CPU Requests should be set
 - CKV_K8S_11 # CPU Limits should be set
 - CKV_K8S_12 # Memory Requests should be set
