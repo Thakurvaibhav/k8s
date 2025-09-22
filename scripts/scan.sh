@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 set -euo pipefail
 IFS=$'\n\t'
@@ -18,6 +18,24 @@ HELM_TEMPLATE_EXTRA_ARGS=${HELM_TEMPLATE_EXTRA_ARGS:-"--include-crds"}
 OUTPUT_DIR=${OUTPUT_DIR:-./scan-output}
 TEST_RESULTS_DIR="$OUTPUT_DIR/test-results"
 SUMMARY_FILE="$OUTPUT_DIR/scan-summary.txt"
+
+# Debug helpers
+DEBUG=${DEBUG:-0}
+debug() { (( DEBUG )) && printf '[DEBUG %s] %s\n' "$(date -u +'%H:%M:%S')" "$*" >&2; }
+(( DEBUG )) && { set -x; debug "Debug mode enabled"; }
+
+if (( DEBUG )); then
+  echo "--- ENV DEBUG DUMP ---" >&2
+  echo "PWD=$(pwd)" >&2
+  echo "STEP=$STEP CONFIG_FILE=$CONFIG_FILE OUTPUT_DIR=$OUTPUT_DIR" >&2
+  echo "BASH_VERSION=$BASH_VERSION" >&2
+  command -v helm >/dev/null 2>&1 && echo "helm version: $(helm version 2>/dev/null || true)" >&2
+  command -v $YQ_CMD >/dev/null 2>&1 && echo "yq version: $($YQ_CMD --version 2>/dev/null || true)" >&2
+  command -v trivy >/dev/null 2>&1 && echo "trivy version: $(trivy --version 2>/dev/null | head -1 || true)" >&2
+  command -v checkov >/dev/null 2>&1 && echo "checkov version: $(checkov --version 2>/dev/null || true)" >&2
+  ls -1 charts 2>/dev/null | sed 's/^/chart-dir: /' >&2 || echo 'no charts dir' >&2
+  echo "-----------------------" >&2
+fi
 
 # ---------------------------------------------
 usage() {
@@ -135,6 +153,7 @@ fi
 # ---------------------------------------------
 render_chart() {
   local chart=$1 values=$2 outdir=$3 chart_name=$4
+  debug "Rendering chart=$chart values=$values outdir=$outdir"
   helm template "$chart" -f "$values" $HELM_TEMPLATE_EXTRA_ARGS >"$outdir/${chart_name}.yaml"
 }
 
@@ -213,6 +232,7 @@ for chart in "${charts_changed[@]}"; do
   deps=$($YQ_CMD e '.dependencies' "$chart/Chart.yaml" 2>/dev/null || echo '')
   if [[ -n "$deps" && "$deps" != "null" ]]; then
     log "Building dependencies for $chart_name"
+    debug "Dependencies field present for $chart_name"
     helm dependency build "$chart" >/dev/null
   fi
   for values in "${value_files[@]}"; do
@@ -241,6 +261,7 @@ for chart in "${charts_changed[@]}"; do
       lint)    ;; # nothing additional
     esac
     if [[ $KEEP_RENDERED -eq 1 ]]; then
+      debug "Keeping rendered manifest for $chart_name $values_name"
       cp "$manifest" "$chart/${chart_name}.${values_name}.rendered.yaml"
     fi
     rm -rf "$render_dir"
