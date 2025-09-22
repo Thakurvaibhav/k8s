@@ -321,4 +321,3 @@ failed_total=${#failed_charts[@]}
 
 log "Finished"
 exit $EXIT_CODE
-
