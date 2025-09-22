@@ -199,7 +199,7 @@ run_trivy_images() {
   local chart=$1 chart_name=$2 values_name=$3 manifest=$4
   if in_array "$chart_name" "${trivy_skip_charts[@]:-}"; then return 0; fi
   mapfile -t images < <($YQ_CMD -N e '..|.image? | select(tag == "!!str")' "$manifest" 2>/dev/null | sort -u || true)
-  (( ${#images[@]} -eq 0 )) && return 0
+  if [[ ${#images[@]} -eq 0 ]]; then return 0; fi
   for image in "${images[@]}"; do
     if in_array "$image" "${trivy_skip_images[@]:-}"; then (( ++images_skipped )); echo "$image SKIPPED" >> "$TRIVY_IMAGE_REPORT"; continue; fi
     if [[ -n "${IMAGE_DONE[$image]:-}" ]]; then (( ++images_skipped )); echo "$image CACHED" >> "$TRIVY_IMAGE_REPORT"; continue; fi
