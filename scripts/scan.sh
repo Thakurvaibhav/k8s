@@ -205,7 +205,7 @@ run_trivy_images() {
     if [[ -n "${IMAGE_DONE[$image]:-}" ]]; then (( ++images_skipped )); echo "$image CACHED" >> "$TRIVY_IMAGE_REPORT"; continue; fi
     log "Trivy image scan: $image"
     local results_file="$TEST_RESULTS_DIR/${image//[^A-Za-z0-9._-]/_}_${chart_name}_${values_name}_trivy.xml"
-    local trivy_opts=(image --exit-code 1 --severity "$TRIVY_SEVERITY" --format template --template "@.argoci/scripts/junit.tpl")
+    local trivy_opts=(image --exit-code 1 --severity "$TRIVY_SEVERITY" --format template --template "@./scripts/junit.tpl")
     [[ "$TRIVY_IGNORE_UNFIXED" == "true" ]] && trivy_opts+=(--ignore-unfixed)
     [[ -f "$chart/.trivyignore" ]] && trivy_opts+=(--ignorefile "$chart/.trivyignore")
     local status=OK
