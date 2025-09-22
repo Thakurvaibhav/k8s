@@ -52,21 +52,6 @@ values.prod-01.yaml
 ```
 Use the matching file (or merge multiple with `-f`).
 
-## Suggested Install / Bootstrap Order
-1. Argo CD (out-of-band)
-2. `app-of-apps`
-3. `sealed-secrets`
-4. `kyverno` (Audit first)
-5. `external-dns`
-6. `envoy-gateway`
-7. `nginx-ingress-controller` (if needed)
-8. `monitoring`
-9. `logging` (after gateway + secrets ready)
-10. `jaeger` (after logging / ES available)
-11. `redis` (as needed by apps)
-
-(Order of redis / jaeger can swap if trace storage readiness precedes need for Redis.)
-
 ## app-of-apps Chart Switches (from `values.yaml` excerpt)
 ```
 sealedSecrets.enable        # sealed-secrets controller + global secrets
