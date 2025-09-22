@@ -101,10 +101,97 @@ helm template monitoring ./monitoring -f monitoring/values.dev-01.yaml | less
 helm lint monitoring
 ```
 
+## CI Chart Scan Pipeline
+A GitHub Actions workflow runs a chart scan matrix with three steps: `lint`, `trivy`, and `checkov`. Only charts changed in the current diff to `origin/master` are scanned (unless `--all` is used).
+
+Script: `scripts/scan.sh`
+
+### Steps
+- lint: Renders each chart+values (Helm template) and checks for accidental double document separators (`---\n---`).
+- trivy: Extracts container images from rendered manifests and performs vulnerability scanning (JUnit XML per image + consolidated `trivy-image-report.txt`). Duplicate images across charts are scanned once (in-memory cache).
+- checkov: Runs Checkov against each chart with its values file using the Helm framework, producing JUnit XML output.
+
+### Outputs (in `scan-output/`)
+- `test-results/*.xml` (JUnit per scan/image)
+- `${STEP}-test-results.html` (if `xunit-viewer` installed in CI)
+- `trivy-image-report.txt` (only for `trivy` step; line: `<image> <OK|FAIL|SKIPPED|CACHED>`)
+- `scan-summary.txt` (aggregate counts & failures)
+
+### Local Usage
+```bash
+# Lint only changed charts
+scripts/scan.sh lint
+
+# Scan all charts with Trivy (include images not in diff)
+scripts/scan.sh trivy --all
+
+# Include HIGH severities too
+TRIVY_SEVERITY=CRITICAL,HIGH scripts/scan.sh trivy
+
+# Ignore unfixed vulnerabilities
+TRIVY_IGNORE_UNFIXED=true scripts/scan.sh trivy
+
+# Keep rendered manifests beside charts
+KEEP_RENDERED=1 scripts/scan.sh lint
+
+# Custom config location
+CONFIG_FILE=my-scan-config.yaml scripts/scan.sh checkov
+```
+
+### Configuration (Skipping Charts / Images)
+Skips are defined in `scan-config.yaml` (or file pointed to by `CONFIG_FILE`). Example:
+```yaml
+trivy:
+  skipcharts:
+    - redis            # skip all images for this chart
+  skipimages:
+    - ghcr.io/org/tooling-helper:latest   # skip a specific image fully
+checkov:
+  skipcharts:
+    - logging          # skip Checkov for this chart
+```
+Place the config at repo root (default path) or set `CONFIG_FILE`.
+
+### Additional Per-Chart Controls
+- `.trivyignore` inside a chart: Standard Trivy ignore rules (CVE IDs etc.).
+- `.checkov.yaml` inside a chart: Merged with `.globalcheckov.yaml` (local file may remove global `check` entries if they appear in `skip-check`).
+
+### Environment Variables
+| Variable | Purpose | Default |
+|----------|---------|---------|
+| `TRIVY_SEVERITY` | Severities to fail on (comma list) | `CRITICAL` |
+| `TRIVY_IGNORE_UNFIXED` | Ignore vulns without fixes | `false` |
+| `CONFIG_FILE` | Path to scan config | `scan-config.yaml` |
+| `KEEP_RENDERED` | Keep rendered manifests (1/0) | `0` |
+| `CONCURRENCY` | (Reserved) future parallelism | `4` |
+| `YQ_CMD` | `yq` binary name | `yq` |
+| `OUTPUT_DIR` | Output root | `./scan-output` |
+
+### Failure Identification
+`scan-summary.txt` fields:
+- Charts processed / Values processed
+- Images scanned / skipped / failed (Trivy step)
+- Failed items (list of tokens `Kind:Detail[:...]`)
+
+Kinds emitted today:
+- `Render:<chart>:<values>` (render failure)
+- `DoubleDoc:<chart>:<values>` (duplicate document separator)
+- `Checkov:<chart>:<values>` (Checkov non-zero)
+- `Trivy:<image>:<chart>:<values>` (image vuln failure)
+- `Deps:<chart>` (helm dependency build failed)
+- `NoChart:<chart>` (missing `Chart.yaml`)
+
+### Skipping an Image Temporarily
+Add it under `trivy.skipimages` in the config file and re-run the `trivy` step. The summary will reflect `Images skipped` count; the image will appear with status `SKIPPED` in `trivy-image-report.txt`.
+
+### JUnit Template
+The Trivy JUnit output uses `@./scripts/junit.tpl`. Adjust this path if relocating the template.
+
 ## Contribution Guidelines
 - Update per‑chart README on changes.
 - Keep inventory table aligned with actual charts.
 - Bump chart versions on template/value default changes.
+- Update CI scan docs above if scan behavior or config keys change.
 
 ## License
 Internal use only unless stated otherwise.

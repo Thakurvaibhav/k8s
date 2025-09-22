@@ -7,7 +7,7 @@ on:
       - 'scripts/scan.sh'
       - '.github/workflows/chart-scan.yml'
   push:
-    branches: [ main, argo-apps ]
+    branches: [ main ]
     paths:
       - 'charts/**'
       - 'scripts/scan.sh'
@@ -80,7 +80,7 @@ jobs:
         run: |
           mkdir -p scan-output/${{ matrix.step }}
           chmod +x scripts/scan.sh
-          DEBUG=${DEBUG} CONFIG_FILE=${CONFIG_FILE} OUTPUT_DIR=scan-output/${{ matrix.step }} bash scripts/scan.sh ${{ matrix.step }} --all
+          DEBUG=${DEBUG} CONFIG_FILE=${CONFIG_FILE} OUTPUT_DIR=scan-output/${{ matrix.step }} bash scripts/scan.sh ${{ matrix.step }}
 
       - name: Show summary
         run: |
