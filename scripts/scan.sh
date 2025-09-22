@@ -24,6 +24,7 @@ HELM_TEMPLATE_EXTRA_ARGS=${HELM_TEMPLATE_EXTRA_ARGS:-"--include-crds"}
 OUTPUT_DIR=${OUTPUT_DIR:-./scan-output}
 TEST_RESULTS_DIR="$OUTPUT_DIR/test-results"
 SUMMARY_FILE="$OUTPUT_DIR/scan-summary.txt"
+TRIVY_IMAGE_REPORT="$OUTPUT_DIR/trivy-image-report.txt"
 
 # Debug helpers
 DEBUG=${DEBUG:-0}
@@ -198,19 +199,21 @@ run_trivy_images() {
   local chart=$1 chart_name=$2 values_name=$3 manifest=$4
   if in_array "$chart_name" "${trivy_skip_charts[@]:-}"; then return 0; fi
   mapfile -t images < <($YQ_CMD -N e '..|.image? | select(tag == "!!str")' "$manifest" 2>/dev/null | sort -u || true)
-  (( ${#images[@]} == 0 )) && return 0
+  (( ${#images[@]} -eq 0 )) && return 0
   for image in "${images[@]}"; do
-    if in_array "$image" "${trivy_skip_images[@]:-}"; then (( ++images_skipped )); continue; fi
-    if [[ -n "${IMAGE_DONE[$image]:-}" ]]; then (( ++images_skipped )); continue; fi
+    if in_array "$image" "${trivy_skip_images[@]:-}"; then (( ++images_skipped )); echo "$image SKIPPED" >> "$TRIVY_IMAGE_REPORT"; continue; fi
+    if [[ -n "${IMAGE_DONE[$image]:-}" ]]; then (( ++images_skipped )); echo "$image CACHED" >> "$TRIVY_IMAGE_REPORT"; continue; fi
     log "Trivy image scan: $image"
     local results_file="$TEST_RESULTS_DIR/${image//[^A-Za-z0-9._-]/_}_${chart_name}_${values_name}_trivy.xml"
     local trivy_opts=(image --exit-code 1 --severity "$TRIVY_SEVERITY" --format template --template "@.argoci/scripts/junit.tpl")
     [[ "$TRIVY_IGNORE_UNFIXED" == "true" ]] && trivy_opts+=(--ignore-unfixed)
     [[ -f "$chart/.trivyignore" ]] && trivy_opts+=(--ignorefile "$chart/.trivyignore")
+    local status=OK
     if ! trivy "${trivy_opts[@]}" -o "$results_file" "$image" 2>/dev/null; then
       failed_charts+=("Trivy:$image:$chart_name:$values_name")
       EXIT_CODE=1
       (( ++images_failed )) || true
+      status=FAIL
     fi
     if [[ -s $results_file && -x $(command -v xmlstarlet || echo /bin/false) ]]; then
       xmlstarlet edit --inplace --delete /testsuites/testsuite[@tests=0] "$results_file" || true
@@ -218,6 +221,7 @@ run_trivy_images() {
     else
       [[ ! -s $results_file ]] && rm -f "$results_file"
     fi
+    echo "$image $status" >> "$TRIVY_IMAGE_REPORT"
     IMAGE_DONE[$image]=1
     (( ++images_scanned )) || true
   done
@@ -301,12 +305,16 @@ if (( EXIT_CODE != 0 )); then
   for f in "${failed_charts[@]}"; do echo "  - $f" >&2; done
 fi
 
+failed_total=${#failed_charts[@]}
 {
   echo "Charts processed: $charts_processed"
   echo "Values files processed: $values_processed"
   echo "Images scanned: $images_scanned"
   echo "Images skipped (cache/skiplist): $images_skipped"
   echo "Images failed: $images_failed"
+  echo "Failed items: $failed_total"
+  (( failed_total > 0 )) && printf 'Failed list: %s\n' "${failed_charts[*]}"
+  [[ "$STEP" == "trivy" && -f "$TRIVY_IMAGE_REPORT" ]] && echo "Trivy image report: $TRIVY_IMAGE_REPORT"
   echo "Step: $STEP"
   echo "Exit code: $EXIT_CODE"
 } | tee "$SUMMARY_FILE"
