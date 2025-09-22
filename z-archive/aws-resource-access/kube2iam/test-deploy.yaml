@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: access-test
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: access-test
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: access-test
+      annotations:
+        iam.amazonaws.com/role: my-role
+    spec:
+      containers:
+      - name: access-test
+        image: "iotapi322/worker:v4"

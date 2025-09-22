@@ -1,0 +1,51 @@
+{{- if .Values.backup.enabled -}}
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  labels:
+    app: halyard
+    role: cron
+  name: halyard-cron
+  namespace: {{ .Values.namespace }}
+spec:
+  schedule: "0 11 * * *"
+  jobTemplate:
+    metadata:
+      labels:
+        app: halyard
+        role: cron
+    spec:
+      template:
+        spec:
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+          serviceAccountName: spinnaker
+          restartPolicy: OnFailure
+          containers:
+          - name: halyard-cron
+            image: {{ .Values.image }}
+            command: [ "/backup.sh" ]
+            env:
+            - name: AWS_BUCKET
+              value: {{ .Values.backup.awsBucket }}
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.backup.awsSecret }}
+                  key: aws_access_key_id
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.backup.awsSecret }}
+                  key: aws_secret_access_key
+            terminationMessagePolicy: FallbackToLogsOnError
+            volumeMounts:
+            - name: spinnaker-home
+              mountPath: /home/spinnaker
+          volumes:
+          - name: spinnaker-home
+            persistentVolumeClaim:
+              claimName: halyard
+{{- end }}

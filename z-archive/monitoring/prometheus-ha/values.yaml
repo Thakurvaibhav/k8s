@@ -1,0 +1,122 @@
+namespace: monitoring
+
+storageClass:
+  name: fast
+  provisioner: kubernetes.io/gce-pd
+
+alertmanager:
+  enabled: true
+  image: prom/alertmanager:v0.20.0
+  service:
+    type: ClusterIP
+
+grafana:
+  enabled: true
+  image: grafana/grafana
+  service:
+    type: ClusterIP
+  storage: 10Gi
+
+kube_state_metrics:
+  enabled: true
+  image: quay.io/coreos/kube-state-metrics:v1.9.5
+
+nodeExporter:
+  enabled: true
+  image: prom/node-exporter:v0.18.1
+
+prometheus:
+  enabled: true
+  image: prom/prometheus:v2.14.0
+  clusterName: my-prometheus
+  replicas: 1
+  storage: 20Gi
+  resources:
+    limits:
+      cpu: "1"
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+
+pushgateway:
+  enabled: true
+  image: prom/pushgateway:v1.0.1
+  replicas: 1
+  service:
+    type: ClusterIP
+
+thanos:
+  archive_bucket: prometheus-metrics-archive
+  gcs_secret: thanos-gcs-credentials
+  image: quay.io/thanos/thanos:v0.12.1
+
+  query:
+    enabled: true
+    replicas: 1
+    # Other Query or Store Endpoints which need to be stacked should be specified here.
+    extraArgs: {}
+    #  store: <IP>:<PORT>
+    resources:
+      limits:
+        cpu: "1"
+        memory: 1Gi
+      requests:
+        cpu: 100m
+        memory: 256Mi
+    service:
+      type: ClusterIP
+    scrape:
+      enabled: false
+      type: LoadBalancer
+      annotations:
+        cloud.google.com/load-balancer-type: Internal
+
+  compactor:
+    enabled: true
+    replicas: 1
+    resources:
+      limits:
+        cpu: "1"
+        memory: 1Gi
+      requests:
+        cpu: 100m
+        memory: 256Mi
+
+  store:
+    enabled: true
+    replicas: 1
+    resources:
+      limits:
+        cpu: 1
+        memory: 4Gi
+      requests:
+        cpu: 0.5
+        memory: 1Gi
+
+  ruler:
+    enabled: true
+    replicas: 1
+    rules_bucket: prometheus-rules-archive
+    service:
+      type: ClusterIP
+    resources:
+      limits:
+        cpu: "1"
+        memory: 1Gi
+      requests:
+        cpu: 50m
+        memory: 100Mi
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  grafana:
+    host: grafana.yourdomain.com
+  alertmanager:
+    host: alertmanager.yourdomain.com
+  query:
+    host: thanos-query.yourdomain.com
+  ruler:
+    host: thanos-ruler.yourdomain.com
