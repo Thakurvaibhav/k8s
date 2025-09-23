@@ -121,6 +121,21 @@ Kyverno supports PolicyExceptions (controller feature enabled). Prefer:
 | High violation count | Existing workloads non‑compliant | Remediate manifests; stage Enforce after reduction |
 | Missing reports | Policy Reporter disabled | Enable `policyReporter.enabled=true` |
 
+## Resource Tracking (Argo CD)
+To avoid label ownership conflicts with the Kyverno Helm chart, configure Argo CD to use a different instance label key than the default `app.kubernetes.io/instance`. Example global setting:
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+  labels:
+    app.kubernetes.io/name: argocd-cm
+    app.kubernetes.io/part-of: argocd
+data:
+  application.instanceLabelKey: argocd.argoproj.io/instance
+```
+
+
 ## Upgrade Notes
 - Pin dependency versions in `Chart.yaml`; bump deliberately for upstream changes.
 - Validate new Kyverno versions for policy schema changes before promoting to production.

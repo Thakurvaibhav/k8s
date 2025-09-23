@@ -1,0 +1,26 @@
+kind: Application
+apiVersion: argoproj.io/v1alpha1
+metadata:
+  name: dev-01-bootstrap-apps
+  namespace: argocd
+spec:
+  project: operations
+  source:
+    path: charts/app-of-apps
+    repoURL: git@github.com:Thakurvaibhav/k8s.git
+    targetRevision: HEAD # Use HEAD for dev so that changes are reflected immediately
+    helm:
+      valueFiles:
+        - values.dev-01.yaml
+  destination:
+    namespace: argocd
+    server: https://kubernetes.default.svc # This is the ops cluster
+  syncPolicy:
+    automated:
+      selfHeal: true
+      allowEmpty: true
+      prune: true
+    syncOptions:
+      - Validate=true
+      - ApplyOutOfSyncOnly=true
+      - ServerSideApply=true
