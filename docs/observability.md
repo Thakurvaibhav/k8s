@@ -19,7 +19,7 @@ The design (and the steps below) assume the following platform components are al
 Ensure cluster trust roots / CA issuers are consistent (or mapped) so mTLS pairs validate correctly across clusters.
 
 ## GitOps App-of-Apps Integration (Foundational)
-This platform is bootstrapped by the existing Helm chart at `charts/app-of-apps` (your published **App-of-Apps** implementation). That chart renders Argo CD `Application` objects for every core and observability component based on simple boolean `enable` flags and per‑environment value files (`values.dev-01.yaml`, `values.stag-01.yaml`, `values.prod-01.yaml`, `values.ops-01.yaml`).
+This platform is bootstrapped by the existing Helm chart at `charts/app-of-apps`. That chart renders Argo CD `Application` objects for every core and observability component based on simple boolean `enable` flags and per‑environment value files (`values.dev-01.yaml`, `values.stag-01.yaml`, `values.prod-01.yaml`, `values.ops-01.yaml`).
 
 ### Key Capabilities
 - Single helm install creates (or updates) all Argo CD Applications for a cluster
