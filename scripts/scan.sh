@@ -144,7 +144,7 @@ fi
 in_array() { local needle="$1"; shift; for e in "$@"; do [[ "$e" == "$needle" ]] && return 0; done; return 1; }
 
 # ---------------------------------------------
-# Image aggregation structures (8)
+# Image aggregation structures
 # ---------------------------------------------
 declare -A IMAGE_OCCURRENCES   # image -> comma separated chart:values entries
 
@@ -306,7 +306,7 @@ for chart in "${charts_changed[@]}"; do
 done
 
 # ---------------------------------------------
-# Trivy aggregated scanning (8,9,11)
+# Trivy aggregated scanning
 # ---------------------------------------------
 if [[ "$STEP" == "trivy" ]]; then
   log "Preparing aggregated Trivy image scan list"

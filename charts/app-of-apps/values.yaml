@@ -64,7 +64,7 @@ monitoring:
   namespace: monitoring
   source:
     repoURL: git@github.com:Thakurvaibhav/k8s.git
-    path: charts/nginx-ingress-controller
+    path: charts/monitoring
     targetRevision: ""
     helm:
       valueFiles: ""
