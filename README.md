@@ -71,66 +71,46 @@ The **Ops cluster** functions as the *global command center*:
 
 ### Topology Diagram
 ```mermaid
-flowchart LR
-  classDef ops fill:#2a5872,stroke:#0d1e27,color:#ffffff;
-  classDef opsnode fill:#1b3d52,stroke:#0a1f29,color:#ffffff;
+%% Top-down layout: Ops at top (horizontal internals), Prod | Stage | Dev row beneath
+flowchart TB
   classDef env fill:#f5f7fa,stroke:#cfd6dd,color:#111111;
   classDef tel fill:#ffffff,stroke:#97a3ab,color:#222222,stroke-dasharray:3 3;
-  classDef gw fill:#203547,stroke:#0d1e27,color:#ffffff;
-  classDef note fill:#ffffff,stroke:#97a3ab,color:#555555,stroke-dasharray:2 2;
-
-  %% OPS CLUSTER
-  subgraph OPS[Ops Cluster Authoritative Control Plane]
-    direction TB
-    ACD[Argo CD]
-    KYV[Kyverno]
-    GWOPS[Envoy Gateway]
-    OBS[Observability Stack]
-  end
 
   %% ENVIRONMENT CLUSTERS
   subgraph PROD[Prod Cluster]
-    subgraph PRDSTACK[ ]
-      PRODAPP[Apps]
-      KYVPRD[Kyverno]
-      GWPRD[Envoy Gateway]
-      TELPRD[Telemetry Agent]
-    end
-  end
-  subgraph DEV[Dev Cluster]
-    subgraph DEVSTACK[ ]
-      DEVAPP[Apps]
-      KYVDEV[Kyverno]
-      GWDEV[Envoy Gateway]
-      TELDEV[Telemetry Agent]
-    end
+    PRODAPP[Apps]
+    KYVPRD[Kyverno]
+    GWPRD[Envoy Gateway]
+    TELPRD[Telemetry Stack]
   end
   subgraph STAGE[Stage / QA Cluster]
-    subgraph STGSTACK[ ]
-      STGAPP[Apps]
-      KYVSTG[Kyverno]
-      GWSTG[Envoy Gateway]
-      TELSTG[Telemetry Agent]
-    end
+    STGAPP[Apps]
+    KYVSTG[Kyverno]
+    GWSTG[Envoy Gateway]
+    TELSTG[Telemetry Stack]
+  end
+  subgraph DEV[Dev Cluster]
+    DEVAPP[Apps]
+    KYVDEV[Kyverno]
+    GWDEV[Envoy Gateway]
+    TELDEV[Telemetry Stack]
   end
 
+  %% OPS CLUSTER
+  subgraph OPS[Ops Cluster]
+    KYV[Kyverno]
+    GWOPS[Envoy Gateway]
+    ACD[Argo CD]
+    OBS[Observability Stack]
+
+  end
+
+  %% GitOps fan-out
   ACD --> PROD
-  ACD --> DEV
   ACD --> STAGE
+  ACD --> DEV
 
-  TELPRD ==> GWPRD --> GWOPS
-  TELDEV ==> GWDEV --> GWOPS
-  TELSTG ==> GWSTG --> GWOPS
-  GWOPS --> OBS
-
-  %% Legend / note
-  NOTE1[[Managed objects: Apps, Kyverno, Envoy, Telemetry are reconciled by Argo CD in each cluster]]:::note
-  ACD -. manages .-> NOTE1
-
-  class OPS ops;
-  class ACD,KYV,GWOPS,OBS opsnode;
-  class PROD,DEV,STAGE env;
-  class GWDEV,GWSTG,GWPRD gw;
+  class PROD,STAGE,DEV env;
   class TELDEV,TELSTG,TELPRD tel;
 ```
 
