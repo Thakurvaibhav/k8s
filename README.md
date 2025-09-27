@@ -72,14 +72,14 @@ The **Ops cluster** functions as the *global command center*:
 ### Topology Diagram
 ```mermaid
 flowchart LR
-  classDef ops fill:#2a5872,stroke:#0d1e27,color:#ffffff;  %% slightly lighter than #3c5c70ff
-  classDef ctrl fill:#254861,stroke:#0d1e27,color:#ffffff;
+  classDef ops fill:#2a5872,stroke:#0d1e27,color:#ffffff;
+  classDef opsnode fill:#1b3d52,stroke:#0a1f29,color:#ffffff;
   classDef env fill:#f5f7fa,stroke:#cfd6dd,color:#111111;
   classDef tel fill:#ffffff,stroke:#97a3ab,color:#222222,stroke-dasharray:3 3;
   classDef gw fill:#203547,stroke:#0d1e27,color:#ffffff;
   classDef note fill:#ffffff,stroke:#97a3ab,color:#555555,stroke-dasharray:2 2;
 
-  %% OPS CLUSTER (vertical layout)
+  %% OPS CLUSTER
   subgraph OPS[Ops Cluster Authoritative Control Plane]
     direction TB
     ACD[Argo CD]
@@ -88,7 +88,7 @@ flowchart LR
     OBS[Observability Stack]
   end
 
-  %% ENVIRONMENT CLUSTERS (ordered: Prod, Dev, Stage to the right)
+  %% ENVIRONMENT CLUSTERS
   subgraph PROD[Prod Cluster]
     subgraph PRDSTACK[ ]
       PRODAPP[Apps]
@@ -114,12 +114,10 @@ flowchart LR
     end
   end
 
-  %% GitOps fan-out (one arrow per cluster retained)
   ACD --> PROD
   ACD --> DEV
   ACD --> STAGE
 
-  %% Telemetry path: local emit -> local Envoy -> Ops Envoy -> Observability
   TELPRD ==> GWPRD --> GWOPS
   TELDEV ==> GWDEV --> GWOPS
   TELSTG ==> GWSTG --> GWOPS
@@ -129,7 +127,8 @@ flowchart LR
   NOTE1[[Managed objects: Apps, Kyverno, Envoy, Telemetry are reconciled by Argo CD in each cluster]]:::note
   ACD -. manages .-> NOTE1
 
-  class OPS,ACD,KYV,GWOPS,OBS ops;
+  class OPS ops;
+  class ACD,KYV,GWOPS,OBS opsnode;
   class PROD,DEV,STAGE env;
   class GWDEV,GWSTG,GWPRD gw;
   class TELDEV,TELSTG,TELPRD tel;
