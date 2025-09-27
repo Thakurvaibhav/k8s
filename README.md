@@ -15,32 +15,19 @@ These charts implement a "Platform in a Box"—a batteries‑included, GitOps dr
 This top‑level document inventories charts, their relationships, and recommended installation / reconciliation order.
 
 ## Inventory
-| Chart | Purpose | Depends On / Cooperates With | Key Notes |
-|-------|---------|------------------------------|-----------|
-| `app-of-apps` | Argo CD App‑of‑Apps root that defines Argo CD `Application` objects for platform components (monitoring, ingress, gateway, secrets, policies, data services, logging). | Argo CD CRDs present in cluster. Optionally Sealed Secrets controller if you enable secret management here. | Toggle components via values: `sealedSecrets`, `ingressController`, `envoyGateway`, `externalDns`, `certManager`, `monitoring`, `kyverno`, `redis`, `logging`, `jaeger`. |
-| `sealed-secrets` | Vendors upstream Bitnami Sealed Secrets controller and (optionally) renders shared/global sealed secrets. | Installed via `app-of-apps` (if `sealedSecrets.enable=true`). Consumed by charts needing encrypted creds (monitoring, external-dns, others). | Supports user‑defined controller key; global secrets only. |
-| `cert-manager` | Issues TLS certs via ACME (DNS‑01 GCP Cloud DNS example) and reflects cert Secrets cluster‑wide using reflector. | Sealed Secrets (for DNS svc acct), ExternalDNS (aligned DNS zones), consumers: envoy-gateway, logging, jaeger, ingress. | Upstream `cert-manager` + `reflector`; wildcard cert reuse via annotations. |
-| `envoy-gateway` | Deploys Envoy Gateway (Gateway API) plus custom GatewayClasses, Gateways, Routes, security & proxy policies. | Kubernetes >=1.27, optionally ExternalDNS & monitoring. | Deployed in every cluster (local ingress + policy attachment) but managed centrally. |
-| `external-dns` | Manages DNS records in Google Cloud DNS for Services & Gateway API (HTTPRoute/GRPCRoute). | GCP service account (sealed credentials), Gateway / Services to watch. | Multi‑domain filters, TXT registry, environment isolation. |
-| `monitoring` | Prometheus + Thanos components for HA metrics and global aggregation. | `envoy-gateway` (if gRPC exposure), Sealed Secrets, object storage. | Values control Thanos, replicas, routes, TLS. |
-| `nginx-ingress-controller` | Traditional NGINX ingress controller for legacy ingress use cases. | None (cluster only). | Prefer Gateway API for new services. |
-| `kyverno` | Upstream Kyverno + Policy Reporter + starter ops & security policies (Audit → Enforce). | Sealed Secrets (optional), monitoring (metrics). | Deployed in every cluster for local admission & policy enforcement; centrally versioned. |
-| `redis` | Vendors upstream Bitnami Redis for cache/session workloads. | Sealed Secrets (auth), monitoring (metrics). | Enable auth & persistence in env overrides before production. |
-| `logging` | Centralized multi‑cluster logging (Elasticsearch + Kibana + Filebeat) using ECK operator & mTLS via Gateway. | `envoy-gateway` (ingest endpoint), Sealed Secrets (certs), eck-operator. | Deployed with Helm release name `logging`; ops cluster hosts ES/Kibana; other clusters ship via Filebeat. |
-| `jaeger` | Multi‑cluster tracing (collectors in all clusters, query UI only in Ops) storing spans in shared Elasticsearch (logging stack). | `logging` (Elasticsearch), Sealed Secrets (ES creds / TLS), optional Envoy Gateway (if exposing query). | Agents optional (apps can emit OTLP direct); uses upstream Jaeger chart. |
-
-## Component Categories
-| Category | Purpose / Scope | Components | Recommendation / Notes |
-|----------|-----------------|------------|------------------------|
-| GitOps Orchestration | Declarative deployment & synchronization of all platform layers | `app-of-apps` (Argo CD root) | Keep lean; only owns Argo CD Application CRs. |
-| Traffic Management & Routing | North/South & East/West HTTP/gRPC ingress, routing, DNS publishing | `envoy-gateway`, `external-dns`, `nginx-ingress-controller` | Prefer Gateway API via `envoy-gateway`; `nginx-ingress-controller` legacy only. |
-| Secrets Management | Encrypted distribution of sensitive config & cert/key material | `sealed-secrets` | Rotate controller key; treat sealed manifests as immutable. |
-| Compliance & Policy | Admission controls, governance, workload standards (Audit→Enforce) | `kyverno` | Start Audit, promote critical policies to Enforce gradually. |
-| TLS & Certificates | Automated ACME issuance, renewal, wildcard/SAN cert reuse across namespaces | `cert-manager`, `reflector` | Use DNS-01 (GCP Cloud DNS) for wildcards; reflect only ingress/public certs; future: add additional issuers. |
-| Observability: Metrics | Cluster & app metrics, long-term aggregation | `monitoring` (Prometheus + Thanos) | Enable Thanos for multi-cluster federation. |
-| Observability: Logs | Centralized log storage & search | `logging` (Elasticsearch + Kibana + Filebeat) | mTLS ingest; size ES per retention & volume. |
-| Observability: Tracing | Distributed trace collection & visualization | `jaeger` (collectors everywhere, query in Ops) | Agents optional; spans stored in Logging ES. |
-| Data Services (Shared) | Shared infra data services for apps / platform features | `redis` | Enable auth & persistence before production. |
+| Chart | Category | Purpose | Depends On / Cooperates With | Key Notes |
+|-------|----------|---------|------------------------------|-----------|
+| `app-of-apps` | GitOps Orchestration | Argo CD App‑of‑Apps root that defines Argo CD `Application` objects for platform components (monitoring, ingress, gateway, secrets, policies, data services, logging). | Argo CD CRDs present in cluster. Optionally Sealed Secrets controller if you enable secret management here. | Toggle components via values: `sealedSecrets`, `ingressController`, `envoyGateway`, `externalDns`, `certManager`, `monitoring`, `kyverno`, `redis`, `logging`, `jaeger`. |
+| `sealed-secrets` | Secrets Management | Vendors upstream Bitnami Sealed Secrets controller and (optionally) renders shared/global sealed secrets. | Installed via `app-of-apps` (if `sealedSecrets.enable=true`). Consumed by charts needing encrypted creds (monitoring, external-dns, others). | Supports user‑defined controller key; global secrets only. |
+| `cert-manager` | TLS & Certificates | Issues TLS certs via ACME (DNS‑01 GCP Cloud DNS example) and reflects cert Secrets cluster‑wide using reflector. | Sealed Secrets (for DNS svc acct), ExternalDNS (aligned DNS zones), consumers: envoy-gateway, logging, jaeger, ingress. | Upstream `cert-manager` + `reflector`; wildcard cert reuse via annotations. |
+| `envoy-gateway` | Traffic Management & Routing | Deploys Envoy Gateway (Gateway API) plus custom GatewayClasses, Gateways, Routes, security & proxy policies. | Kubernetes >=1.27, optionally ExternalDNS & monitoring. | Deployed in every cluster (local ingress + policy attachment) but managed centrally. |
+| `external-dns` | Traffic Management & Routing | Manages DNS records in Google Cloud DNS for Services & Gateway API (HTTPRoute/GRPCRoute). | GCP service account (sealed credentials), Gateway / Services to watch. | Multi‑domain filters, TXT registry, environment isolation. |
+| `monitoring` | Observability: Metrics | Prometheus + Thanos components for HA metrics and global aggregation. | `envoy-gateway` (if gRPC exposure), Sealed Secrets, object storage. | Values control Thanos, replicas, routes, TLS. |
+| `nginx-ingress-controller` | Traffic Management & Routing | Traditional NGINX ingress controller for legacy ingress use cases. | None (cluster only). | Prefer Gateway API for new services. |
+| `kyverno` | Compliance & Policy | Upstream Kyverno + Policy Reporter + starter ops & security policies (Audit → Enforce). | Sealed Secrets (optional), monitoring (metrics). | Deployed in every cluster for local admission & policy enforcement; centrally versioned. |
+| `redis` | Data Services (Shared) | Vendors upstream Bitnami Redis for cache/session workloads. | Sealed Secrets (auth), monitoring (metrics). | Enable auth & persistence in env overrides before production. |
+| `logging` | Observability: Logs | Centralized multi‑cluster logging (Elasticsearch + Kibana + Filebeat) using ECK operator & mTLS via Gateway. | `envoy-gateway` (ingest endpoint), Sealed Secrets (certs), eck-operator. | Deployed with Helm release name `logging`; ops cluster hosts ES/Kibana; other clusters ship via Filebeat. |
+| `jaeger` | Observability: Tracing | Multi‑cluster tracing (collectors in all clusters, query UI only in Ops) storing spans in shared Elasticsearch (logging stack). | `logging` (Elasticsearch), Sealed Secrets (ES creds / TLS), optional Envoy Gateway (if exposing query). | Agents optional (apps can emit OTLP direct); uses upstream Jaeger chart. |
 
 ## Argo CD Control Plane & Bootstrap
 Argo CD runs in the **ops cluster** (namespace `argocd`) and serves as the central command & control plane for *all* platform components across every environment cluster. The ops cluster hosts:
