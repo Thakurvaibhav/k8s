@@ -72,7 +72,7 @@ The **Ops cluster** functions as the *global command center*:
 ### Topology Diagram
 ```mermaid
 flowchart LR
-  classDef ops fill:#1f3b4d,stroke:#0d1e27,color:#ffffff;
+  classDef ops fill:#2a5872,stroke:#0d1e27,color:#ffffff;  %% slightly lighter than #3c5c70ff
   classDef ctrl fill:#254861,stroke:#0d1e27,color:#ffffff;
   classDef env fill:#f5f7fa,stroke:#cfd6dd,color:#111111;
   classDef tel fill:#ffffff,stroke:#97a3ab,color:#222222,stroke-dasharray:3 3;
