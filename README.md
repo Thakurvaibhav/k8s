@@ -20,11 +20,11 @@ This top‑level document inventories charts, their relationships, and recommend
 | `app-of-apps` | Argo CD App‑of‑Apps root that defines Argo CD `Application` objects for platform components (monitoring, ingress, gateway, secrets, policies, data services, logging). | Argo CD CRDs present in cluster. Optionally Sealed Secrets controller if you enable secret management here. | Toggle components via values: `sealedSecrets`, `ingressController`, `envoyGateway`, `externalDns`, `certManager`, `monitoring`, `kyverno`, `redis`, `logging`, `jaeger`. |
 | `sealed-secrets` | Vendors upstream Bitnami Sealed Secrets controller and (optionally) renders shared/global sealed secrets. | Installed via `app-of-apps` (if `sealedSecrets.enable=true`). Consumed by charts needing encrypted creds (monitoring, external-dns, others). | Supports user‑defined controller key; global secrets only. |
 | `cert-manager` | Issues TLS certs via ACME (DNS‑01 GCP Cloud DNS example) and reflects cert Secrets cluster‑wide using reflector. | Sealed Secrets (for DNS svc acct), ExternalDNS (aligned DNS zones), consumers: envoy-gateway, logging, jaeger, ingress. | Upstream `cert-manager` + `reflector`; wildcard cert reuse via annotations. |
-| `envoy-gateway` | Deploys Envoy Gateway (Gateway API) plus custom GatewayClasses, Gateways, Routes, security & proxy policies. | Kubernetes >=1.27, optionally ExternalDNS & monitoring. | Vendors upstream OCI chart (`gateway-helm` alias `gatewayprovider`). |
+| `envoy-gateway` | Deploys Envoy Gateway (Gateway API) plus custom GatewayClasses, Gateways, Routes, security & proxy policies. | Kubernetes >=1.27, optionally ExternalDNS & monitoring. | Deployed in every cluster (local ingress + policy attachment) but managed centrally. |
 | `external-dns` | Manages DNS records in Google Cloud DNS for Services & Gateway API (HTTPRoute/GRPCRoute). | GCP service account (sealed credentials), Gateway / Services to watch. | Multi‑domain filters, TXT registry, environment isolation. |
 | `monitoring` | Prometheus + Thanos components for HA metrics and global aggregation. | `envoy-gateway` (if gRPC exposure), Sealed Secrets, object storage. | Values control Thanos, replicas, routes, TLS. |
 | `nginx-ingress-controller` | Traditional NGINX ingress controller for legacy ingress use cases. | None (cluster only). | Prefer Gateway API for new services. |
-| `kyverno` | Upstream Kyverno + Policy Reporter + starter ops & security policies (Audit → Enforce). | Sealed Secrets (optional), monitoring (metrics). | Policy groups toggled via `opsPolicies.*` / `secPolicies.*`. |
+| `kyverno` | Upstream Kyverno + Policy Reporter + starter ops & security policies (Audit → Enforce). | Sealed Secrets (optional), monitoring (metrics). | Deployed in every cluster for local admission & policy enforcement; centrally versioned. |
 | `redis` | Vendors upstream Bitnami Redis for cache/session workloads. | Sealed Secrets (auth), monitoring (metrics). | Enable auth & persistence in env overrides before production. |
 | `logging` | Centralized multi‑cluster logging (Elasticsearch + Kibana + Filebeat) using ECK operator & mTLS via Gateway. | `envoy-gateway` (ingest endpoint), Sealed Secrets (certs), eck-operator. | Deployed with Helm release name `logging`; ops cluster hosts ES/Kibana; other clusters ship via Filebeat. |
 | `jaeger` | Multi‑cluster tracing (collectors in all clusters, query UI only in Ops) storing spans in shared Elasticsearch (logging stack). | `logging` (Elasticsearch), Sealed Secrets (ES creds / TLS), optional Envoy Gateway (if exposing query). | Agents optional (apps can emit OTLP direct); uses upstream Jaeger chart. |
@@ -49,6 +49,109 @@ Argo CD runs in the **ops cluster** (namespace `argocd`) and serves as the centr
 - Bootstrap Application manifests located under `argocd-bootstrap-apps/` (e.g. `ops-01.yaml`) which create the root Application pointing at the `app-of-apps` Helm chart
 
 From this root, Argo CD renders and manages per‑cluster component Applications (monitoring, logging, jaeger, gateway, cert-manager, kyverno, etc.). Remote clusters are registered in Argo CD (cluster secrets) and targeted by generated `Application` specs; reconciliation therefore originates centrally while resources apply to their respective destination clusters.
+
+### Global Operations Topology
+The **Ops cluster** functions as the *global command center*:
+- Hosts the authoritative Argo CD control plane (API, repo-server, controllers)
+- Runs centralized observability backends (Grafana, Thanos Global Query, Elasticsearch/Kibana, Jaeger Query) and shared gateway / policy components
+- Provides a single RBAC + audit surface for promotions & rollbacks
+- Exposes only the minimum required northbound endpoints (UI/API, metrics, routes)
+
+**Workload Environment Clusters** (Dev, QA/Stage, Prod) connect outward to the Ops control plane:
+- Applications & platform components deploy *into* those clusters via Argo CD Application destinations
+- Metrics / logs / traces federate back (pull or push depending on component) to the Ops cluster’s aggregation layer
+- Promotion flows (dev → staging → prod) are purely Git-driven; clusters never need inbound access to each other
+
+#### Core Assertions
+1. Ops cluster = authoritative source of deployment orchestration & cross‑environment visibility.
+2. Dev / QA / Prod clusters are *execution targets*; they do not run their own Argo CD (unless intentionally delegated).
+3. Multiple Ops clusters are possible (e.g. per regulatory boundary, geography, or business unit) — each managing a *scope* of environment clusters.
+4. Observability backends can be hierarchical (regional Ops aggregators → global Ops) if needed for scale or sovereignty.
+5. Envoy Gateway and Kyverno run in every cluster to keep ingress and policy enforcement local (reduced latency, fail‑closed posture) while remaining Git‑driven from the Ops control plane.
+
+### Topology Diagram
+```mermaid
+%% Top-down layout: Ops at top (horizontal internals), Prod | Stage | Dev row beneath
+flowchart TB
+  classDef env fill:#f5f7fa,stroke:#cfd6dd,color:#111111;
+  classDef tel fill:#ffffff,stroke:#97a3ab,color:#222222,stroke-dasharray:3 3;
+
+  %% ENVIRONMENT CLUSTERS
+  subgraph PROD[Prod Cluster]
+    PRODAPP[Apps]
+    KYVPRD[Kyverno]
+    GWPRD[Envoy Gateway]
+    TELPRD[Telemetry Stack]
+  end
+  subgraph STAGE[Stage / QA Cluster]
+    STGAPP[Apps]
+    KYVSTG[Kyverno]
+    GWSTG[Envoy Gateway]
+    TELSTG[Telemetry Stack]
+  end
+  subgraph DEV[Dev Cluster]
+    DEVAPP[Apps]
+    KYVDEV[Kyverno]
+    GWDEV[Envoy Gateway]
+    TELDEV[Telemetry Stack]
+  end
+
+  %% OPS CLUSTER
+  subgraph OPS[Ops Cluster]
+    KYV[Kyverno]
+    GWOPS[Envoy Gateway]
+    ACD[Argo CD]
+    OBS[Observability Stack]
+
+  end
+
+  %% GitOps fan-out
+  ACD --> PROD
+  ACD --> STAGE
+  ACD --> DEV
+
+  class PROD,STAGE,DEV env;
+  class TELDEV,TELSTG,TELPRD tel;
+```
+
+### Multi-Ops Variant (Segregated Control Planes)
+When mandated by isolation (e.g., regulated vs commercial, or geo latency), run *multiple* Ops clusters—each an island of control—but optionally feed a higher‑level analytics layer.
+
+```mermaid
+flowchart LR
+  subgraph OPSA[Ops Cluster A]
+    ACD1[Argo CD A]
+    OBSA[Observability A]
+  end
+  subgraph OPSB[Ops Cluster B]
+    ACD2[Argo CD B]
+    OBSB[Observability B]
+  end
+  subgraph ENVA[Env Clusters A]
+    D1[Dev A]
+    S1[Stage A]
+    P1[Prod A]
+  end
+  subgraph ENVB[Env Clusters B]
+    D2[Dev B]
+    S2[Stage B]
+    P2[Prod B]
+  end
+
+  ACD1 --> D1
+  ACD1 --> S1
+  ACD1 --> P1
+  ACD2 --> D2
+  ACD2 --> S2
+  ACD2 --> P2
+
+  OBSA -. optional aggregated exports .- OBSB
+```
+
+**Guidance**
+- Start with a single Ops cluster unless compliance / latency clearly requires separation.
+- If splitting, standardize naming (e.g., `ops-global`, `ops-regulated`) and duplicate only the minimal control plane + observability roles.
+- Keep Git repository structure unified; scope Argo CD Projects per Ops domain.
 
 ### Bootstrap Flow (Ops Cluster)
 1. Apply the bootstrap Application (e.g. `kubectl apply -f argocd-bootstrap-apps/ops-01.yaml` in the ops cluster).
@@ -183,7 +286,8 @@ Each block also supplies:
 - Logging relies on Envoy Gateway for mTLS log ingestion endpoints and Sealed Secrets for TLS cert material.
 - Jaeger collectors write spans to Elasticsearch in the logging stack; Query UI only runs in Ops cluster; optional exposure via Envoy Gateway / ingress.
 - Jaeger agents are optional when applications can emit OTLP direct to collector services.
-- Kyverno enforces standards on workloads deployed by other charts (progress Audit→Enforce).
+- Kyverno enforces standards on workloads deployed by other charts (progress Audit→Enforce) and operates per cluster for locality of admission decisions.
+- Envoy Gateway is present in each cluster for local north/south & east/west routing; global Gitops ensures consistent security policy overlays.
 - Redis, Logging Stack, and Jaeger may expose metrics scraped by monitoring.
 - Sealed Secrets underpins secret distribution (monitoring, external-dns, kyverno, redis, logging, jaeger, cert-manager DNS creds).
 
