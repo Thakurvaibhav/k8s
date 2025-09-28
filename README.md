@@ -16,6 +16,16 @@ These charts implement a "Platform in a Box"—a batteries‑included, GitOps dr
 
 This top‑level document inventories charts, their relationships, and recommended installation / reconciliation order.
 
+### Detailed Component & Architecture Docs
+The `docs/` folder contains deep‑dive guidance, reference architectures, and operational playbooks for major platform pillars. Use these for design decisions, hardening steps, and lifecycle operations beyond the high‑level overview in this README:
+
+- [Argo CD Best Practices](docs/argocd-best-practices.md) – HA setup, custom labels, Redis guidance, Gateway exposure, metrics scraping.
+- [Observability (Metrics, Logs, Traces)](docs/observability.md) – Thanos federation model, Elastic logging, Jaeger design, mTLS patterns, retention & ILM.
+- [Traffic Management (Gateway API, TLS, DNS)](docs/traffic-management.md) – Envoy Gateway deployment, certificate issuance flows, DNS automation, sync wave ordering.
+- [Policy & Compliance](docs/compliance.md) – Kyverno audit→enforce ladder, Checkov shift‑left scanning, exception handling strategy.
+
+These documents evolve independently of this summary; always consult them first for implementation specifics, security hardening steps, and operational playbooks.
+
 ## Inventory
 | Chart | Category | Purpose | Depends On / Cooperates With | Key Notes |
 |-------|----------|---------|------------------------------|-----------|
@@ -234,17 +244,7 @@ Argo CD in the ops cluster functions as the operational nerve center:
 - Aggregated health: UI shows all cluster Applications (`<cluster>-<component>` naming convention)
 - Centralized RBAC: limit who can promote by controlling write access to `staging` and `stable` tag creation
 - Single audit trail: Git history + Argo CD event log for every rollout / rollback
-- Simplified credential & secret management: sealed secrets decrypted only within target clusters; definitions managed centrally
-- Coordinated policy evolution: Kyverno & other governance changes rolled out progressively via promotion pipeline
-
-If Argo CD control plane outage occurs, existing workloads remain running; only reconciliation pauses. Recovery: restore ops cluster or Argo CD deployment, reapply bootstrap Application if necessary—state rehydrates from Git.
-
-## Environment Overrides
-Each chart provides environment value files:
-```
-values.dev-01.yaml
-values.stag-01.yaml
-values.ops-01.yaml
+- Simplified credential
 values.prod-01.yaml
 ```
 Use the matching file (or merge multiple with `-f`).
