@@ -1,0 +1,117 @@
+{{ if and (eq .Values.filebeat.enabled true) (.Values.elasticsearch.enable) }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: filebeat-ilm-configure
+  namespace: {{ .Values.elasticsearch.namespace }}
+  annotations:
+    argocd.argoproj.io/sync-options: Replace=true
+spec:
+  template:
+    spec:
+      serviceAccountName: logging
+      containers:
+      - name: filebeat-ilm-configure
+        image: vaibhavthakur/utils:v0.3
+        resources:
+          limits:
+            cpu: "300m"
+            memory: 100Mi
+          requests:
+            cpu: "100m"
+            memory: 50Mi
+        env:
+          - name: ELASTIC_NAME
+            value: {{ .Values.elasticsearch.name }}
+          - name: ELASTIC_NAMESPACE
+            value: {{ .Values.elasticsearch.namespace }}
+          - name: ELASTIC_ENDPOINT
+            value: {{ .Values.elasticsearch.name }}-es-http.{{ .Values.elasticsearch.namespace }}
+          - name: ELASTIC_USER
+            value: elastic
+          - name: ELASTIC_PASS
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.elasticsearch.name }}-es-elastic-user
+                key: elastic
+          - name: FILEBEAT_DATA_MAX_RETENTION_DAYS
+            value: "{{ .Values.filebeat.ilm.data_max_retention_days }}"
+        command:
+        - sh
+        - "-c"
+        - |
+          /bin/bash <<'EOF'
+
+          wait_es() {
+            RETRIES=50
+            for attempt in $(seq 0 ${RETRIES}); do
+              exit_code=0
+              ELASTIC_STATUS=$(kubectl -n ${ELASTIC_NAMESPACE} get es ${ELASTIC_NAME} -o json | jq -r .status.health )
+              if [[ "${ELASTIC_STATUS}" == "green" ]]; then
+                echo [INFO] Elasticsearch status is green.
+                break
+              elif [[ "${attempt}" == "${RETRIES}" ]]; then
+                echo [ERROR] Elasticsearch status unavailable. Exiting
+                sleep 60
+                exit ${exit_code}
+              else
+                echo [WAIT] Elasticsearch status is not yet green. Retrying...
+                sleep 60
+              fi
+            done
+          }
+
+          wait_es
+
+
+          generate_filebeat_ilm_policy_data(){
+          cat <<EOL
+          {
+            "policy": {
+              "phases": {
+                "warm": {
+                  "min_age": "7d",
+                  "actions": {
+                    "readonly": {},
+                    "set_priority": {
+                      "priority": 50
+                    }
+                  }
+                },
+                "hot": {
+                  "min_age": "0ms",
+                  "actions": {
+                    "rollover": {
+                      "max_size": "20gb",
+                      "max_age": "7d"
+                    },
+                    "set_priority": {
+                      "priority": 100
+                    }
+                  }
+                },
+                "delete": {
+                  "min_age": "${FILEBEAT_DATA_MAX_RETENTION_DAYS}d",
+                  "actions": {
+                    "delete": {}
+                  }
+                }`
+              }
+            }
+          }
+          EOL
+          }
+
+          echo [INFO] Configuring Filebeat ILM policy in Elasticsearch
+          curl -k \
+            -u "${ELASTIC_USER}":"${ELASTIC_PASS}" \
+            -X PUT https://${ELASTIC_ENDPOINT}:9200/_ilm/policy/filebeat \
+            -H 'Content-Type: application/json' \
+            --data "$(generate_filebeat_ilm_policy_data)"
+
+          echo [INFO] Wait for filebeat to grab logs
+          sleep 60
+
+          EOF
+      restartPolicy: OnFailure
+{{- end }}

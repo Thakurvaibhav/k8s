@@ -132,6 +132,7 @@ filebeat:
     client_key: "" # SealedSecret value
   ilm:
     policy_name: filebeat
+    data_max_retention_days: 56 # 8 weeks of total data retention
   queue_mem:
     #maximum events which can be stored in the queue
     events: 512
