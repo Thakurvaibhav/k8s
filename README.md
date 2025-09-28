@@ -1,5 +1,7 @@
 # Helm Charts
 
+[![Chart Scan](https://github.com/Thakurvaibhav/k8s/actions/workflows/chart-scan.yml/badge.svg)](https://github.com/Thakurvaibhav/k8s/actions/workflows/chart-scan.yml)
+
 ## Platform in a Box
 These charts implement a "Platform in a Box"—a batteries‑included, GitOps driven foundation for operating a Kubernetes platform using the Argo CD App‑of‑Apps pattern. They compose the core traffic, security, observability, data, and enablement layers so teams can onboard applications quickly with consistent guardrails.
 
