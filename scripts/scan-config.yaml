@@ -16,6 +16,7 @@ trivy:
     -  docker.elastic.co/beats/filebeat-oss:8.17.0 # Fix not available
     -  docker.io/bitnami/redis:8.0.3-debian-12-r1 # Fix not available
     -  busybox:1.31.1 # Fix not available
+    -  vaibhavthakur/utils:v0.3 # Custom image, not updating for now
 
 checkov:
   skipcharts:
