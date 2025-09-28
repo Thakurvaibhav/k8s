@@ -244,7 +244,17 @@ Argo CD in the ops cluster functions as the operational nerve center:
 - Aggregated health: UI shows all cluster Applications (`<cluster>-<component>` naming convention)
 - Centralized RBAC: limit who can promote by controlling write access to `staging` and `stable` tag creation
 - Single audit trail: Git history + Argo CD event log for every rollout / rollback
-- Simplified credential
+- Simplified credential & secret management: sealed secrets decrypted only within target clusters; definitions managed centrally
+- Coordinated policy evolution: Kyverno & other governance changes rolled out progressively via promotion pipeline
+
+If Argo CD control plane outage occurs, existing workloads remain running; only reconciliation pauses. Recovery: restore ops cluster or Argo CD deployment, reapply bootstrap Application if necessary—state rehydrates from Git.
+
+## Environment Overrides
+Each chart provides environment value files:
+```
+values.dev-01.yaml
+values.stag-01.yaml
+values.ops-01.yaml
 values.prod-01.yaml
 ```
 Use the matching file (or merge multiple with `-f`).
