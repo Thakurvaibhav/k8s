@@ -53,7 +53,9 @@ spec:
             - --reloader.rule-dir=/etc/prometheus/rules/
           env:
             - name: CLUSTER_NAME
-              value: {{ .Values.prometheus.clusterName }}
+              value: {{ .Values.cluster.name }}
+            - name: ENVIRONMENT
+              value: {{ .Values.cluster.environment }}
             - name: POD_NAME
               valueFrom:
                 fieldRef:

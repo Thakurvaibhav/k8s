@@ -1,8 +1,7 @@
 cluster:
   type: ops
-
-prometheus:
-  clusterName: ops-01
+  name: ops-01
+  environment: operations
 
 thanos:
   gcsSecret: ""

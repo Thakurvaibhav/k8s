@@ -1,13 +1,11 @@
 cluster:
   type: dev
+  name: dev-01
+  environment: development
 
 grafana:
   enabled: false
 
-prometheus:
-  clusterName: dev-01
-
 thanos:
   gcsSecret: ""
   archive_bucket: dev-01-metrics-archive
-

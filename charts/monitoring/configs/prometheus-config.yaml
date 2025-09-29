@@ -4,6 +4,7 @@ global:
   evaluation_interval: 5s
   external_labels:
     cluster: $(CLUSTER_NAME)
+    environment: $(ENVIRONMENT)
     # Each Prometheus has to have unique labels.
     prometheus_replica: $(POD_NAME)
 
