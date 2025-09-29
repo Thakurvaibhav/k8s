@@ -1,7 +1,9 @@
 namespace: monitoring
 
 cluster:
+  name: cluster-name
   type: cluster-type
+  environment: production
 
 storageClass:
   name: monitoring
@@ -64,7 +66,6 @@ nodeExporter:
 prometheus:
   enabled: true
   image: prom/prometheus:v3.1.0
-  clusterName: cluster-name
   replicas: 1
   storage: 20Gi
   resources:

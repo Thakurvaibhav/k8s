@@ -1,11 +1,10 @@
 cluster:
   type: prod
+  name: prod-01
+  environment: production
 
 grafana:
   enabled: false
-
-prometheus:
-  clusterName: prod-01
 
 thanos:
   gcsSecret: ""
