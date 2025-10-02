@@ -50,8 +50,8 @@ elasticExporter:
   extraArgs:
     - es.timeout=60s
   es:
-    uri: AgBTll2YIAjiOQWQed1U86lgoraPnuGZBC9n4V7W0qv1hw6f1mvvCX9prT3bm7CCg1D2ykRn13LQt2rekq5ZP+STp7T3a6Cr2SrxPK3akLDSQaAvwPXI0WFQUImgksK68qMr7tp0VX1Nb539yqcbmessZ0R3afQLA5hnt4Rh11DWlLX/aGpquqcdLK+tJaV4RHZfliQ3ioVQsRT8Dzn3S51N3fHVbWObvLoC+fs/3Ok48I5UbFv7YUQfayEe2Zl+wXnG3OfNCrCBYcxQOcON9zsvDkQW4Sa+VFs/RDBc7PkezfzUHj/2dAMV5M1TYnUpVdpQ9cg+ZbF91Md1Pdv+MIDIBHWhl03O7s92mPJvrpl/hnA9Zt9QeOHmQf01j0bLD/nRGS4PXPL2IM4tvJsBmoP7ojlXuIW3yIiFqw7BpoEhVhl21U2LWCQWiru/fz6hW556jAqISdxLpZ0+mjs/OLyEeE6HaqjXk4e5Lf6EnL7spvzT5UMGo29THrLi0KVk4/E6jh1UypE7TsWBCzfMssxoE2DHKmdjjD8H8w8ZI6FyLVf5AXlt+HxXbvyKz2usOYWAW4btR4KvflxBmR/31MdJJWawfRuozb6+r0avZgDDpx/SGRMBzlqZj5A1gJNtTXf/N2GEr/fFULay8OXcU7rpY1d2TcN46tJGjzXNYkB8FsOrSmjZ0eJqq8TsSmJLOIpKnuJ9K63YoKEQ2uwXoIkP178EA2LMPb8W18j834ZvFLMhmCOPnrrs4pk305HKh8CXFFwxbbRHL7Wb//x4zBrqrRaR5e3ui4WdCKl1gBTs
-    host: tigera-secure-es-http.tigera-elasticsearch
+    uri: "" # Sealed ES URI
+    host: ""
     port: "9200"
   resources:
     limits:
