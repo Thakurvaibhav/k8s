@@ -1,0 +1,13 @@
+groups:
+ - name: Kyverno
+   rules:
+   - alert: Kyverno enforced policy failed
+     annotations:
+       summary: Kyverno enforced policy failed"
+       description: "\nCluster Name: {{$externalLabels.cluster}}\nNamespace: {{$labels.resource_namespace}}\nPolicy name: {{$labels.policy_name}}\nRule name: {{$labels.rule_name}}"
+     expr: |
+      rate(kyverno_policy_results_total{rule_result="fail",policy_validation_mode="enforce"}[5m]) > 0
+     for: 1m
+     labels:
+       team: devops
+       severity: warning

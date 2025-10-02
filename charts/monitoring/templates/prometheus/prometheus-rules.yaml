@@ -7,7 +7,26 @@ metadata:
     name: prometheus-rules
   namespace: {{ .Values.namespace }}
 data:
+# Default alert rules for all clusters
   alert-rules.yaml: |-
 {{ .Files.Get "configs/prometheus-rules.yaml" | indent 4 }}
+
+# Alert rules for Elastic Exporter
+{{- if .Values.alerts.elasticExporter }}
+  alert-es-rules.yaml: |-
+{{ .Files.Get "configs/alert-rules/prometheus-es-rules.yaml" | indent 4 }}
+{{- end }}
+
+# Alerts for Kyverno
+{{- if .Values.alerts.kyverno }}
+  alert-kyverno-rules.yaml: |-
+{{ .Files.Get "configs/alert-rules/prometheus-kyverno-rules.yaml" | indent 4 }}
+{{- end }}
+
+# Alerts for Envoy Gateway
+{{- if .Values.alerts.envoyGateway }}
+  alert-gateway-rules.yaml: |-
+{{ .Files.Get "configs/alert-rules/prometheus-envoy-gateway-rules.yaml" | indent 4 }}
+{{- end }}
 
 {{- end }}

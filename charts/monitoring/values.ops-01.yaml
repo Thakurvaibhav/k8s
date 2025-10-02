@@ -17,3 +17,10 @@ thanos:
     scrape:
       grpcRoute:
         enabled: false
+
+elasticExporter:
+  enabled: true
+  es:
+    uri: "" # Sealed ES URI
+    host: logging-es-http.logging
+    port: "9200"

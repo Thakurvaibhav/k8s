@@ -1,0 +1,57 @@
+groups:
+ - name: Envoy Gateway
+   rules:
+   - alert: Gateway Route High 4xx Error Count
+     annotations:
+       summary: Gateway Route More than 50% Error Rate 4xx on "{{$labels.envoy_cluster_name}}"
+       description: "\nCluster Name: {{$externalLabels.cluster}}\nRoute: {{$labels.envoy_cluster_name}}"
+     expr: |
+       ((sum(rate(envoy_cluster_upstream_rq_xx{envoy_cluster_name!~"prometheus_stats|xds_cluster",envoy_response_code_class=~"4"}[10m])) by (envoy_cluster_name)) / (sum(rate(envoy_cluster_upstream_rq_xx{envoy_cluster_name!~"prometheus_stats|xds_cluster"}[10m])) by (envoy_cluster_name)) )* 100 > 50
+     for: 5m
+     labels:
+       team: slack
+       severity: warning
+
+   - alert: Gateway Route High 5xx Error Count
+     annotations:
+       summary: Gateway Route More than 50% Error Rate 5xx on "{{$labels.envoy_cluster_name}}"
+       description: "\nCluster Name: {{$externalLabels.cluster}}\nRoute: {{$labels.envoy_cluster_name}}"
+     expr: |
+       ((sum(rate(envoy_cluster_upstream_rq_xx{envoy_cluster_name!~"prometheus_stats|xds_cluster",envoy_response_code_class=~"5"}[10m])) by (envoy_cluster_name)) / (sum(rate(envoy_cluster_upstream_rq_xx{envoy_cluster_name!~"prometheus_stats|xds_cluster"}[10m])) by (envoy_cluster_name)) )* 100 > 50
+     for: 5m
+     labels:
+       team: slack
+       severity: warning
+
+   - alert: Gateway Route Critical 4xx Error Count
+     annotations:
+       summary: Gateway Route More than 75% Error Rate 4xx on "{{$labels.envoy_cluster_name}}"
+       description: "\nCluster Name: {{$externalLabels.cluster}}\nRoute: {{$labels.envoy_cluster_name}}"
+     expr: |
+       ((sum(rate(envoy_cluster_upstream_rq_xx{envoy_cluster_name!~"prometheus_stats|xds_cluster",envoy_response_code_class=~"4"}[10m])) by (envoy_cluster_name)) / (sum(rate(envoy_cluster_upstream_rq_xx{envoy_cluster_name!~"prometheus_stats|xds_cluster"}[10m])) by (envoy_cluster_name)) )* 100 > 75
+     for: 5m
+     labels:
+       team: devops
+       severity: warning
+
+   - alert: Gateway Route Critical 5xx Error Count
+     annotations:
+       summary: Gateway Route More than 75% Error Rate 5xx on "{{$labels.envoy_cluster_name}}"
+       description: "\nCluster Name: {{$externalLabels.cluster}}\nRoute: {{$labels.envoy_cluster_name}}"
+     expr: |
+       ((sum(rate(envoy_cluster_upstream_rq_xx{envoy_cluster_name!~"prometheus_stats|xds_cluster",envoy_response_code_class=~"5"}[10m])) by (envoy_cluster_name)) / (sum(rate(envoy_cluster_upstream_rq_xx{envoy_cluster_name!~"prometheus_stats|xds_cluster"}[10m])) by (envoy_cluster_name)) )* 100 > 75
+     for: 5m
+     labels:
+       team: devops
+       severity: critical
+
+   - alert: Gateway High P90 Latecy
+     annotations:
+       summary: Gateway Route P90 Latency greater than 100ms "{{$labels.envoy_cluster_name}}"
+       description: "\nCluster Name: {{$externalLabels.cluster}}\nRoute: {{$labels.envoy_cluster_name}}"
+     expr: |
+       histogram_quantile(0.9, sum(rate(envoy_cluster_upstream_rq_time_bucket{envoy_cluster_name!~".*(prometheus_stats|xds_cluster|ratelimit).*"}[5m])) by (le, envoy_cluster_name)) > 500
+     for: 15m
+     labels:
+       team: slack
+       severity: warning
