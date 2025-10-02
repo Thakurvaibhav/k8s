@@ -44,6 +44,23 @@ grafana:
     gatewayName: eg-infra-01
     host: grafana.mydomain.com
 
+elasticExporter:
+  enabled: true
+  image: quay.io/prometheuscommunity/elasticsearch-exporter:v1.8.0
+  extraArgs:
+    - es.timeout=60s
+  es:
+    uri: "" # Sealed ES URI
+    host: ""
+    port: "9200"
+  resources:
+    limits:
+      cpu: 750m
+      memory: 512Mi
+    requests:
+      cpu: 25m
+      memory: 64Mi
+
 kube_state_metrics:
   enabled: true
   image: registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.14.0
@@ -163,3 +180,8 @@ thanos:
       requests:
         cpu: 10m
         memory: 100Mi
+
+alerts:
+  elasticExporter: true
+  kyverno: true
+  envoyGateway: true
