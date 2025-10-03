@@ -1,0 +1,13 @@
+{{- if .Values.kube_state_metrics.customResourceState.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: customresourcestate-config
+  labels:
+    name: customresourcestate-config
+  namespace: {{ .Values.namespace }}
+data:
+  config.yaml: |-
+{{ .Files.Get "configs/kube-state-customresource/custom-resource.yaml" | indent 4 }}
+
+{{- end }}

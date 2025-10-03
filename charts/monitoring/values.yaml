@@ -63,6 +63,8 @@ elasticExporter:
 
 kube_state_metrics:
   enabled: true
+  customResourceState:
+    enabled: true
   image: registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.14.0
 
 kubeEagle:
