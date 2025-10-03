@@ -90,7 +90,6 @@ scrape_configs:
       target_label: systemd_service_name
       replacement: '${1}'
 
-
 - job_name: 'kubernetes-pods'
   scrape_interval: 10s
   scrape_timeout: 10s
@@ -121,7 +120,6 @@ scrape_configs:
       target_label: __address__
       regex: ([^:]+)(?::\d+)?;(\d+)
       replacement: $1:$2
-
 
 - job_name: 'kubernetes-apiservers'
   kubernetes_sd_configs:
@@ -167,3 +165,195 @@ scrape_configs:
       regex: (.+)(?::\d+);(\d+)
       replacement: $1:$2
 
+- job_name: "blackbox-ingress"
+
+  metrics_path: /probe
+  params:
+    module: [http_2xx]
+
+  kubernetes_sd_configs:
+    - role: ingress
+
+  relabel_configs:
+    # Overwrite the scheme using blackbox.io/scheme annotation
+    - source_labels: [__meta_kubernetes_ingress_annotation_blackbox_io_scheme]
+      regex: "(http|https)"
+      target_label: __meta_kubernetes_ingress_scheme
+      replacement: "$1"
+    - source_labels:
+        [
+          __meta_kubernetes_ingress_scheme,
+          __address__,
+        ]
+      regex: (.+);(.+)
+      replacement: ${1}://${2}
+      target_label: __param_target
+    # Overwrite the path using blackbox.io/path annotation
+    - source_labels:
+        [
+          __meta_kubernetes_ingress_scheme,
+          __address__,
+          __meta_kubernetes_ingress_annotation_blackbox_io_path,
+        ]
+      regex: (.+);(.+);(.+)
+      replacement: ${1}://${2}${3}
+      target_label: __param_target
+    # Overwrite the module using blackbox.io/module annotation
+    - action: labelmap
+      regex: __meta_kubernetes_ingress_annotation_blackbox_io_module
+      replacement: __param_module
+    - target_label: __address__
+      replacement: prometheus-blackbox-exporter:9115
+    - source_labels: [__param_target]
+      target_label: instance
+    - source_labels: [__meta_kubernetes_namespace]
+      target_label: namespace
+    - source_labels: [__meta_kubernetes_ingress_name]
+      target_label: ingress
+
+- job_name: "blackbox-ingress-tcp"
+
+  metrics_path: /probe
+  params:
+    module: [tcp_connect]
+
+  kubernetes_sd_configs:
+    - role: ingress
+
+  relabel_configs:
+    # Add "blackbox.io/tcp: blackbox "annotation to enable blackbox monitoring
+    - source_labels: [__meta_kubernetes_ingress_annotation_blackbox_io_tcp]
+      action: keep
+      regex: true
+
+    - source_labels:
+        [
+          __address__
+        ]
+      regex: (.+)
+      replacement: '${1}:9000'
+      target_label: __param_target
+
+    # Overwrite the path using blackbox.io/tcpport annotation
+    - source_labels:
+        [
+          __address__,
+          __meta_kubernetes_ingress_annotation_blackbox_io_tcpport,
+        ]
+      regex: (.+);(.+)
+      replacement: ${1}:${2}
+      target_label: __param_target
+
+    # Overwrite the target using blackbox.io/tcptarget annotation
+    - action: labelmap
+      regex: __meta_kubernetes_ingress_annotation_blackbox_io_tcptarget
+      replacement: __param_target
+
+    # Overwrite the module using blackbox.io/tcpmodule annotation
+    - action: labelmap
+      regex: __meta_kubernetes_ingress_annotation_blackbox_io_tcpmodule
+      replacement: __param_module
+
+    # Pass the servername parameter using blackbox.io/tcpservername annotation
+    - action: labelmap
+      regex: __meta_kubernetes_ingress_annotation_blackbox_io_tcpservername
+      replacement: __param_hostname
+
+    - target_label: __address__
+      replacement: prometheus-blackbox-exporter:9115
+    - source_labels: [__param_target]
+      target_label: instance
+    - source_labels: [__meta_kubernetes_namespace]
+      target_label: namespace
+    - source_labels: [__meta_kubernetes_ingress_name]
+      target_label: ingress
+
+- job_name: "blackbox-service-http"
+
+  metrics_path: /probe
+  params:
+    module: [http_2xx]
+
+  kubernetes_sd_configs:
+    - role: service
+
+  relabel_configs:
+    # Overwrite the scheme using blackbox.io/scheme annotation
+    - source_labels: [__meta_kubernetes_service_annotation_blackbox_io_scheme]
+      regex: "(http|https)"
+      target_label: __meta_kubernetes_service_scheme
+      replacement: "$1"
+    - source_labels:
+        [
+          __meta_kubernetes_service_scheme,
+          __meta_kubernetes_service_annotation_blackbox_io_address,
+        ]
+      regex: (.+);(.+)
+      replacement: ${1}://${2}
+      target_label: __param_target
+    # Overwrite the path using blackbox.io/path annotation
+    - source_labels:
+        [
+          __meta_kubernetes_service_scheme,
+          __meta_kubernetes_service_annotation_blackbox_io_address,
+          __meta_kubernetes_service_annotation_blackbox_io_path,
+        ]
+      regex: (.+);(.+);(.+)
+      replacement: ${1}://${2}${3}
+      target_label: __param_target
+    # Overwrite the module using blackbox.io/module annotation
+    - action: labelmap
+      regex: __meta_kubernetes_service_annotation_blackbox_io_module
+      replacement: __param_module
+    - target_label: __address__
+      replacement: prometheus-blackbox-exporter:9115
+    - source_labels: [__param_target]
+      target_label: instance
+    - source_labels: [__meta_kubernetes_namespace]
+      target_label: namespace
+    - source_labels: [__meta_kubernetes_service_name]
+      target_label: service
+
+- job_name: "blackbox-service-tcp"
+
+  metrics_path: /probe
+  params:
+    module: [tcp_connect]
+
+  kubernetes_sd_configs:
+    - role: service
+
+  relabel_configs:
+
+    # Overwrite the module using blackbox.io/tcpmodule annotation
+    - action: labelmap
+      regex: __meta_kubernetes_service_annotation_blackbox_io_tcpmodule
+      replacement: __param_module
+
+    # Pass the servername parameter using blackbox.io/tcpservername annotation
+    - action: labelmap
+      regex: __meta_kubernetes_service_annotation_blackbox_io_tcpservername
+      replacement: __param_hostname
+
+    - source_labels: [__meta_kubernetes_service_annotation_blackbox_io_address]
+      regex: (.+)
+      replacement: '${1}'
+      target_label: __param_target
+
+    # Overwrite the path using blackbox.io/tcpport annotation
+    - source_labels:
+        [
+          __meta_kubernetes_service_annotation_blackbox_io_address,
+          __meta_kubernetes_service_annotation_blackbox_io_tcpport,
+        ]
+      regex: (.+);(.+)
+      replacement: ${1}:${2}
+      target_label: __param_target
+    - target_label: __address__
+      replacement: prometheus-blackbox-exporter:9115
+    - source_labels: [__param_target]
+      target_label: instance
+    - source_labels: [__meta_kubernetes_namespace]
+      target_label: namespace
+    - source_labels: [__meta_kubernetes_service_name]
+      target_label: service

@@ -4,7 +4,7 @@ groups:
    - alert: ElasticSearch Status RED
      annotations:
        summary: "ElasticSearch Status is RED (cluster {{ $labels.cluster }})"
-       description: "ES Health is Critical\nCluster Name: {{$externalLabels.cluster}}"
+       description: "ES Health is Critical\nCluster Name: {{$externalLabels.cluster}}\nOrchestrator: {{$externalLabels.orchestrator}}"
      expr: |
         elasticsearch_cluster_health_status{color="red"}==1
      for: 3m
@@ -15,7 +15,7 @@ groups:
    - alert: ElasticSearch Status YELLOW
      annotations:
        summary: "ElasticSearch Status is YELLOW (cluster {{ $labels.cluster }})"
-       description: "ES Health is Critical\nCluster Name: {{$externalLabels.cluster}}" 
+       description: "ES Health is Critical\nCluster Name: {{$externalLabels.cluster}}\nOrchestrator: {{$externalLabels.orchestrator}}"
      expr: |
         elasticsearch_cluster_health_status{color="yellow"}==1
      for: 5m
@@ -26,7 +26,7 @@ groups:
    - alert: ElasticSearch Health Missing
      annotations:
        summary: "Last scrape of the ElasticSearch cluster health failed (cluster {{ $labels.cluster }})"
-       description: "Last scrape of the ElasticSearch cluster health failed"
+       description: "Last scrape of the ElasticSearch cluster health failed\nCluster Name: {{$externalLabels.cluster}}\nOrchestrator: {{$externalLabels.orchestrator}}"
      expr: |
         elasticsearch_clusterinfo_up !=1
      for: 5m

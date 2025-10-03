@@ -16,6 +16,17 @@ The `monitoring` chart deploys a highly available Prometheus stack integrated wi
 - SealedSecrets for secure delivery of TLS certs & GCS bucket credentials
 - Environment specific values overrides (`values.dev-01.yaml`, `values.stag-01.yaml`, etc.)
 - Custom resource state metrics (Gateway API CRDs enabled now; extensible to additional CRDs via kube-state-metrics / custom exporters)
+- Blackbox exporter for synthetic uptime / reachability probes (annotate Services / Ingress for auto-discovery; Gateway API requires annotating backing Services)
+
+### Exporters Matrix
+| Exporter | Enabled Key (values.yaml) | Image (default) | Purpose | Notes |
+|----------|---------------------------|-----------------|---------|-------|
+| kube-state-metrics | `kube_state_metrics.enabled` | `registry.k8s.io/kube-state-metrics:v2.14.0` | Kubernetes object state metrics (Deployments, Pods, Nodes, etc.) plus optional custom CRD state | Extend with custom CRDs via `configs/kube-state-customresource/custom-resource.yaml` when `kube_state_metrics.customResourceState.enabled=true`. |
+| Node Exporter | `nodeExporter.enabled` | `prom/node-exporter:v1.8.2` | Node OS / hardware metrics (CPU, mem, filesystem, net) | Runs as DaemonSet; restrict access with NetworkPolicy; exclude host paths if hardening needed. |
+| Blackbox Exporter | `blackboxExporter.enabled` | `prom/blackbox-exporter:v0.25.0` | Synthetic HTTP / HTTPS / TCP / TLS endpoint probing for uptime & latency | Annotate Services / Ingress; Gateway API requires annotating backing Service; modules configured in blackbox config. |
+| Elasticsearch Exporter | `elasticExporter.enabled` | `quay.io/prometheuscommunity/elasticsearch-exporter:v1.8.0` | Elasticsearch health, cluster, shard & index metrics | Provide secured ES endpoint (URI/host/port) via sealed secret; scope credentials read-only. |
+| Kube Eagle | `kubeEagle.enabled` | `quay.io/google-cloud-tools/kube-eagle:1.1.4` | Aggregated namespace / workload resource allocation & usage metrics (requests vs usage) for capacity efficiency | Supports over/under‑utilization dashboards|
+
 
 ## Important Templates
 - `templates/thanos/` (e.g. `thanos-query-route.yaml`): Routing, TLS & mTLS policy (only rendered when enabled)
@@ -134,3 +145,45 @@ The chart exposes Gateway API resource state metrics (e.g. Gateways, HTTPRoutes)
 `configs/kube-state-customresource/custom-resource.yaml`
 
 This file declares the extra CRDs kube-state-metrics should watch. Adding a CRD here (group, version, kind) and redeploying the chart causes kube-state-metrics to emit per‑object gauges without writing custom exporters.
+
+## Endpoint Uptime Monitoring (Blackbox Exporter)
+This chart enables the Prometheus Blackbox Exporter to perform synthetic probes (HTTP/HTTPS, TCP, TLS) against annotated targets.
+
+### Auto-Discovery
+Prometheus automatically discovers and scrapes annotated **Service** and **Ingress** objects. Add standardized annotations so the blackbox exporter generates probe targets:
+
+Example (Service):
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-api
+  annotations:
+    blackbox.io/scheme: https         # http|https
+    blackbox.io/path: /healthz        # optional override
+    blackbox.io/module: http_2xx      # blackbox exporter module name
+spec:
+  selector:
+    app: my-api
+  ports:
+    - name: http
+      port: 80
+```
+Example (Ingress):
+```yaml
+metadata:
+  annotations:
+    blackbox.io/scheme: https
+```
+
+### Gateway API Limitation
+Prometheus does not natively service-discover Gateway API `Gateway` / `HTTPRoute` objects for blackbox probing. To monitor Gateway-exposed endpoints:
+1. Ensure the backend **Service** representing the entrypoint (or a dedicated “probe” Service) carries the probe annotations.
+2. (Optional) Expose a lightweight readiness/health path on that Service that exercises the full routing stack.
+3. Use labels (`service`, `gateway_class`, `cluster`, `environment`) so dashboards & alerts can group by gateway context.
+
+### Recommendations
+- Probe only critical external paths (health, readiness, public API landing) to minimize noise & cost.
+- Prefer explicit `probe-path` to avoid hitting heavy/root pages.
+- Use distinct modules (e.g. `http_2xx`, `http_ssl`, `tcp_connect`) for different expectations; alert thresholds can vary per module.
+- Tag probes with `environment` & `cluster` via relabeling so cross-cluster SLO dashboards aggregate cleanly.

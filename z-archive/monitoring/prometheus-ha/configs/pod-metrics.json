@@ -196,7 +196,7 @@
         "lineColor": "rgb(31, 120, 193)",
         "show": false
       },
-      "tableColumn": "kube_pod_container_status_restarts_total{cluster=\"doug-ts-200-management-prometheus\", container=\"elasticsearch\", instance=\"10.24.0.20:8080\", job=\"kubernetes-service-endpoints\", k8s_app=\"kube-state-metrics\", kubernetes_name=\"kube-state-metrics\", kubernetes_namespace=\"monitoring\", namespace=\"tigera-elasticsearch\", pod=\"tigera-secure-es-9bd8b7baa502d70d-0\"}",
+      "tableColumn": "kube_pod_container_status_restarts_total{cluster=\"my-prometheus\", container=\"elasticsearch\", instance=\"10.24.0.20:8080\", job=\"kubernetes-service-endpoints\", k8s_app=\"kube-state-metrics\", kubernetes_name=\"kube-state-metrics\"}",
       "targets": [
         {
           "expr": "kube_pod_container_status_restarts_total{pod_template_hash=\"\",pod=\"$Pod\", container=\"$container\",container!=\"\",cluster=\"$Cluster\"} ",
@@ -283,7 +283,7 @@
         "lineColor": "rgb(31, 120, 193)",
         "show": false
       },
-      "tableColumn": "kube_pod_container_status_running{cluster=\"doug-ts-200-management-prometheus\", container=\"elasticsearch\", instance=\"10.24.0.20:8080\", job=\"kubernetes-service-endpoints\", k8s_app=\"kube-state-metrics\", kubernetes_name=\"kube-state-metrics\", kubernetes_namespace=\"monitoring\", namespace=\"tigera-elasticsearch\", pod=\"tigera-secure-es-9bd8b7baa502d70d-0\"}",
+      "tableColumn": "kube_pod_container_status_running{container=\"elasticsearch\", instance=\"10.24.0.20:8080\", job=\"kubernetes-service-endpoints\", k8s_app=\"kube-state-metrics\", kubernetes_name=\"kube-state-metrics\", kubernetes_namespace=\"monitoring\"}",
       "targets": [
         {
           "expr": "kube_pod_container_status_running{pod_template_hash=\"\",namespace=\"$namespace\", pod=\"$Pod\",container=\"$container\",container!=\"\",cluster=\"$Cluster\"}",
@@ -3611,8 +3611,8 @@
         "allValue": null,
         "current": {
           "selected": false,
-          "text": "tigera-elasticsearch",
-          "value": "tigera-elasticsearch"
+          "text": "elasticsearch",
+          "value": "elasticsearch"
         },
         "datasource": "DS_Prometheus",
         "definition": "label_values(container_memory_usage_bytes{cluster=~\"$Cluster\",namespace=~\".+\",container!=\"POD\"},namespace)",
@@ -3637,8 +3637,8 @@
         "allValue": ".*",
         "current": {
           "selected": false,
-          "text": "tigera-secure-es-9bd8b7baa502d70d-0",
-          "value": "tigera-secure-es-9bd8b7baa502d70d-0"
+          "text": "elasticsearch",
+          "value": "elasticsearch"
         },
         "datasource": "DS_Prometheus",
         "definition": "label_values(container_memory_usage_bytes{cluster=~\"$Cluster\",namespace=~\"$namespace\",container!=\"POD\"},pod)",
