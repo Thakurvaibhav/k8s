@@ -44,7 +44,7 @@ Avoid reflecting highly sensitive key material unnecessarily; scope usage to pub
 5. Issued certificate Secret is annotated and automatically replicated by reflector for consumers.
 
 ## Example Staging ClusterIssuer & Certificate
-Excerpt (see `templates/certificates/stg-calicocloud-com.yaml`):
+Excerpt (see `templates/certificates/stg-mydomain-com.yaml`):
 ```yaml
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
