@@ -36,6 +36,14 @@ spec:
             port: 8080
           initialDelaySeconds: 5
           timeoutSeconds: 5
+        {{- if .Values.kube_state_metrics.customResourceState.enabled }}
+        args:
+          - --custom-resource-state-config-file=/etc/customresourcestate/config.yaml
+        volumeMounts:
+        - name: customresourcestate-config
+          mountPath: /etc/customresourcestate
+          readOnly: true
+        {{- end }}
       - name: addon-resizer
         image: k8s.gcr.io/addon-resizer:1.8.3
         resources:
@@ -63,6 +71,12 @@ spec:
           - --extra-memory=2Mi
           - --threshold=5
           - --deployment=kube-state-metrics
+      {{- if .Values.kube_state_metrics.customResourceState.enabled }}
+      volumes:
+      - name: customresourcestate-config
+        configMap:
+          name: customresourcestate-config
+      {{- end }}
 ---
 apiVersion: v1
 kind: Service

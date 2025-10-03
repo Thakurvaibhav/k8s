@@ -15,6 +15,7 @@ The `monitoring` chart deploys a highly available Prometheus stack integrated wi
 - Optional gRPC exposure of Thanos Query through Gateway API (Envoy Gateway) with mTLS
 - SealedSecrets for secure delivery of TLS certs & GCS bucket credentials
 - Environment specific values overrides (`values.dev-01.yaml`, `values.stag-01.yaml`, etc.)
+- Custom resource state metrics (Gateway API CRDs enabled now; extensible to additional CRDs via kube-state-metrics / custom exporters)
 
 ## Important Templates
 - `templates/thanos/` (e.g. `thanos-query-route.yaml`): Routing, TLS & mTLS policy (only rendered when enabled)
@@ -126,3 +127,10 @@ helm upgrade --install monitoring ./monitoring -f values.dev-01.yaml -n monitori
 - Host must have DNS A/AAAA record to Gateway LB IP (when exposing Thanos Query)
 - Add SealedSecrets for: (1) GCS bucket service account JSON (Thanos object storage) and (2) TLS certs / client CA used for gRPC/mTLS before enabling corresponding features
 - Rotate TLS and storage credentials regularly; updating SealedSecret triggers rolling reloads where applicable
+
+## Custom Resource Metrics (Gateway API & Extensible CRDs)
+The chart exposes Gateway API resource state metrics (e.g. Gateways, HTTPRoutes) so you can alert on config drift, readiness, and reconciliation errors. Additional Kubernetes Custom Resource metrics are enabled centrally by editing:
+
+`configs/kube-state-customresource/custom-resource.yaml`
+
+This file declares the extra CRDs kube-state-metrics should watch. Adding a CRD here (group, version, kind) and redeploying the chart causes kube-state-metrics to emit per‑object gauges without writing custom exporters.
