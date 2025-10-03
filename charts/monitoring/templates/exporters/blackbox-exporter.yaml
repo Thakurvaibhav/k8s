@@ -1,0 +1,88 @@
+{{- if .Values.blackboxExporter.enabled -}}
+kind: Service
+apiVersion: v1
+metadata:
+  name: prometheus-blackbox-exporter
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: prometheus-blackbox-exporter
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 9115
+      protocol: TCP
+  selector:
+    app: prometheus-blackbox-exporter
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus-blackbox-exporter
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: prometheus-blackbox-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus-blackbox-exporter
+  template:
+    metadata:
+      labels:
+        app: prometheus-blackbox-exporter
+    spec:
+      serviceAccountName: monitoring
+      restartPolicy: Always
+      containers:
+        - name: blackbox-exporter
+          image: {{ .Values.blackboxExporter.image }}
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1000
+          args:
+            - "--config.file=/config/blackbox.yaml"
+          resources:
+            {{- toYaml .Values.blackboxExporter.resources | nindent 12 }}
+          ports:
+            - containerPort: 9115
+              name: http
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+          volumeMounts:
+            - mountPath: /config
+              name: config
+        - name: configmap-reload
+          image: "jimmidyson/configmap-reload:v0.2.2"
+          imagePullPolicy: "IfNotPresent"
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65534
+          args:
+            - --volume-dir=/etc/config
+            - --webhook-url=http://localhost:9115/-/reload
+          resources:
+            limits:
+              cpu: 10m
+              memory: 100Mi
+            requests:
+              cpu: 0.5m
+              memory: 5Mi
+          volumeMounts:
+            - mountPath: /etc/config
+              name: config
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: prometheus-blackbox-exporter
+{{- end }}

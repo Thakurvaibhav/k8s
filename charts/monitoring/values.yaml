@@ -82,6 +82,17 @@ nodeExporter:
   enabled: true
   image: prom/node-exporter:v1.8.2
 
+blackboxExporter:
+  enabled: true
+  image: prom/blackbox-exporter:v0.25.0
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 50Mi
+
 prometheus:
   enabled: true
   image: prom/prometheus:v3.1.0
@@ -187,3 +198,4 @@ alerts:
   elasticExporter: true
   kyverno: true
   envoyGateway: true
+  kubeStateMetrics: true

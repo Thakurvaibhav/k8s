@@ -1,0 +1,22 @@
+groups:
+ - name: BlackBox Alerts
+   rules:
+   - alert: Probe Failed
+     annotations:
+       summary: "Probe failed (instance {{ $labels.instance }})"
+       description: "Probe failed\nValue: {{$value}}\nCluster Name: {{$externalLabels.cluster}}\nOrchestrator: {{$externalLabels.orchestrator}}"
+     expr: |
+        probe_success == 0
+     for: 1m
+     labels:
+       team: devops
+
+   - alert: SSL Certificate Expiry
+     annotations:
+       summary: "SSL certificate will expire soon (instance {{ $labels.instance }})"
+       description: "SSL certificate expires in 10 days\nValue: {{$value}}\nCluster Name: {{$externalLabels.cluster}}\nOrchestrator: {{$externalLabels.orchestrator}}"
+     expr: |
+        probe_ssl_earliest_cert_expiry - time() < 86400 * 10
+     for: 5m
+     labels:
+       team: devops
