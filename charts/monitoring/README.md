@@ -18,6 +18,16 @@ The `monitoring` chart deploys a highly available Prometheus stack integrated wi
 - Custom resource state metrics (Gateway API CRDs enabled now; extensible to additional CRDs via kube-state-metrics / custom exporters)
 - Blackbox exporter for synthetic uptime / reachability probes (annotate Services / Ingress for auto-discovery; Gateway API requires annotating backing Services)
 
+### Exporters Matrix
+| Exporter | Enabled Key (values.yaml) | Image (default) | Purpose | Notes |
+|----------|---------------------------|-----------------|---------|-------|
+| kube-state-metrics | `kube_state_metrics.enabled` | `registry.k8s.io/kube-state-metrics:v2.14.0` | Kubernetes object state metrics (Deployments, Pods, Nodes, etc.) plus optional custom CRD state | Extend with custom CRDs via `configs/kube-state-customresource/custom-resource.yaml` when `kube_state_metrics.customResourceState.enabled=true`. |
+| Node Exporter | `nodeExporter.enabled` | `prom/node-exporter:v1.8.2` | Node OS / hardware metrics (CPU, mem, filesystem, net) | Runs as DaemonSet; restrict access with NetworkPolicy; exclude host paths if hardening needed. |
+| Blackbox Exporter | `blackboxExporter.enabled` | `prom/blackbox-exporter:v0.25.0` | Synthetic HTTP / HTTPS / TCP / TLS endpoint probing for uptime & latency | Annotate Services / Ingress; Gateway API requires annotating backing Service; modules configured in blackbox config. |
+| Elasticsearch Exporter | `elasticExporter.enabled` | `quay.io/prometheuscommunity/elasticsearch-exporter:v1.8.0` | Elasticsearch health, cluster, shard & index metrics | Provide secured ES endpoint (URI/host/port) via sealed secret; scope credentials read-only. |
+| Kube Eagle | `kubeEagle.enabled` | `quay.io/google-cloud-tools/kube-eagle:1.1.4` | Aggregated namespace / workload resource allocation & usage metrics (requests vs usage) for capacity efficiency | Supports over/under‑utilization dashboards|
+
+
 ## Important Templates
 - `templates/thanos/` (e.g. `thanos-query-route.yaml`): Routing, TLS & mTLS policy (only rendered when enabled)
 - Additional Prometheus / Thanos component manifests (refer to chart templates directory)
