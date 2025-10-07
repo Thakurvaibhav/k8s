@@ -3,7 +3,9 @@
 [![Chart Scan](https://github.com/Thakurvaibhav/k8s/actions/workflows/chart-scan.yml/badge.svg)](https://github.com/Thakurvaibhav/k8s/actions/workflows/chart-scan.yml)
 
 ## Platform in a Box
-These charts implement a "Platform in a Box"—a batteries‑included, GitOps driven foundation for operating a Kubernetes platform using the Argo CD App‑of‑Apps pattern. They compose the core traffic, security, observability, data, and enablement layers so teams can onboard applications quickly with consistent guardrails.
+These charts implement a "Platform in a Box", a batteries‑included, GitOps driven foundation for operating a Kubernetes platform using the Argo CD App‑of‑Apps pattern. They compose the core traffic, security, observability, data, and enablement layers so teams can onboard applications quickly with consistent guardrails.
+
+Introductory article: [Bootstrapping a Production-Grade Kubernetes Platform](https://medium.com/faun/bootstrapping-a-production-grade-kubernetes-platform-c23fff13a26), narrative walkthrough of goals, architecture choices, and bootstrap flow.
 
 ## Core Principles
 - Git as the single source of truth (no snowflake clusters)
