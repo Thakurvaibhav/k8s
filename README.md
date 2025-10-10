@@ -25,6 +25,7 @@ The `docs/` folder contains deep‑dive guidance, reference architectures, and o
 - [Observability (Metrics, Logs, Traces)](docs/observability.md) – Thanos federation model, Elastic logging, Jaeger design, mTLS patterns, retention & ILM.
 - [Traffic Management (Gateway API, TLS, DNS)](docs/traffic-management.md) – Envoy Gateway deployment, certificate issuance flows, DNS automation, sync wave ordering.
 - [Policy & Compliance](docs/compliance.md) – Kyverno audit→enforce ladder, Checkov shift‑left scanning, exception handling strategy.
+- [Elasticsearch Best Practices](docs/elastic-best-practices.md) – Node role segregation, mTLS external access, heap sizing, ILM, GC & recovery tuning.
 
 These documents evolve independently of this summary; always consult them first for implementation specifics, security hardening steps, and operational playbooks.
 
