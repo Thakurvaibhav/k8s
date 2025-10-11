@@ -1,86 +1,68 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Generates a pivot table of which components run in which cluster and with what targetRevision.
-# Requires: yq (v4). Output file: charts/app-of-apps/what-runs-where.md
+# what-runs-where.sh (simplified)
+# Generates charts/app-of-apps/what-runs-where.md mapping clusters -> enabled components -> effective targetRevision
+# Requires: yq v4
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-APP_OF_APPS_DIR="${SCRIPT_DIR}/../charts/app-of-apps"
-OUT_FILE="${APP_OF_APPS_DIR}/what-runs-where.md"
+APP_DIR="${SCRIPT_DIR}/../charts/app-of-apps"
+OUT_FILE="${APP_DIR}/what-runs-where.md"
+BASE_FILE="${APP_DIR}/values.yaml"  # base values file (only source of component list)
 
-if ! command -v yq >/dev/null 2>&1; then
-  echo "[ERROR] yq not found in PATH" >&2
-  exit 1
-fi
+command -v yq >/dev/null 2>&1 || { echo "[ERROR] yq not found" >&2; exit 1; }
+[ -f "${BASE_FILE}" ] || { echo "[ERROR] ${BASE_FILE} not found" >&2; exit 1; }
 
-# Gather values files
+# Collect env values files
 VALUE_FILES=()
-for f in "${APP_OF_APPS_DIR}"/values.*.yaml; do [[ -f "$f" ]] && VALUE_FILES+=("$f"); done
-if [[ ${#VALUE_FILES[@]} -eq 0 ]]; then
-  echo "[WARN] No environment values files found under ${APP_OF_APPS_DIR}" >&2; exit 0; fi
+for f in "${APP_DIR}"/values.*.yaml; do [ -f "$f" ] && VALUE_FILES+=("$f"); done
+[ ${#VALUE_FILES[@]} -eq 0 ] && { echo "[WARN] No values.*.yaml under ${APP_DIR}" >&2; exit 0; }
 VALUE_FILES=( $(printf '%s\n' "${VALUE_FILES[@]}" | sort) )
 
-# Discover components (avoid storing embedded \n; build space-delimited list)
-COMPONENTS_STR=""
-add_component() {
-  local c="$1"
-  # skip duplicates
-  for existing in $COMPONENTS_STR; do [[ "$existing" == "$c" ]] && return 0; done
-  COMPONENTS_STR+=" $c"
-}
-for vf in "${VALUE_FILES[@]}"; do
-  while IFS= read -r key; do
-    [[ -z "$key" || "$key" == cluster || "$key" == source ]] && continue
-    if yq -e ".${key} | has(\"enable\")" "$vf" >/dev/null 2>&1; then
-      add_component "$key"
-    fi
-  done < <(yq -r 'keys | .[]' "$vf")
-done
-# Trim leading space and convert to array
-COMPONENTS_STR="${COMPONENTS_STR# }"
-IFS=' ' read -r -a COMPONENTS <<< "$COMPONENTS_STR"
-# Sort components
-COMPONENTS=( $(printf '%s\n' "${COMPONENTS[@]}" | sort) )
+# Discover components ONLY from base values.yaml (top-level keys having an 'enable' field)
+read -r -d '' COMPONENTS_STR < <(yq -r '. | to_entries[] | select(.value.enable != null) | .key' "${BASE_FILE}" | sort -u | tr '\n' ' ' && printf '\0') || true
+IFS=' ' read -r -a COMPONENTS <<< "${COMPONENTS_STR}"; unset IFS
 
-# Build table header (no embedded newlines)
+# Helper: env inference + ordering
+lower() { printf '%s' "$1" | tr 'A-Z' 'a-z'; }
+env_of() { case "$(lower "$1")" in ops*)echo ops;; prod*)echo prod;; stag*|stage*)echo staging;; dev*)echo dev;; *)echo other;; esac; }
+rank_of() { case "$(lower "$1")" in ops*)echo 0;; prod*)echo 1;; staging)echo 2;; dev*)echo 3;; *)echo 9;; esac; }
+
+# Build header
 HEADER="| Cluster | Env | Default targetRevision |"
 SEPARATOR="|---------|-----|----------------------|"
-for comp in "${COMPONENTS[@]}"; do
-  HEADER+=" ${comp} |"
-  SEPARATOR+="------------|"
-done
+for c in "${COMPONENTS[@]}"; do HEADER+=" ${c} |"; SEPARATOR+="------------|"; done
 
-# Env helpers
-env_rank() { local lc; lc="$(printf '%s' "$1" | tr 'A-Z' 'a-z')"; case "$lc" in ops*)echo 0;; prod*)echo 1;; stag*|stage*)echo 2;; dev*)echo 3;; *)echo 9;; esac; }
-infer_env() { local lc; lc="$(printf '%s' "$1" | tr 'A-Z' 'a-z')"; case "$lc" in ops*)echo ops;; prod*)echo prod;; stag*|stage*)echo staging;; dev*)echo dev;; *)echo other;; esac; }
-
-ROWS_PRE=()
+# Rows
+ROWS=()
 for vf in "${VALUE_FILES[@]}"; do
   cluster=$(yq -r '.cluster.name' "$vf")
-  env=$(yq -r '.cluster.env // ""' "$vf"); [[ -z "$env" || "$env" == null ]] && env=$(infer_env "$cluster")
+  env=$(yq -r '.cluster.env // ""' "$vf"); [ -z "$env" -o "$env" = null ] && env=$(env_of "$cluster")
   default_rev=$(yq -r '.source.targetRevision' "$vf")
-  rank=$(env_rank "$env")
-  row="${cluster} | ${env} | ${default_rev} |"
+  row="| ${cluster} | ${env} | ${default_rev} |"
   for comp in "${COMPONENTS[@]}"; do
     enabled=$(yq -r ".${comp}.enable // false" "$vf" 2>/dev/null || echo false)
-    if [[ "$enabled" == true || "$enabled" == "true" ]]; then
+    if [ "$enabled" = true ] || [ "$enabled" = "true" ]; then
       override=$(yq -r ".${comp}.targetRevision // \"\"" "$vf")
-      [[ -n "$override" && "$override" != "null" ]] && val="$override" || val="$default_rev"
+      [ -n "$override" ] && [ "$override" != null ] && eff="$override" || eff="$default_rev"
     else
-      val="-"
+      eff="❌"  # disabled indicator
     fi
-    row+=" ${val} |"
+    row+=" ${eff} |"
   done
-  ROWS_PRE+=("$rank|$row")
+  ROWS+=("$(rank_of "$env")|$row")
 done
 
-IFS=$'\n' SORTED_ROWS=($(printf '%s\n' "${ROWS_PRE[@]}" | sort -t '|' -k1,1n -k2,2)); unset IFS
-FINAL_ROWS=(); for r in "${SORTED_ROWS[@]}"; do FINAL_ROWS+=("| ${r#*|}"); done
+# Sort by rank then cluster
+IFS=$'\n' SORTED=( $(printf '%s\n' "${ROWS[@]}" | sort -t '|' -k1,1n -k3,3) ); unset IFS
 
+# Output
 {
   echo "# What Runs Where"; echo; echo "> Generated by scripts/what-runs-where.sh. Do not edit manually."; echo;
-  echo "This table shows enabled platform components per cluster with effective Git targetRevision (component override if present else default). Disabled components are '-'. Clusters ordered ops → prod → staging → dev → other."; echo;
-  echo "$HEADER"; echo "$SEPARATOR"; for r in "${FINAL_ROWS[@]}"; do echo "$r"; done; echo;
+  echo "Shows enabled components per cluster with effective Git targetRevision (override if set else default). Disabled: ❌ . Order: ops → prod → staging → dev → other."; echo;
+  echo "$HEADER"; echo "$SEPARATOR";
+  for r in "${SORTED[@]}"; do echo "${r#*[0-9]|}" | sed 's/^| /| /'; done
+  echo
 } > "$OUT_FILE"
 
 echo "[INFO] Wrote ${OUT_FILE}"
