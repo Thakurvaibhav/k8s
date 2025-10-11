@@ -1,4 +1,5 @@
 cluster:
+  env: staging
   name: stag-01
   server: https://stag-01-k8s.endpoint.kubernetes
 
