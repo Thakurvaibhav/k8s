@@ -23,30 +23,7 @@ Kyverno operates inside each cluster as an admission controller applying:
 > Kyverno advantages: Native K8s resources (no custom DSL needed), policy CRDs stored in Git, integrates cleanly with App‑of‑Apps for multi‑cluster rollout.
 
 ---
-## 3. GitOps Deployment (App‑of‑Apps Pattern)
-Kyverno (and optional report UI) are packaged like other components (e.g. `monitoring`, `logging`) and toggled via environment value files in the `app-of-apps` chart:
-```yaml
-kyverno:
-  enable: true
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
-kyvernoPolicies:
-  enable: true
-  annotations:
-    argocd.argoproj.io/sync-wave: "2"  # ensure CRDs + controller first
-kyvernoReportUI:
-  enable: true
-  annotations:
-    argocd.argoproj.io/sync-wave: "3"
-```
-Progressive cluster onboarding:
-1. Enable Kyverno core (controller + CRDs) in dev only.
-2. Add base non‑blocking policies (audit mode) in dev.
-3. Promote same set to staging (still audit) → validate noise & false positives.
-4. Add selective `enforce` transitions per policy (dev → staging → prod) using Git diffs for traceability.
-
----
-## 4. Progressive Rollout Strategy (Audit → Enforce Ladder)
+## 3. Progressive Rollout Strategy (Audit → Enforce Ladder)
 All new policies follow this state machine:
 ```
 Draft (local branch) → Audit (dev) → Audit (staging) → Audit (prod) → Enforce (dev) → Enforce (staging) → Enforce (prod)
@@ -66,7 +43,7 @@ validate:
 ```
 
 ---
-## 5. Namespace & System Exclusions (Avoid Lockout)
+## 4. Namespace & System Exclusions (Avoid Lockout)
 Exclude critical namespaces from *initial* enforcement to prevent cluster bootstrap or core service disruption:
 - `kube-system`, `kube-public`, `kube-node-lease`
 - Argo CD control plane namespace
@@ -90,7 +67,7 @@ exclude:
 ```
 
 ---
-## 6. Conditional / Scoped Exceptions
+## 5. Conditional / Scoped Exceptions
 Prefer **structured exception channels**, not ad-hoc disabling:
 1. Dedicated label (e.g. `policy.exception/<rule>=approved`) added via pull request with reviewer sign‑off.
 2. Kyverno rule references label in a `precondition` or `pattern` negation.
@@ -107,7 +84,7 @@ preconditions:
 If teams need conditional resources (jobs, migrations), provide a separate *Generate* NetworkPolicy or allowlist policy limited by annotation.
 
 ---
-## 7. Observability & Reporting
+## 6. Observability & Reporting
 Install **Kyverno Policy Reports** + **report-ui** to surface:
 - Violations grouped by policy → cluster → namespace.
 - Trend lines (decreasing violation rate before enforcing).
@@ -123,7 +100,7 @@ Operational checks:
 | Report UI | Browser → `/kyverno/` path | Lists policies & violations |
 
 ---
-## 8. Enforcement Maturity Roadmap
+## 7. Enforcement Maturity Roadmap
 | Phase | Focus | Actions |
 |-------|-------|---------|
 | 0 | Visibility | Deploy Kyverno + policies (Audit) + report-ui |
@@ -135,7 +112,7 @@ Operational checks:
 Graduation criteria: sustained low (near-zero) audit violations for 1–2 release cycles in staging.
 
 ---
-## 9. Shift‑Left With Checkov (CI Guardrails)
+## 8. Shift‑Left With Checkov (CI Guardrails)
 **Checkov** scans Terraform, Kubernetes manifests (Helm-rendered), and other IaC artifacts **before** merge:
 - Prevents late-stage admission failures (e.g. disallowed capabilities) by failing PR early.
 - Ensures cloud infra (buckets, networks, IAM) aligns with baseline (encryption, versioning, least privilege) complementary to runtime Kyverno (which only sees K8s API objects).
@@ -151,7 +128,7 @@ Alignment with Kyverno:
 - Reduces noise: by the time manifests reach cluster, most structural violations already fixed.
 
 ---
-## 10. Workflow Example (Dev → Prod)
+## 9. Workflow Example (Dev → Prod)
 1. Developer adds new Deployment chart change lacking resource limits.
 2. CI renders chart → Checkov fails (missing limits) → PR updated with limits.
 3. Merged; Argo CD syncs dev cluster; Kyverno (Audit) still records 0 violations.
@@ -160,7 +137,7 @@ Alignment with Kyverno:
 6. Future similar PRs blocked earlier (CI) + runtime policy prevents drift.
 
 ---
-## 11. Operational Playbook
+## 10. Operational Playbook
 | Task | Action | Tool |
 |------|--------|------|
 | Add new policy | Author ClusterPolicy (Audit), commit to dev values / policies dir | GitOps + Argo |
@@ -172,7 +149,7 @@ Alignment with Kyverno:
 | Monitor spike | Alert on metric delta (violations/min) | Grafana |
 
 ---
-## 12. Summary
+## 11. Summary
 - Kyverno supplies **runtime guardrails**; EVERY policy begins in **Audit** to gather signal safely.
 - Namespace/resource exclusions + label-scoped matching prevent accidental platform disruption.
 - Exceptions are **structured, labeled, reviewable**, not ad hoc edits.
