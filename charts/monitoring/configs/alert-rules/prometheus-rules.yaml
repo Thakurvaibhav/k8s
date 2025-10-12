@@ -10,6 +10,7 @@ groups:
      for: 1m
      labels:
        team: devops
+       severity: critical
 
    - alert: HPA Scaling Limited  
      annotations: 
@@ -20,6 +21,7 @@ groups:
      for: 1m
      labels: 
        team: devops
+       severity: warning
 
    - alert: HPA at MaxCapacity 
      annotations: 
@@ -30,6 +32,7 @@ groups:
      for: 1m
      labels: 
        team: devops
+       severity: critical
 
  - name: Pods
    rules:
@@ -42,6 +45,7 @@ groups:
      for: 0m
      labels:
        team: slack
+       severity: warning
 
    - alert: Too many Container restarts
      annotations:
@@ -52,16 +56,18 @@ groups:
      for: 0m
      labels:
        team: dev
+       severity: critical
 
    - alert: Container Not Ready
      annotations:
        summary: Container named {{$labels.container}} in {{$labels.pod}} in {{$labels.namespace}} is reporting Not Ready status
        description: "\nCluster Name: {{$externalLabels.cluster}}\nNamespace: {{$labels.namespace}}\nPod name: {{$labels.pod}}\nContainer name: {{$labels.container}}\nOrchestrator: {{$externalLabels.orchestrator}}"
      expr: |
-       kube_pod_container_status_ready{pod!~"elastic-curator.*",namespace!="backend",namespace!="monitoring"} == 0
+       kube_pod_container_status_ready{namespace!="monitoring"} == 0
      for: 4m
      labels:
        team: dev
+       severity: warning
 
    - alert: High Memory Usage of Container 
      annotations: 
@@ -72,6 +78,7 @@ groups:
      for: 5m
      labels: 
        team: dev
+       severity: warning
 
    - alert: High CPU Usage of Container 
      annotations: 
@@ -82,6 +89,7 @@ groups:
      for: 5m
      labels: 
        team: dev
+       severity: warning
 
    - alert: CPU Throttling of Container
      annotations:
@@ -92,6 +100,7 @@ groups:
      for: 5m
      labels:
        team: slack
+       severity: warning
 
    - alert: High Persistent Volume Usage
      annotations:
@@ -102,6 +111,7 @@ groups:
      for: 5m
      labels:
        team: devops
+       severity: warning
 
  - name: Nodes
    rules:
@@ -114,6 +124,7 @@ groups:
      for: 5m
      labels:
        team: devops
+       severity: warning
 
    - alert: High Node CPU Usage
      annotations:
@@ -124,6 +135,7 @@ groups:
      for: 10m
      labels:
        team: devops
+       severity: warning
 
    - alert: High Node Disk Usage
      annotations:
@@ -134,3 +146,4 @@ groups:
      for: 5m
      labels:
        team: devops
+       severity: warning

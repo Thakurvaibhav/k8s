@@ -18,6 +18,9 @@ The `monitoring` chart deploys a highly available Prometheus stack integrated wi
 - Custom resource state metrics (Gateway API CRDs enabled now; extensible to additional CRDs via kube-state-metrics / custom exporters)
 - Blackbox exporter for synthetic uptime / reachability probes (annotate Services / Ingress for auto-discovery; Gateway API requires annotating backing Services)
 
+## Alert Catalog
+See the consolidated [Alert Catalog](../../docs/alert-catalog.md) describing each Prometheus alert (purpose, severity, first actions) sourced from `configs/alert-rules/*-rules.yaml` (Deployment, Pods, Nodes, BlackBox, Envoy Gateway, Elasticsearch, Kyverno). Update that catalog in the same PR whenever you add / modify alert rules.
+
 ### Exporters Matrix
 | Exporter | Enabled Key (values.yaml) | Image (default) | Purpose | Notes |
 |----------|---------------------------|-----------------|---------|-------|
