@@ -6,7 +6,7 @@ Shows enabled components per cluster with effective Git targetRevision (override
 
 | Cluster | Env | Default targetRevision | certManager | envoyGateway | externalDNS | ingressController | jaeger | kyverno | logging | monitoring | redis | sealedSecrets |
 |---------|-----|----------------------|------------|------------|------------|------------|------------|------------|------------|------------|------------|------------|
-| ops-01 | ops | master | master | master | master | ❌ | master | master | master | master | master | master |
+| ops-01 | ops | stable | stable | stable | stable | ❌ | stable | stable | stable | stable | stable | stable |
 | prod-01 | prod | stable | stable | stable | stable | ❌ | stable | stable | stable | stable | stable | stable |
 | stag-01 | staging | staging | staging | staging | staging | ❌ | staging | staging | staging | staging | staging | staging |
 | dev-01 | dev | master | master | master | master | ❌ | master | master | master | master | master | master |

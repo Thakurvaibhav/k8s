@@ -1,0 +1,51 @@
+name: Generate What Runs Where Matrix
+
+on:
+  pull_request:
+    paths:
+      - 'charts/app-of-apps/values.yaml'
+      - 'charts/app-of-apps/values.*.yaml'
+      - 'scripts/what-runs-where.sh'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  generate-matrix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR head branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.head_ref }}
+
+      - name: Set up yq
+        uses: mikefarah/yq@v4.44.3
+
+      - name: Generate matrix
+        run: |
+          bash scripts/what-runs-where.sh
+
+      - name: Commit updated matrix if changed (same-repo PRs only)
+        if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+        run: |
+          set -euo pipefail
+          if git diff --quiet charts/app-of-apps/what-runs-where.md; then
+            echo "No changes in matrix"
+            exit 0
+          fi
+          BRANCH="${GITHUB_HEAD_REF}"  # branch name of the PR head
+          echo "Working on branch: $BRANCH"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          # Ensure we are on the branch (checkout step already did, but be safe)
+          git checkout "$BRANCH"
+          git add charts/app-of-apps/what-runs-where.md
+          git commit -m "chore: update what-runs-where matrix" || { echo "Nothing to commit"; exit 0; }
+          git push origin "$BRANCH"
+
+      - name: Skip commit for fork PR
+        if: ${{ github.event.pull_request.head.repo.full_name != github.repository }}
+        run: echo "Fork PR detected - not pushing updates. Run script locally and commit manually."
