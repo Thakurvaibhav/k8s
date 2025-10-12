@@ -29,6 +29,9 @@ The following higher‑level design documents describe how this chart participat
 | Traffic Management (Gateway, certs, DNS) | [traffic-management.md](../../docs/traffic-management.md) | Sync waves ensure `sealed-secrets` → `cert-manager` → `envoyGateway` → `externalDNS` ordering defined here. |
 | Policy & Compliance (Kyverno + Checkov) | [compliance.md](../../docs/compliance.md) | Progressive `kyverno` + `kyvernoPolicies` enablement (Audit → Enforce) coordinated via environment value files. |
 
+### Component Matrix
+See [What Runs Where](./what-runs-where.md) for a generated per‑cluster component enablement and effective `targetRevision` matrix (disabled components marked with ❌). Regenerate via `scripts/what-runs-where.sh` after changing `values.*.yaml` files.
+
 ### Quick Mapping (Values → Docs)
 - `monitoring.enable`, `logging.enable`, `jaeger.enable` → Observability deployment stages
 - `envoyGateway.enable`, `certManager.enable`, `externalDNS.enable`, `sealedSecrets.enable` → Traffic stack sync waves
