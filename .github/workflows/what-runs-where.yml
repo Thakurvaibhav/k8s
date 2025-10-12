@@ -1,0 +1,41 @@
+name: Generate What Runs Where Matrix
+
+on:
+  pull_request:
+    paths:
+      - 'charts/app-of-apps/values.yaml'
+      - 'charts/app-of-apps/values.*.yaml'
+      - 'scripts/what-runs-where.sh'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  generate-matrix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up yq
+        uses: mikefarah/yq@v4.44.3
+
+      - name: Generate matrix
+        run: |
+          bash scripts/what-runs-where.sh
+
+      - name: Commit updated matrix if changed
+        run: |
+          set -euo pipefail
+          if git diff --quiet charts/app-of-apps/what-runs-where.md; then
+            echo "No changes in matrix"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add charts/app-of-apps/what-runs-where.md
+          git commit -m "chore: update what-runs-where matrix" || echo "Nothing to commit"
+          git push
