@@ -3,6 +3,9 @@ apiVersion: argoproj.io/v1alpha1
 metadata:
   name: stag-01-bootstrap-apps
   namespace: argocd
+  labels:
+    env: stag
+    cluster: stag-01
 spec:
   project: operations
   source:
