@@ -3,6 +3,9 @@ apiVersion: argoproj.io/v1alpha1
 metadata:
   name: prod-01-bootstrap-apps
   namespace: argocd
+  labels:
+    env: prod
+    cluster: prod-01
 spec:
   project: operations
   source:

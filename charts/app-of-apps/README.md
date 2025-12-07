@@ -15,11 +15,6 @@ Define child Applications or Projects under `templates/`. Each environment file 
 ```bash
 helm upgrade --install app-of-apps ./app-of-apps -f values.dev-01.yaml -n argocd
 ```
-
-## Recommended
-- Use sync waves and hooks in child apps for ordering
-- Lock chart versions for reproducibility
-
 ## Related Platform Documentation
 The following higher‑level design documents describe how this chart participates in the overall platform. They are maintained centrally under `docs/` to avoid drift.
 

@@ -2,6 +2,8 @@ sealedSecrets:
   enable: false
   project: operations
   namespace: sealed-secrets
+  annotations:
+    argocd.argoproj.io/sync-wave: "-5"
   source:
     repoURL: git@github.com:Thakurvaibhav/k8s.git
     path: charts/sealed-secrets
@@ -26,6 +28,8 @@ envoyGateway:
   enable: false
   project: operations
   namespace: envoy-gateway-system
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
   source:
     repoURL: git@github.com:Thakurvaibhav/k8s.git
     path: charts/envoy-gateway
@@ -38,6 +42,8 @@ externalDNS:
   enable: false
   project: operations
   namespace: external-dns
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   source:
     repoURL: git@github.com:Thakurvaibhav/k8s.git
     path: charts/external-dns
@@ -50,6 +56,8 @@ certManager:
   enable: false
   project: operations
   namespace: cert-manager
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   source:
     repoURL: git@github.com:Thakurvaibhav/k8s.git
     path: charts/cert-manager
