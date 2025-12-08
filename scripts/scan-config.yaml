@@ -3,7 +3,6 @@ trivy:
     - argo-apps
     - nginx-ingress-controller # not enabled anywhere
     - jaeger # upstream chart has some vulnerabilities for which fix is not available
-    - kyverno # Trivy unable to scan
 
   skipimages:
     -  lmenezes/cerebro:0.9.4 # Fix not available
