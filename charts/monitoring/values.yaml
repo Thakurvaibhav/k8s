@@ -10,7 +10,7 @@ storageClass:
 
 alertmanager:
   enabled: true
-  image: prom/alertmanager:v0.27.0
+  image: prom/alertmanager:v0.28.1
   service:
     type: ClusterIP
   resources:
@@ -46,7 +46,7 @@ grafana:
 
 elasticExporter:
   enabled: true
-  image: quay.io/prometheuscommunity/elasticsearch-exporter:v1.8.0
+  image: quay.io/prometheuscommunity/elasticsearch-exporter:v1.9.0
   extraArgs:
     - es.timeout=60s
   es:
@@ -65,7 +65,7 @@ kube_state_metrics:
   enabled: true
   customResourceState:
     enabled: true
-  image: registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.14.0
+  image: registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.15.0
 
 kubeEagle:
   enabled: true
@@ -80,11 +80,11 @@ kubeEagle:
 
 nodeExporter:
   enabled: true
-  image: prom/node-exporter:v1.8.2
+  image: prom/node-exporter:v1.10.2
 
 blackboxExporter:
   enabled: true
-  image: prom/blackbox-exporter:v0.25.0
+  image: prom/blackbox-exporter:v0.26.0
   resources:
     limits:
       cpu: 1000m
@@ -114,7 +114,7 @@ pushgateway:
     type: ClusterIP
 
 thanos:
-  image: quay.io/thanos/thanos:v0.37.2
+  image: quay.io/thanos/thanos:v0.38.0
   archive_bucket: prometheus-metrics-archive
   gcsSecret: ""
   globalQuery:

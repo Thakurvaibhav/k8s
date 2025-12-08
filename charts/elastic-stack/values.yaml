@@ -113,7 +113,7 @@ dash:
     
 filebeat:
   enable: true
-  image: docker.elastic.co/beats/filebeat-oss:8.17.0
+  image: docker.elastic.co/beats/filebeat-oss:8.17.10
   clusterName: k8s-01
   resources:
     limits:
