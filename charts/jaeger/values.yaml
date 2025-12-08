@@ -83,7 +83,7 @@ jaeger:
       image:
         registry: quay.io
         repository: oauth2-proxy/oauth2-proxy
-        tag: v7.6.0
+        tag: v7.11.0
         pullPolicy: IfNotPresent
       resources:
         limits:

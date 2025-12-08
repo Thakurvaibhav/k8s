@@ -4,12 +4,11 @@ trivy:
     - nginx-ingress-controller # not enabled anywhere
     - jaeger # upstream chart has some vulnerabilities for which fix is not available
     - cert-manager # Trivy unable to scan
-    - external-dns # Trivy unable to scan
     - envoy-gateway # Trivy unable to scan
     - kyverno # Trivy unable to scan
 
   skipimages:
-    -  lmenezes/cerebro:0.9.4
+    -  lmenezes/cerebro:0.9.4 # Fix not available
     -  bitnami/kubectl:1.30.2 # Fix not available
     -  quay.io/google-cloud-tools/kube-eagle:1.1.4 # Fix not available
     -  docker.io/bitnami/redis:8.0.3-debian-12-r1 # Fix not available
