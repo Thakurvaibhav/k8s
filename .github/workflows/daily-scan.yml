@@ -1,0 +1,116 @@
+name: Daily Chart Security Scan
+
+on:
+  schedule:
+    - cron: '0 6 * * *' # Every day at 06:00 UTC
+  workflow_dispatch: {}
+
+concurrency:
+  group: daily-scan-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  TRIVY_SEVERITY: CRITICAL
+  TRIVY_IGNORE_UNFIXED: false
+  CONFIG_FILE: scripts/scan-config.yaml
+  DEBUG: 1
+
+jobs:
+  scan:
+    name: ${{ matrix.step }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        step: [lint, checkov, trivy]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.14.4
+
+      - name: Install dependencies (apt)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq xmlstarlet nodejs npm python3 python3-pip curl git
+
+      - name: Install yq
+        run: |
+          YQ_VERSION=v4.44.1
+          curl -sSL https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64 -o yq
+          chmod +x yq
+          sudo mv yq /usr/local/bin/yq
+          yq --version
+
+      - name: Install Trivy
+        if: matrix.step == 'trivy'
+        run: |
+          VERSION=0.52.2
+          curl -sSL https://github.com/aquasecurity/trivy/releases/download/v${VERSION}/trivy_${VERSION}_Linux-64bit.tar.gz \
+            | sudo tar -xz -C /usr/local/bin trivy
+          trivy --version
+
+      - name: Cache Trivy DB
+        if: matrix.step == 'trivy'
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/trivy
+          key: trivy-db-${{ runner.os }}-${{ hashFiles('scripts/scan.sh') }}
+          restore-keys: |
+            trivy-db-${{ runner.os }}-
+
+      - name: Install Checkov & xunit-viewer
+        run: |
+          pip3 install --no-cache-dir --upgrade pip
+          pip3 install --no-cache-dir checkov==3.2.0
+          sudo npm install -g xunit-viewer@9
+          checkov --version
+
+      - name: Run scan
+        run: |
+          mkdir -p scan-output/${{ matrix.step }}
+          chmod +x scripts/scan.sh
+          DEBUG=${DEBUG} CONFIG_FILE=${CONFIG_FILE} OUTPUT_DIR=scan-output/${{ matrix.step }} bash scripts/scan.sh ${{ matrix.step }} --all
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-scan-${{ matrix.step }}-artifacts
+          path: scan-output/${{ matrix.step }}/
+          if-no-files-found: warn
+
+  summarize:
+    name: Summarize Daily Scan
+    runs-on: ubuntu-latest
+    needs: [scan]
+    if: always()
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Generate consolidated report
+        run: |
+          echo "Daily Scan Report - $(date -u +'%Y-%m-%d %H:%M UTC')" > daily-report.txt
+          find artifacts -type f -name 'scan-summary.txt' -exec echo '\n---- {} ----' \; -exec cat {} \; >> daily-report.txt || true
+      - name: Upload consolidated report
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-scan-consolidated
+          path: daily-report.txt
+          if-no-files-found: warn
+      - name: Post summary
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = 'daily-report.txt';
+            if (fs.existsSync(path)) {
+              const content = fs.readFileSync(path, 'utf8');
+              core.summary.addHeading('Daily Chart Security Scan').addCodeBlock(content).write();
+            } else {
+              core.summary.addHeading('Daily Chart Security Scan').addRaw('No report generated').write();
+            }
