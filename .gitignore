@@ -1,0 +1,57 @@
+# Scan output
+scan-output/
+*.rendered.yaml
+
+# Helm
+charts/*/charts/
+charts/*/Chart.lock
+*.tgz
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Temporary files
+*.tmp
+*.log
+*.bak
+*.orig
+
+# Secrets (should never be committed)
+*secrets*.yaml
+!*sealed*.yaml
+*.key
+*.pem
+*.crt
+*.cert
+
+# Test results
+test-results/
+*.xml
+*.html
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
