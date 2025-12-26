@@ -31,7 +31,6 @@ jobs:
       TRIVY_IGNORE_UNFIXED: false
       CONFIG_FILE: scripts/scan-config.yaml
       DEBUG: 1
-      ALL_CHARTS: true
     steps:
       - name: Checkout
         uses: actions/checkout@v4
