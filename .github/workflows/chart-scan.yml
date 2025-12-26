@@ -6,6 +6,7 @@ on:
       - 'charts/**'
       - 'scripts/scan.sh'
       - '.github/workflows/chart-scan.yml'
+      - '.globalcheckov.yaml'
   push:
     branches: [ main ]
     paths:
