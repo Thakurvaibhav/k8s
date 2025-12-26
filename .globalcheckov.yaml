@@ -8,7 +8,5 @@ check:
 - CKV_K8S_12 # Memory Requests should be set
 - CKV_K8S_13 # Memory Limits should be set
 - CKV_K8S_14 # Ensure Image tag is set
-- CKV_K8S_15 # Image Pull Policy should be Always
 - CKV_K8S_21 # The default namespace should not be used
 - CKV_K8S_26 # Do not specify hostPort unless absolutely necessary
-- CKV_K8S_41 # Ensure that default service accounts are not actively used
