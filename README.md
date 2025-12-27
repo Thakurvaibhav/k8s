@@ -2,10 +2,121 @@
 
 [![Chart Scan](https://github.com/Thakurvaibhav/k8s/actions/workflows/chart-scan.yml/badge.svg)](https://github.com/Thakurvaibhav/k8s/actions/workflows/chart-scan.yml)
 
+## Table of Contents
+
+- [Platform in a Box](#platform-in-a-box)
+- [Quick Start](#quick-start)
+- [Core Principles](#core-principles)
+- [Detailed Component & Architecture Docs](#detailed-component--architecture-docs)
+- [Inventory](#inventory)
+- [Argo CD Control Plane & Bootstrap](#argo-cd-control-plane--bootstrap)
+  - [Global Operations Topology](#global-operations-topology)
+  - [Topology Diagram](#topology-diagram)
+  - [Multi-Ops Variant](#multi-ops-variant-segregated-control-planes)
+  - [Bootstrap Flow](#bootstrap-flow-ops-cluster)
+- [Branching & Promotion Model](#branching--promotion-model)
+  - [Branch / Tag Roles](#branch--tag-roles)
+  - [Visual Flow](#visual-flow)
+  - [Promotion Flow](#promotion-flow)
+  - [Argo CD Values Alignment](#argo-cd-values-alignment)
+  - [Benefits](#benefits)
+- [Central Command & Control (Ops Argo CD)](#central-command-control-ops-argocd)
+- [Environment Overrides](#environment-overrides)
+- [app-of-apps Chart Switches](#app-of-apps-chart-switches-from-valuesyaml-excerpt)
+- [Cross‑Chart Relationships](#cross-chart-relationships)
+- [DNS & Certificates](#dns--certificates)
+- [Security Considerations](#security-considerations)
+- [Development & Testing](#development--testing)
+- [CI Chart Scan Pipeline](#ci-chart-scan-pipeline)
+  - [Steps](#steps)
+  - [Outputs](#outputs-in-scan-output)
+  - [Local Usage](#local-usage)
+  - [Configuration](#configuration-skipping-charts--images)
+  - [Additional Per-Chart Controls](#additional-per-chart-controls)
+  - [Environment Variables](#environment-variables)
+  - [Failure Identification](#failure-identification)
+  - [Skipping an Image Temporarily](#skipping-an-image-temporarily)
+  - [JUnit Template](#junit-template)
+- [Contribution Guidelines](#contribution-guidelines)
+
 ## Platform in a Box
 These charts implement a "Platform in a Box", a batteries‑included, GitOps driven foundation for operating a Kubernetes platform using the Argo CD App‑of‑Apps pattern. They compose the core traffic, security, observability, data, and enablement layers so teams can onboard applications quickly with consistent guardrails.
 
 Introductory article: [Bootstrapping a Production-Grade Kubernetes Platform](https://medium.com/faun/bootstrapping-a-production-grade-kubernetes-platform-c23fff13a26), narrative walkthrough of goals, architecture choices, and bootstrap flow.
+
+## Quick Start
+
+### Prerequisites
+- Kubernetes cluster (v1.27+)
+- `kubectl` configured with cluster access
+- `helm` v3.8+
+- `kubeseal` CLI (for sealed secrets)
+- Argo CD installed in ops cluster
+- Git repository access
+- Object storage bucket (for Thanos metrics)
+- DNS provider credentials (for cert-manager and external-dns)
+
+### 5-Minute Bootstrap
+
+1. **Clone and prepare**:
+   ```bash
+   git clone <repo-url>
+   cd k8s
+   ```
+
+2. **Configure environment**:
+   - Review `charts/app-of-apps/values.ops-01.yaml`
+   - Update cluster endpoints, domains, and secrets
+   - Ensure required components are enabled:
+     ```yaml
+     sealedSecrets:
+       enable: true
+     certManager:
+       enable: true
+     envoyGateway:
+       enable: true
+     ```
+
+3. **Prepare sealed secrets** (if using):
+   - Generate sealing key: `kubeseal --fetch-cert > pub-cert.pem`
+   - Seal required secrets (DNS credentials, object storage, etc.)
+
+4. **Bootstrap Argo CD**:
+   ```bash
+   kubectl apply -f argocd-bootstrap-apps/ops-01.yaml
+   ```
+
+5. **Verify sync**:
+   ```bash
+   # Wait for Argo CD to sync (usually 1-2 minutes)
+   kubectl get applications -n argocd
+   
+   # Check specific app status
+   argocd app get ops-01-app-of-apps
+   
+   # Or via Argo CD UI
+   argocd app list
+   ```
+
+6. **Enable additional components** (via values files):
+   ```yaml
+   # In values.ops-01.yaml or values.dev-01.yaml
+   monitoring:
+     enable: true    # For metrics (Prometheus/Thanos)
+   logging:
+     enable: true    # For centralized logs (Elasticsearch)
+   envoyGateway:
+     enable: true    # For ingress (Gateway API)
+   kyverno:
+     enable: true    # For policy enforcement
+   ```
+
+### Next Steps
+- Go through the [Getting Started Guide](docs/getting-started.md) for a step-by-step walkthrough
+- See [Bootstrap Flow](#bootstrap-flow-ops-cluster) for detailed deployment steps
+- Explore [Component Documentation](docs/) for architecture deep-dives
+- See the [FAQ](docs/faq.md) for common questions and answers
+- For troubleshooting and common issues, see the [Troubleshooting Guide](docs/troubleshooting.md)
 
 ## Core Principles
 - Git as the single source of truth (no snowflake clusters)
@@ -242,7 +353,7 @@ Adjust these to match your exact branch names (e.g., replace `HEAD` with `dev` i
 - Staging soak ensures operational dashboards / alerts validate before tagging.
 - Uniform model reduces cognitive load when diagnosing drift (branch vs tag mismatch quickly visible in `Application` spec).
 
-## Central Command & Control (Ops Argo CD)
+## Central Command & Control (Ops Argo CD) <a id="central-command-control-ops-argocd"></a>
 Argo CD in the ops cluster functions as the operational nerve center:
 - Aggregated health: UI shows all cluster Applications (`<cluster>-<component>` naming convention)
 - Centralized RBAC: limit who can promote by controlling write access to `staging` and `stable` tag creation
@@ -281,7 +392,7 @@ Each block also supplies:
 - `source.repoURL` / `path` / `targetRevision`
 - Optional Helm release metadata under `helm`
 
-## Cross‑Chart Relationships
+## Cross‑Chart Relationships <a id="cross-chart-relationships"></a>
 - Monitoring gRPC exposure uses Envoy Gateway for external Thanos Query.
 - ExternalDNS publishes hosts from Envoy Gateway (Gateway API) & any ingress objects.
 - Cert-Manager issues wildcard / SAN certs consumed by Envoy Gateway, logging (Kibana/ES ingress), Jaeger Query, and any legacy ingress objects; reflector replicates cert secrets.
