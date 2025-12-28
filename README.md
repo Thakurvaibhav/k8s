@@ -132,6 +132,7 @@ This top‑level document inventories charts, their relationships, and recommend
 ### Detailed Component & Architecture Docs
 The `docs/` folder contains deep‑dive guidance, reference architectures, and operational playbooks for major platform pillars. Use these for design decisions, hardening steps, and lifecycle operations beyond the high‑level overview in this README:
 
+- [Architecture Decision Records (ADRs)](docs/adr/) – Documented rationale for major architectural choices (App-of-Apps pattern, Thanos, Envoy Gateway, Sealed Secrets, topology decisions).
 - [Argo CD Best Practices](docs/argocd-best-practices.md) – HA setup, custom labels, Redis guidance, Gateway exposure, metrics scraping.
 - [Observability (Metrics, Logs, Traces)](docs/observability.md) – Thanos federation model, Elastic logging, Jaeger design, mTLS patterns, retention & ILM.
 - [Traffic Management (Gateway API, TLS, DNS)](docs/traffic-management.md) – Envoy Gateway deployment, certificate issuance flows, DNS automation, sync wave ordering.
