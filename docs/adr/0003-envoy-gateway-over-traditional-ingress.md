@@ -84,41 +84,39 @@ I adopted **Envoy Gateway** as my primary ingress solution, implementing the Kub
 
 ### 1. NGINX Ingress Controller
 **Rejected because:**
-- Uses deprecated Ingress API (not Gateway API)
-- NGINX Ingress Controller itself is being deprecated in favor of Gateway API implementations
-- Vendor-specific annotations create lock-in
-- Limited gRPC support
-- Advanced policies require external services (rate limiting, WAF)
-- Not aligned with Kubernetes future direction
+- NGINX Ingress Controller is a mature, battle-tested solution
+- Kubernetes Ingress API is being superseded by Gateway API (industry direction)
+- Gateway API provides better standardization and vendor-agnostic approach
+- This use case requires advanced gRPC support and policy capabilities that Gateway API provides
+- Vendor-specific annotations create dependency on a single implementation
 
 ### 2. Traefik
 **Rejected because:**
-- Also uses Ingress API (though has Gateway API support in newer versions)
-- Less mature Gateway API implementation than Envoy Gateway
-- Smaller community than Envoy
-- Less proven at enterprise scale
+- Traefik is an excellent ingress controller with good Gateway API support
+- For this specific use case, Envoy Gateway provided more mature Gateway API implementation at the time
+- Envoy's extensive ecosystem and community support were beneficial
+- Both are solid choices; Envoy Gateway better matched the requirements
 
 ### 3. Istio Service Mesh
 **Rejected because:**
-- Overkill for ingress-only use case (full service mesh adds complexity)
-- Higher resource overhead (control plane + data plane)
-- More complex configuration
-- I don't need full mesh capabilities (just ingress)
+- Istio is a comprehensive service mesh solution with excellent features
+- For this use case, only ingress capabilities were needed, not full mesh functionality
+- Full service mesh adds operational complexity and resource overhead not required here
+- Istio would be an excellent choice if full service mesh capabilities were needed
 
 ### 4. Cloud Load Balancers Only (GCP Load Balancer, AWS ALB)
 **Rejected because:**
-- Vendor lock-in (cloud-specific)
-- Limited policy capabilities
-- Higher cost at scale
-- Less GitOps-friendly (requires cloud console/API)
-- Can't use for east-west traffic
+- Cloud load balancers are excellent for simple ingress scenarios
+- This use case requires advanced policy capabilities (rate limiting, circuit breaking) and east-west traffic
+- GitOps-native approach was important for declarative infrastructure management
+- Cloud-specific solutions limit portability across environments
 
 ### 5. Kong Gateway
 **Rejected because:**
-- Proprietary features require enterprise license
-- Less aligned with Gateway API standard
-- Smaller community than Envoy
-- More complex configuration model
+- Kong Gateway is a feature-rich API gateway with strong capabilities
+- Gateway API standardization was a key requirement for this platform
+- Envoy Gateway's alignment with Gateway API standard and open-source nature were important factors
+- Kong's enterprise features are excellent but not required for this use case
 
 ## Implementation Notes
 

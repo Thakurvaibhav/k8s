@@ -10,39 +10,7 @@ assignees: ''
 
 <!-- Provide a clear and concise description of the bug -->
 
-## Affected Component
-
-<!-- Mark the relevant component(s) -->
-
-- [ ] app-of-apps
-- [ ] cert-manager
-- [ ] envoy-gateway
-- [ ] external-dns
-- [ ] kyverno
-- [ ] logging (elastic-stack)
-- [ ] monitoring
-- [ ] redis
-- [ ] sealed-secrets
-- [ ] jaeger
-- [ ] Documentation
-- [ ] CI/CD (scan scripts)
-- [ ] Other: ___________
-
-## Environment
-
-<!-- Mark which environment(s) are affected -->
-
-- [ ] dev-01
-- [ ] stag-01
-- [ ] prod-01
-- [ ] ops-01
-- [ ] All environments
-- [ ] Local development
-- [ ] CI/CD pipeline
-
 ## Steps to Reproduce
-
-<!-- Describe the steps to reproduce the issue -->
 
 1. 
 2. 
@@ -64,35 +32,11 @@ assignees: ''
 Paste error messages or logs here
 ```
 
-## Configuration
+## Environment
 
-<!-- If relevant, share configuration (redact secrets) -->
+<!-- If relevant, share environment details -->
 
-```yaml
-# Paste relevant configuration here
-```
-
-## Argo CD Status
-
-<!-- If applicable, share Argo CD application status -->
-
-```bash
-# Paste output of: argocd app get <app-name>
-```
-
-## Kubernetes Version
-
-<!-- What Kubernetes version is running? -->
-
-```
-kubectl version --short
-```
-
-## Additional Context
-
-<!-- Add any other context, screenshots, or information about the issue -->
-
-## Possible Solution
-
-<!-- If you have ideas on how to fix this, describe them here -->
+- Component: ___________
+- Environment: ___________
+- Kubernetes version: ___________
 

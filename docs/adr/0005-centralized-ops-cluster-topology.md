@@ -104,18 +104,19 @@ I adopted a **centralized Ops cluster topology** where:
 
 ### 3. Managed Argo CD (Argo CD SaaS)
 **Rejected because:**
-- Vendor lock-in
-- Data sovereignty concerns (GitOps state in external system)
-- Less control over configuration
-- Cost at scale
-- I want to keep everything GitOps-managed and self-hosted
+- Managed Argo CD services offer excellent features and reduce operational overhead
+- For this use case, self-hosted approach was preferred for full control and data sovereignty
+- Self-hosted provides more flexibility for custom configuration and integration
+- Cost considerations and keeping everything GitOps-managed were important factors
+- Managed services are an excellent choice when operational overhead is a primary concern
 
 ### 4. GitOps Tool per Cluster (Flux, Argo CD, etc.)
 **Rejected because:**
-- Tool sprawl (different tools in different clusters)
-- No unified management
-- Inconsistent patterns
-- Higher learning curve (must know multiple tools)
+- Using different GitOps tools per cluster provides flexibility and tool-specific benefits
+- For this use case, unified management and consistent patterns across clusters were priorities
+- Single tool reduces operational complexity and learning curve
+- Unified approach provides better visibility and coordination across environments
+- Multiple tools would be appropriate if different clusters had significantly different requirements
 
 ### 5. No Centralized Control (Manual kubectl)
 **Rejected because:**
