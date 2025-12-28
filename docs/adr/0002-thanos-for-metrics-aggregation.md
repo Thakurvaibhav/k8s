@@ -85,33 +85,33 @@ I implemented **Thanos** in a sidecar architecture with the following components
 
 ### 2. Cortex
 **Rejected because:**
-- More complex architecture (requires object storage, chunks storage, query frontend)
-- Different query model (not pure PromQL compatibility)
-- Higher operational overhead
-- Less mature ecosystem than Thanos
+- Cortex is a robust solution with excellent scalability features
+- The architecture is more complex (object storage, chunks storage, query frontend) than needed for this use case
+- Query model differs from pure PromQL, which would require team retraining
+- Operational overhead is higher than Thanos for this specific multi-cluster scenario
 
 ### 3. VictoriaMetrics
 **Rejected because:**
-- Different storage format (not Prometheus-compatible)
-- Migration complexity from existing Prometheus setups
-- Smaller community than Thanos
-- Less proven at multi-cluster scale
+- VictoriaMetrics is a high-performance solution with excellent compression
+- Different storage format requires migration from existing Prometheus setups
+- For this use case, maintaining Prometheus compatibility was important
+- Thanos provides better integration with existing Prometheus deployments
 
 ### 4. Multiple Independent Prometheus Instances
 **Rejected because:**
-- No unified querying (must query each cluster separately)
-- Limited retention (2-4 weeks typical)
-- High storage costs (full resolution data in each cluster)
-- No global alerting capabilities
-- Operational overhead of managing many Prometheus instances
+- Simple and straightforward approach, but lacks unified querying
+- Each cluster must be queried separately, making cross-cluster analysis difficult
+- Limited retention (2-4 weeks typical) doesn't meet long-term analysis needs
+- Storage costs scale linearly with each cluster
+- No global alerting capabilities across clusters
 
 ### 5. Managed Solutions (Datadog, New Relic, etc.)
 **Rejected because:**
-- Vendor lock-in
-- High cost at scale
-- Data sovereignty concerns
-- Less control over retention and query patterns
-- I want to keep observability stack GitOps-managed
+- Managed solutions offer excellent features and reduce operational overhead
+- For this use case, maintaining full control over the observability stack was important
+- Cost considerations at scale favor self-hosted solutions
+- Data sovereignty and GitOps-managed infrastructure were key requirements
+- Self-hosted approach provides more flexibility for custom retention and query patterns
 
 ## Implementation Notes
 

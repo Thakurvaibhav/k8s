@@ -99,16 +99,18 @@ I implemented a **multi-cluster GitOps approach** using:
 
 ### 2. Flux Instead of Argo CD
 **Rejected because:**
-- Argo CD has better UI for multi-cluster management
-- Argo CD Application CRDs more flexible than Flux Kustomizations
-- Larger community and ecosystem around Argo CD
+- Flux is an excellent GitOps tool with strong declarative capabilities
+- Argo CD's UI and multi-cluster management features better suited this use case
+- Argo CD Application CRDs provided more flexibility for this specific architecture
+- Both are excellent choices; Argo CD's ecosystem and features aligned better with requirements
 
 ### 3. Terraform for Multi-Cluster Management
 **Rejected because:**
-- Not GitOps-native (Terraform state management complexity)
-- Requires external tooling (Terraform Cloud/Enterprise or state backends)
-- Less Kubernetes-native (Terraform providers vs native K8s resources)
-- Continuous reconciliation requires Terraform runs (not automatic)
+- Terraform is excellent for infrastructure provisioning and management
+- For application deployment orchestration, GitOps tools provide better continuous reconciliation
+- Terraform state management adds complexity for this use case
+- Kubernetes-native resources (via GitOps) provide better integration than Terraform providers
+- Terraform would be an excellent choice for infrastructure-as-code, but this focused on application deployment
 
 ### 4. Helm-Only (No GitOps Tool)
 **Rejected because:**

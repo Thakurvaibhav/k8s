@@ -87,35 +87,35 @@ kubectl create secret generic my-secret --dry-run=client -o yaml \
 
 ### 1. External Secrets Operator (ESO)
 **Rejected because:**
-- Requires external secret store (Vault, AWS Secrets Manager, etc.)
-- Adds infrastructure dependency (must operate Vault or cloud secret manager)
-- Not Git-native (secrets stored in external system, not Git)
-- More complex architecture (operator + external system)
-- Potential cost (cloud secret manager pricing)
+- ESO is an excellent solution when you have existing secret stores (Vault, AWS Secrets Manager, etc.)
+- For this use case, Git-native secret management was a key requirement
+- ESO adds infrastructure dependency (must operate Vault or cloud secret manager)
+- The architecture requires both the operator and external secret store, increasing complexity
+- Sealed Secrets provides a simpler, Git-native approach that fits the GitOps workflow better
 
 ### 2. HashiCorp Vault
 **Rejected because:**
-- Requires separate Vault infrastructure to operate
-- Not Git-native (secrets in Vault, not Git)
-- More complex (Vault HA, unsealing, policies)
-- Additional operational overhead
-- Overkill for my use case (I don't need dynamic secrets, PKI, etc.)
+- Vault is an industry-leading secret management solution with excellent features
+- Vault excels at dynamic secrets, PKI, and complex secret management scenarios
+- For this use case, Git-native secret management was required, and Vault stores secrets externally
+- Vault's advanced features (dynamic secrets, PKI) weren't needed for this platform
+- The operational overhead (HA setup, unsealing, policies) was more than required
 
 ### 3. SOPS with age/PGP
 **Rejected because:**
-- Requires key management (age keys or PGP keys)
-- Not Kubernetes-native (SOPS is file-level encryption, not K8s resource)
-- Manual decryption step in CI/CD (not automatic like Sealed Secrets)
-- Less integrated with Kubernetes workflows
-- Requires managing encryption keys
+- SOPS is a solid file-level encryption solution widely used in the industry
+- For this use case, Kubernetes-native secret resources were preferred
+- SOPS requires manual decryption steps in CI/CD, whereas Sealed Secrets integrates automatically
+- Key management overhead (age keys or PGP keys) was a consideration
+- Sealed Secrets provides better integration with Kubernetes workflows
 
 ### 4. Cloud Secret Managers (AWS Secrets Manager, GCP Secret Manager)
 **Rejected because:**
-- Vendor lock-in
-- Not Git-native (secrets in cloud, not Git)
-- Requires cloud-specific integrations
-- Cost at scale
-- Less GitOps-friendly (requires cloud API calls)
+- Cloud secret managers are excellent managed solutions that reduce operational overhead
+- For this use case, Git-native secret management and multi-cloud portability were important
+- Cloud-specific solutions create vendor lock-in and require cloud API integrations
+- Cost at scale was a consideration for this self-hosted platform
+- GitOps-native approach preferred declarative, version-controlled secrets
 
 ### 5. Plaintext in Git (with private repos)
 **Rejected because:**

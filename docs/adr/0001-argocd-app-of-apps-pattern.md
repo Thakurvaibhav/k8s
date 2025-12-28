@@ -79,23 +79,24 @@ The pattern works as follows:
 
 ### 2. Kustomize-based App-of-Apps
 **Rejected because:**
-- Less flexible for conditional logic (enable/disable toggles)
-- Harder to manage per-environment git revisions
-- Kustomize overlays don't scale well for many environments
-- Helm provides better templating for complex scenarios
+- Kustomize is excellent for simpler scenarios, but less flexible for conditional logic (enable/disable toggles)
+- Managing per-environment git revisions is more complex with overlays
+- Kustomize overlays become unwieldy with many environments
+- Helm templating better suited for this use case with complex conditional requirements
 
 ### 3. Argo CD ApplicationSets
 **Rejected because:**
-- More complex for my use case (I don't need matrix generation)
-- Relatively new feature
-- Helm charts provide better integration with existing tooling
-- ApplicationSets are better for "one app, many clusters" scenarios, not "many apps, many clusters"
+- ApplicationSets excel at "one app, many clusters" scenarios with matrix generation
+- For "many apps, many clusters" scenarios, the App-of-Apps pattern provides better organization
+- Helm charts integrate well with existing tooling and workflows
+- ApplicationSets are a powerful feature but add complexity not needed for this architecture
 
 ### 4. Terraform/Crossplane for Application Management
 **Rejected because:**
-- Adds another tool to the stack
-- Overkill for managing Argo CD Applications
-- GitOps should stay Git-native (YAML/Helm)
+- Terraform/Crossplane are excellent for infrastructure provisioning and management
+- For managing Argo CD Applications specifically, staying Git-native (YAML/Helm) aligns better with GitOps principles
+- Adding another tool would increase operational complexity
+- The use case focuses on application deployment orchestration rather than infrastructure provisioning
 
 ## References
 
