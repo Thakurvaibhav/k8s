@@ -1,0 +1,12 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://github.com/Thakurvaibhav/k8s#readme
+    about: Check the README and docs/ folder for detailed documentation
+  - name: FAQ
+    url: https://github.com/Thakurvaibhav/k8s/blob/main/docs/faq.md
+    about: Check the FAQ for common questions and answers
+  - name: Troubleshooting Guide
+    url: https://github.com/Thakurvaibhav/k8s/blob/main/docs/troubleshooting.md
+    about: Check the troubleshooting guide for common issues
+
