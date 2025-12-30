@@ -56,6 +56,12 @@ Introductory article: [Bootstrapping a Production-Grade Kubernetes Platform](htt
 - Object storage bucket (for Thanos metrics)
 - DNS provider credentials (for cert-manager and external-dns)
 
+### Infrastructure Provisioning
+
+**Note:** This repository focuses on platform components and assumes you have already provisioned your Kubernetes clusters and cloud infrastructure (VPCs, object storage, DNS zones, etc.) using tools like Terraform, Pulumi, or cloud provider CLIs.
+
+We plan to add opinionated guides for Kubernetes-native infrastructure provisioning using Crossplane or similar tools in the future. For now, please provision your infrastructure using your preferred IaC tool before following the bootstrap steps below.
+
 ### 5-Minute Bootstrap
 
 1. **Clone and prepare**:
