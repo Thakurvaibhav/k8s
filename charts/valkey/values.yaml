@@ -1,0 +1,48 @@
+storageClass:
+  provisioner: update-as-per-environment
+
+valkey:
+  commonLabels:
+    k8s-app: valkey
+    team: ops
+  resources:
+    limits:
+      cpu: 1200m
+      memory: 6Gi
+    requests:
+      cpu: 900m
+      memory: 512Mi
+  initResources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  replica:
+    enabled: true
+    replicas: 2
+    minReplicasToWrite: 1
+    persistence:
+      size: "100Gi"
+      storageClass: "valkey"
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+          - key: k8s-app
+            operator: In
+            values:
+            - valkey
+        topologyKey: "kubernetes.io/hostname"
+  metrics:
+    enabled: true
+    exporter:
+      resources:
+        limits:
+          cpu: 100m
+          memory: 128Mi
+        requests:
+          cpu: 50m
+          memory: 64Mi
+    service:
+      annotations:
+        prometheus.io/scrape: "true"

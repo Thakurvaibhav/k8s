@@ -34,3 +34,6 @@ kyverno:
 
 redis:
   enable: true
+
+valkey:
+  enable: true

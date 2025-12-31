@@ -1,0 +1,5 @@
+storageClass:
+  provisioner: pd.csi.storage.gke.io
+  parameters:
+    type: pd-ssd
+    csi.storage.k8s.io/fstype: ext4
