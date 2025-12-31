@@ -13,6 +13,9 @@ valkey:
       cpu: 900m
       memory: 512Mi
   initResources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
     requests:
       cpu: 100m
       memory: 128Mi
@@ -21,7 +24,7 @@ valkey:
     replicas: 2
     minReplicasToWrite: 1
     persistence:
-      size: "100Gi"
+      size: "200Gi"
       storageClass: "valkey"
   affinity:
     podAntiAffinity:
