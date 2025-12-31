@@ -125,3 +125,15 @@ redis:
     helm:
       valueFiles: ""
       releaseName: redis
+
+valkey:
+  enable: false
+  project: operations
+  namespace: valkey
+  source:
+    repoURL: git@github.com:Thakurvaibhav/k8s.git
+    path: charts/valkey
+    targetRevision: ""
+    helm:
+      valueFiles: ""
+      releaseName: valkey

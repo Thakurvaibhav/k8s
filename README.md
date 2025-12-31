@@ -139,7 +139,7 @@ This top‑level document inventories charts, their relationships, and recommend
 The `docs/` folder contains deep‑dive guidance, reference architectures, and operational playbooks for major platform pillars. Use these for design decisions, hardening steps, and lifecycle operations beyond the high‑level overview in this README:
 
 - [Architecture Decision Records (ADRs)](docs/adr/) – Documented rationale for major architectural choices (App-of-Apps pattern, Thanos, Envoy Gateway, Sealed Secrets, topology decisions).
-- [Argo CD Best Practices](docs/argocd-best-practices.md) – HA setup, custom labels, Redis guidance, Gateway exposure, metrics scraping.
+- [Argo CD Best Practices](docs/argocd-best-practices.md) – HA setup, custom labels, Redis/Valkey guidance, Gateway exposure, metrics scraping.
 - [Observability (Metrics, Logs, Traces)](docs/observability.md) – Thanos federation model, Elastic logging, Jaeger design, mTLS patterns, retention & ILM.
 - [Traffic Management (Gateway API, TLS, DNS)](docs/traffic-management.md) – Envoy Gateway deployment, certificate issuance flows, DNS automation, sync wave ordering.
 - [Policy & Compliance](docs/compliance.md) – Kyverno audit→enforce ladder, Checkov shift‑left scanning, exception handling strategy.
@@ -150,7 +150,7 @@ These documents evolve independently of this summary; always consult them first 
 ## Inventory
 | Chart | Category | Purpose | Depends On / Cooperates With | Key Notes |
 |-------|----------|---------|------------------------------|-----------|
-| `app-of-apps` | GitOps Orchestration | Argo CD App‑of‑Apps root that defines Argo CD `Application` objects for platform components (monitoring, ingress, gateway, secrets, policies, data services, logging). | Argo CD CRDs present in cluster. Optionally Sealed Secrets controller if you enable secret management here. | Toggle components via values: `sealedSecrets`, `ingressController`, `envoyGateway`, `externalDns`, `certManager`, `monitoring`, `kyverno`, `redis`, `logging`, `jaeger`. |
+| `app-of-apps` | GitOps Orchestration | Argo CD App‑of‑Apps root that defines Argo CD `Application` objects for platform components (monitoring, ingress, gateway, secrets, policies, data services, logging). | Argo CD CRDs present in cluster. Optionally Sealed Secrets controller if you enable secret management here. | Toggle components via values: `sealedSecrets`, `ingressController`, `envoyGateway`, `externalDns`, `certManager`, `monitoring`, `kyverno`, `redis`, `valkey`, `logging`, `jaeger`. |
 | `sealed-secrets` | Secrets Management | Vendors upstream Bitnami Sealed Secrets controller and (optionally) renders shared/global sealed secrets. | Installed via `app-of-apps` (if `sealedSecrets.enable=true`). Consumed by charts needing encrypted creds (monitoring, external-dns, others). | Supports user‑defined controller key; global secrets only. |
 | `cert-manager` | TLS & Certificates | Issues TLS certs via ACME (DNS‑01 GCP Cloud DNS example) and reflects cert Secrets cluster‑wide using reflector. | Sealed Secrets (for DNS svc acct), ExternalDNS (aligned DNS zones), consumers: envoy-gateway, logging, jaeger, ingress. | Upstream `cert-manager` + `reflector`; wildcard cert reuse via annotations. |
 | `envoy-gateway` | Traffic Management & Routing | Deploys Envoy Gateway (Gateway API) plus custom GatewayClasses, Gateways, Routes, security & proxy policies. | Kubernetes >=1.27, optionally ExternalDNS & monitoring. | Deployed in every cluster (local ingress + policy attachment) but managed centrally. |
@@ -158,7 +158,8 @@ These documents evolve independently of this summary; always consult them first 
 | `monitoring` | Observability: Metrics | Prometheus + Thanos components for HA metrics and global aggregation. | `envoy-gateway` (if gRPC exposure), Sealed Secrets, object storage. | Values control Thanos, replicas, routes, TLS. |
 | `nginx-ingress-controller` | Traffic Management & Routing | Traditional NGINX ingress controller for legacy ingress use cases. | None (cluster only). | Prefer Gateway API for new services. |
 | `kyverno` | Compliance & Policy | Upstream Kyverno + Policy Reporter + starter ops & security policies (Audit → Enforce). | Sealed Secrets (optional), monitoring (metrics). | Deployed in every cluster for local admission & policy enforcement; centrally versioned. |
-| `redis` | Data Services (Shared) | Vendors upstream Bitnami Redis for cache/session workloads. | Sealed Secrets (auth), monitoring (metrics). | Enable auth & persistence in env overrides before production. |
+| `redis` | Data Services (Shared) | Vendors upstream Bitnami Redis for cache/session workloads. | Sealed Secrets (auth), monitoring (metrics). | Enable auth & persistence in env overrides before production. **Note:** Bitnami is deprecating free images; consider migrating to `valkey` (drop-in Redis replacement). |
+| `valkey` | Data Services (Shared) | High-performance Redis fork for cache/session workloads. Drop-in replacement for Redis with modern features. | Sealed Secrets (auth), monitoring (metrics). | Recommended alternative to Redis. Currently supports replication mode; Sentinel mode coming soon. Enable auth & persistence in env overrides before production. |
 | `logging` | Observability: Logs | Centralized multi‑cluster logging (Elasticsearch + Kibana + Filebeat) using ECK operator & mTLS via Gateway. | `envoy-gateway` (ingest endpoint), Sealed Secrets (certs), eck-operator. | Deployed with Helm release name `logging`; ops cluster hosts ES/Kibana; other clusters ship via Filebeat. |
 | `jaeger` | Observability: Tracing | Multi‑cluster tracing (collectors in all clusters, query UI only in Ops) storing spans in shared Elasticsearch (logging stack). | `logging` (Elasticsearch), Sealed Secrets (ES creds / TLS), optional Envoy Gateway (if exposing query). | Agents optional (apps can emit OTLP direct); uses upstream Jaeger chart. |
 
@@ -389,7 +390,8 @@ ingressController.enable    # nginx ingress controller
 envoyGateway.enable         # envoy gateway platform ingress
 monitoring.enable           # monitoring stack (Prometheus/Thanos)
 kyverno.enable              # kyverno policies + reporter
-redis.enable                # redis data service
+redis.enable                # redis data service (consider valkey instead)
+valkey.enable               # valkey data service (recommended Redis alternative)
 logging.enable              # elastic logging stack (Helm release name: logging)
 jaeger.enable               # distributed tracing (Jaeger collectors + optional query UI)
 ```
@@ -408,8 +410,8 @@ Each block also supplies:
 - Jaeger agents are optional when applications can emit OTLP direct to collector services.
 - Kyverno enforces standards on workloads deployed by other charts (progress Audit→Enforce) and operates per cluster for locality of admission decisions.
 - Envoy Gateway is present in each cluster for local north/south & east/west routing; global Gitops ensures consistent security policy overlays.
-- Redis, Logging Stack, and Jaeger may expose metrics scraped by monitoring.
-- Sealed Secrets underpins secret distribution (monitoring, external-dns, kyverno, redis, logging, jaeger, cert-manager DNS creds).
+- Redis/Valkey, Logging Stack, and Jaeger may expose metrics scraped by monitoring.
+- Sealed Secrets underpins secret distribution (monitoring, external-dns, kyverno, redis, valkey, logging, jaeger, cert-manager DNS creds).
 
 ## DNS & Certificates
 - Ensure Cloud DNS zones exist for all `external-dns` domains.
@@ -420,9 +422,18 @@ Each block also supplies:
 - Principle of least privilege for service accounts & secrets.
 - Rotate sealed secrets periodically.
 - Enforce policies with Kyverno only after Audit stabilization.
-- Enable Redis auth & persistence before production use.
+- Enable Redis/Valkey auth & persistence before production use.
 - Protect Elasticsearch & Kibana with auth + mTLS where applicable.
 - Secure Jaeger Query with OAuth / SSO and TLS; ensure collectors use mTLS to ES.
+
+### Bitnami Image Deprecation Notice
+Bitnami is deprecating free container images, which affects charts that depend on Bitnami images (notably the `redis` chart). **We recommend migrating to `valkey`**, which is a drop-in replacement for Redis with:
+- Continued open-source support and active development
+- Redis protocol compatibility (drop-in replacement)
+- Modern performance improvements and features
+- No dependency on deprecated Bitnami images
+
+The `valkey` chart provides the same functionality as `redis` with improved long-term maintainability.
 
 ## Development & Testing
 ```bash

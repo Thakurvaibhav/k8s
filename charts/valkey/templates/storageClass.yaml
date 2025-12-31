@@ -1,0 +1,12 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: {{ .Values.valkey.replica.persistence.storageClass }}
+provisioner: {{ .Values.storageClass.provisioner }}
+reclaimPolicy: Retain
+allowVolumeExpansion: true
+volumeBindingMode: WaitForFirstConsumer
+parameters:
+{{- range $key, $value := .Values.storageClass.parameters }}
+  {{ $key }}: {{ $value }} 
+{{- end }}
