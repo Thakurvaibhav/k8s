@@ -509,7 +509,7 @@ Place the config at repo root (default path) or set `CONFIG_FILE`.
 
 ### Failure Identification
 `scan-summary.txt` fields:
-- Charts processed / Values processed
+- Charts processed / values files processed
 - Images scanned / skipped / failed (Trivy step)
 - Failed items (list of tokens `Kind:Detail[:...]`)
 
@@ -530,6 +530,5 @@ The Trivy JUnit output uses `@./scripts/junit.tpl`. Adjust this path if relocati
 ## Contribution Guidelines
 - Update per‑chart README on changes.
 - Keep inventory table aligned with actual charts.
-- Bump chart versions on template/value default changes.
 - Update CI scan docs above if scan behavior or config keys change.
 
