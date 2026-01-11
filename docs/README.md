@@ -35,6 +35,7 @@ This directory contains comprehensive documentation for the Kubernetes platform.
 
 ### Traffic Management
 - [Traffic Management Guide](traffic-management.md) - Envoy Gateway, TLS certificates, DNS automation
+- [Envoy Gateway Best Practices](envoy-gateway-best-practices.md) - Production patterns, certificate management, observability, route management
 
 ### GitOps & Operations
 - [Argo CD Best Practices](argocd-best-practices.md) - HA setup, custom labels, Redis, Gateway exposure, metrics

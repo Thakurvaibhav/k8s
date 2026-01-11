@@ -142,6 +142,7 @@ The `docs/` folder contains deep‑dive guidance, reference architectures, and o
 - [Argo CD Best Practices](docs/argocd-best-practices.md) – HA setup, custom labels, Redis/Valkey guidance, Gateway exposure, metrics scraping.
 - [Observability (Metrics, Logs, Traces)](docs/observability.md) – Thanos federation model, Elastic logging, Jaeger design, mTLS patterns, retention & ILM.
 - [Traffic Management (Gateway API, TLS, DNS)](docs/traffic-management.md) – Envoy Gateway deployment, certificate issuance flows, DNS automation, sync wave ordering.
+- [Envoy Gateway Best Practices](docs/envoy-gateway-best-practices.md) – Production patterns, certificate management, observability, route management, migration strategies.
 - [Policy & Compliance](docs/compliance.md) – Kyverno audit→enforce ladder, Checkov shift‑left scanning, exception handling strategy.
 - [Elasticsearch Best Practices](docs/elastic-best-practices.md) – Node role segregation, mTLS external access, heap sizing, ILM, GC & recovery tuning.
 
