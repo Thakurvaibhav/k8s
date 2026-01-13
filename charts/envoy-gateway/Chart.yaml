@@ -7,5 +7,5 @@ appVersion: "1.16.0"
 dependencies:
   - name: gateway-helm
     alias: gatewayprovider
-    version: v1.4.2
+    version: v1.6.2
     repository: oci://docker.io/envoyproxy
