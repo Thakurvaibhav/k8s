@@ -1,32 +1,31 @@
 namespace: external-dns
-
-image:
-  repository: registry.k8s.io/external-dns/external-dns
-  tag: v0.15.1
-
-logLevel: info
-dryRun: false
-upsertOnly: true
 kubernetesProvider: GKE
-dnsConfig:
-  domainFilters: 
-    - mydomain.com
-    - dev.mydomain.com
-    - staging.mydomain.com
-    - ops.mydomain.com
+
+external-dns:
+  logLevel: info
+  logFormat: json
+  interval: 5m
+  provider: google
   sources:
   - service
   - gateway-httproute
   - gateway-grpcroute
-  gcpProject: ops-01
-  txtOwner: ops-01
-
-resources:
-  limits:
-    cpu: 500m
-    memory: 300Mi
-  requests:
-    cpu: 20m
-    memory: 75Mi
+  resources:
+    limits:
+      cpu: 500m
+      memory: 300Mi
+    requests:
+      cpu: 20m
+      memory: 75Mi
+  env:
+  - name: GOOGLE_APPLICATION_CREDENTIALS
+    value: /var/secrets/google/external-dns-credentials.json
+  extraVolumes:
+  - name: google-cloud-key
+    secret:
+      secretName: external-dns-credentials
+  extraVolumeMounts:
+  - name: google-cloud-key
+    mountPath: /var/secrets/google
 
 sealedCredentials: "" # SealedSecret value for external-dns-credentials.json

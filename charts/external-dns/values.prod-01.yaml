@@ -1,4 +1,7 @@
-upsertOnly: false
-dnsConfig:
-  gcpProject: prod-01
-  txtOwner: prod-01
+external-dns:
+  domainFilters: 
+    - mydomain.com
+  extraArgs:
+  - --google-project=prod-01
+  - --registry=txt
+  - --txt-owner-id=prod-01
