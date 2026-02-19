@@ -1,3 +1,7 @@
-dnsConfig:
-  gcpProject: ops-01
-  txtOwner: ops-01
+external-dns:
+  domainFilters: 
+    - ops.mydomain.com
+  extraArgs:
+  - --google-project=ops-01
+  - --registry=txt
+  - --txt-owner-id=ops-01

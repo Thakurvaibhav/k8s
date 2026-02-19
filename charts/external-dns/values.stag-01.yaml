@@ -1,4 +1,7 @@
-upsertOnly: false
-dnsConfig:
-  gcpProject: stag-01
-  txtOwner: stag-01
+external-dns:
+  domainFilters: 
+    - staging.mydomain.com
+  extraArgs:
+  - --google-project=stag-01
+  - --registry=txt
+  - --txt-owner-id=stag-01
