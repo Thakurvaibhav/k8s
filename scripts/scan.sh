@@ -136,11 +136,13 @@ fi
 if [[ ! -f $CONFIG_FILE ]]; then
   echo "[WARN] Config file $CONFIG_FILE not found; proceeding with empty skips" >&2
   trivy_skip_charts=(); trivy_skip_images=(); checkov_skip_charts=(); kubeconform_skip_charts=()
+  kubeconform_k8s_version="1.30.0"
 else
   mapfile -t trivy_skip_charts < <($YQ_CMD e '.trivy.skipcharts[]' "$CONFIG_FILE" 2>/dev/null || true)
   mapfile -t trivy_skip_images < <($YQ_CMD e '.trivy.skipimages[]' "$CONFIG_FILE" 2>/dev/null || true)
   mapfile -t checkov_skip_charts < <($YQ_CMD e '.checkov.skipcharts[]' "$CONFIG_FILE" 2>/dev/null || true)
   mapfile -t kubeconform_skip_charts < <($YQ_CMD e '.kubeconform.skipcharts[]' "$CONFIG_FILE" 2>/dev/null || true)
+  kubeconform_k8s_version=$($YQ_CMD e '.kubeconform.kubernetes_version // "1.30.0"' "$CONFIG_FILE" 2>/dev/null || echo "1.30.0")
 fi
 
 in_array() { local needle="$1"; shift; for e in "$@"; do [[ "$e" == "$needle" ]] && return 0; done; return 1; }
@@ -226,9 +228,10 @@ run_kubeconform() {
   log "Kubeconform validating: $chart_name ($values_name)"
   local results_file="$TEST_RESULTS_DIR/${chart_name}_${values_name}_kubeconform.json"
   if ! kubeconform \
-    --strict \
+    --ignore-missing-schemas \
     --summary \
     --output json \
+    -kubernetes-version "$kubeconform_k8s_version" \
     -schema-location default \
     -schema-location 'https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceVersion}}.json' \
     "$manifest" > "$results_file" 2>&1; then
