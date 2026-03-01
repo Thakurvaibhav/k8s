@@ -18,3 +18,8 @@ checkov:
     - kyverno # Upstream chart has hooks which does not support all configs
     - eck-operator # skipping since upstream chart does not support all configs
 
+kubeconform:
+  skipcharts:
+    - argo-apps  # app-of-apps pattern, renders ArgoCD Application CRDs
+  kubernetes_version: "1.30.0"
+

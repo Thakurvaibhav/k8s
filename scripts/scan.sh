@@ -70,7 +70,7 @@ done
 if [[ -z "${STEP}" ]]; then
   usage; exit 2
 fi
-if ! [[ " ${STEP} " =~ ^[[:space:]]*(lint|trivy|checkov)[[:space:]]*$ ]]; then
+if ! [[ " ${STEP} " =~ ^[[:space:]]*(lint|trivy|checkov|kubeconform)[[:space:]]*$ ]]; then
   echo "[ERR] Invalid STEP: ${STEP}" >&2; usage; exit 2
 fi
 
@@ -81,6 +81,7 @@ need_bin() { command -v "$1" >/dev/null 2>&1 || { echo "[ERR] Missing required b
 need_bin git; need_bin helm; need_bin "$YQ_CMD"; need_bin grep; need_bin sort; need_bin cut; need_bin find; need_bin awk
 [[ "$STEP" == "trivy" ]] && need_bin trivy
 [[ "$STEP" == "checkov" ]] && need_bin checkov
+[[ "$STEP" == "kubeconform" ]] && need_bin kubeconform
 command -v xmlstarlet >/dev/null 2>&1 || echo "[WARN] xmlstarlet not found; XML post-processing skipped"
 
 mkdir -p "$TEST_RESULTS_DIR"
@@ -134,11 +135,12 @@ fi
 # ---------------------------------------------
 if [[ ! -f $CONFIG_FILE ]]; then
   echo "[WARN] Config file $CONFIG_FILE not found; proceeding with empty skips" >&2
-  trivy_skip_charts=(); trivy_skip_images=(); checkov_skip_charts=()
+  trivy_skip_charts=(); trivy_skip_images=(); checkov_skip_charts=(); kubeconform_skip_charts=()
 else
   mapfile -t trivy_skip_charts < <($YQ_CMD e '.trivy.skipcharts[]' "$CONFIG_FILE" 2>/dev/null || true)
   mapfile -t trivy_skip_images < <($YQ_CMD e '.trivy.skipimages[]' "$CONFIG_FILE" 2>/dev/null || true)
   mapfile -t checkov_skip_charts < <($YQ_CMD e '.checkov.skipcharts[]' "$CONFIG_FILE" 2>/dev/null || true)
+  mapfile -t kubeconform_skip_charts < <($YQ_CMD e '.kubeconform.skipcharts[]' "$CONFIG_FILE" 2>/dev/null || true)
 fi
 
 in_array() { local needle="$1"; shift; for e in "$@"; do [[ "$e" == "$needle" ]] && return 0; done; return 1; }
@@ -215,6 +217,26 @@ run_checkov() {
   fi
 }
 
+run_kubeconform() {
+  local manifest=$1 chart_name=$2 values_name=$3
+  if in_array "$chart_name" "${kubeconform_skip_charts[@]:-}"; then
+    debug "Skipping kubeconform for $chart_name (in skip list)"
+    return 0
+  fi
+  log "Kubeconform validating: $chart_name ($values_name)"
+  local results_file="$TEST_RESULTS_DIR/${chart_name}_${values_name}_kubeconform.json"
+  if ! kubeconform \
+    --strict \
+    --summary \
+    --output json \
+    -schema-location default \
+    -schema-location 'https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceVersion}}.json' \
+    "$manifest" > "$results_file" 2>&1; then
+    failed_charts+=("Kubeconform:$chart_name:$values_name")
+    EXIT_CODE=1
+  fi
+}
+
 # ---------------------------------------------
 # Main Loop (render + aggregate or per-step actions)
 # ---------------------------------------------
@@ -269,7 +291,7 @@ for chart in "${charts_changed[@]}"; do
     (( ++values_processed ))
     render_dir=$(mktemp -d)
     manifest="$render_dir/${chart_name}.yaml"
-    if [[ "$STEP" == "lint" || "$STEP" == "trivy" ]]; then
+    if [[ "$STEP" == "lint" || "$STEP" == "trivy" || "$STEP" == "kubeconform" ]]; then
       if ! render_chart "$chart" "$values" "$render_dir" "$chart_name"; then
         failed_charts+=("Render:$chart_name:$values_name")
         EXIT_CODE=1
@@ -293,9 +315,10 @@ for chart in "${charts_changed[@]}"; do
       fi
     fi
     case "$STEP" in
-      checkov) run_checkov "$chart" "$values" "$chart_name" "$values_name" ;;
-      trivy)   ;; # scanning deferred
-      lint)    ;; # nothing additional
+      checkov)      run_checkov "$chart" "$values" "$chart_name" "$values_name" ;;
+      trivy)        ;; # scanning deferred
+      lint)         ;; # nothing additional
+      kubeconform)  run_kubeconform "$manifest" "$chart_name" "$values_name" ;;
     esac
     if [[ $KEEP_RENDERED -eq 1 ]]; then
       debug "Keeping rendered manifest for $chart_name $values_name"
@@ -370,6 +393,26 @@ if [[ "$STEP" == "trivy" ]]; then
     fi
   done < "$statuses_file"
   rm -f "$statuses_file"
+fi
+
+# ---------------------------------------------
+# Kubeconform summary
+# ---------------------------------------------
+if [[ "$STEP" == "kubeconform" ]]; then
+  log "Kubeconform validation summary"
+  kc_pass=0
+  kc_fail=0
+  kc_total=0
+  for result_file in "$TEST_RESULTS_DIR"/*_kubeconform.json; do
+    [[ -f "$result_file" ]] || continue
+    (( ++kc_total ))
+    if grep -q '"status":"invalid"' "$result_file" 2>/dev/null; then
+      (( ++kc_fail ))
+    else
+      (( ++kc_pass ))
+    fi
+  done
+  log "Kubeconform results: $kc_total validated, $kc_pass passed, $kc_fail failed"
 fi
 
 # ---------------------------------------------

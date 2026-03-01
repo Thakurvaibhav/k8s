@@ -78,7 +78,7 @@ internalProxyConfig:
     resources:
       limits:
         cpu: 10000m
-        memory: 512i
+        memory: 512Mi
       requests:
         cpu: 500m
         memory: 128Mi

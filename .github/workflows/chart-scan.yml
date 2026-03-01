@@ -5,6 +5,7 @@ on:
     paths:
       - 'charts/**'
       - 'scripts/scan.sh'
+      - 'scripts/scan-config.yaml'
       - '.github/workflows/chart-scan.yml'
       - '.globalcheckov.yaml'
   push:
@@ -12,6 +13,7 @@ on:
     paths:
       - 'charts/**'
       - 'scripts/scan.sh'
+      - 'scripts/scan-config.yaml'
       - '.github/workflows/chart-scan.yml'
 
 concurrency:
@@ -25,7 +27,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        step: [lint, checkov, trivy]
+        step: [lint, checkov, trivy, kubeconform]
     env:
       TRIVY_SEVERITY: CRITICAL
       TRIVY_IGNORE_UNFIXED: false
@@ -60,6 +62,14 @@ jobs:
           curl -sSL https://github.com/aquasecurity/trivy/releases/download/v${VERSION}/trivy_${VERSION}_Linux-64bit.tar.gz \
             | sudo tar -xz -C /usr/local/bin trivy
           trivy --version
+
+      - name: Install kubeconform
+        if: matrix.step == 'kubeconform'
+        run: |
+          VERSION=0.6.7
+          curl -sSL https://github.com/yannh/kubeconform/releases/download/v${VERSION}/kubeconform-linux-amd64.tar.gz \
+            | sudo tar -xz -C /usr/local/bin kubeconform
+          kubeconform -v
 
       - name: Install Checkov & xunit-viewer
         run: |
