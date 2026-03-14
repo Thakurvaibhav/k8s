@@ -58,9 +58,9 @@ jobs:
       - name: Install Trivy
         if: matrix.step == 'trivy'
         run: |
-          VERSION=0.66.0
-          curl -sSL https://github.com/aquasecurity/trivy/releases/download/v${VERSION}/trivy_${VERSION}_Linux-64bit.tar.gz \
-            | sudo tar -xz -C /usr/local/bin trivy
+          TRIVY_VERSION=0.69.3
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh \
+            | sudo sh -s -- -b /usr/local/bin v${TRIVY_VERSION}
           trivy --version
 
       - name: Install kubeconform
